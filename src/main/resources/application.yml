@@ -1,0 +1,6 @@
+#Default port
+server:
+  port: 21314
+spring:
+  profiles:
+    active: test
