@@ -16,7 +16,7 @@ public class AEFluidAccessor {
 
     private final String fluid_loc;
 
-    public AEFluidAccessor(PathAccessor pa) {
+    AEFluidAccessor(PathAccessor pa) {
         this.fluid_loc = pa.getPath_json_fluid();
     }
 

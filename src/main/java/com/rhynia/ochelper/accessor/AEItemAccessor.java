@@ -16,7 +16,7 @@ public class AEItemAccessor {
 
     private final String item_loc;
 
-    public AEItemAccessor(PathAccessor pa) {
+    AEItemAccessor(PathAccessor pa) {
         this.item_loc = pa.getPath_json_item();
     }
 

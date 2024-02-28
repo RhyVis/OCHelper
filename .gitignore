@@ -36,3 +36,5 @@ build/
 /src/main/resources/static/dist/
 /src/main/resources/static/res/item_table/
 /dev/
+/database/
+/drivers/

@@ -2,10 +2,14 @@ package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.accessor.AEFluidAccessor;
 import com.rhynia.ochelper.accessor.AEItemAccessor;
+import com.rhynia.ochelper.accessor.DatabaseAccessor;
 import com.rhynia.ochelper.accessor.PathAccessor;
 import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.var.AEFluid;
+import com.rhynia.ochelper.var.AEFluidDisplay;
 import com.rhynia.ochelper.var.AEItem;
+import com.rhynia.ochelper.var.AEItemDisplay;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,19 +21,15 @@ import java.util.Objects;
 
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID;
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_ITEM;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
 
 @Controller
+@AllArgsConstructor
 public class IndexController {
-
     private final AEItemAccessor aei;
     private final AEFluidAccessor aef;
     private final PathAccessor pa;
-
-    IndexController(AEItemAccessor aei, AEFluidAccessor aef, PathAccessor pa) {
-        this.aei = aei;
-        this.aef = aef;
-        this.pa = pa;
-    }
+    private final DatabaseAccessor da;
 
     @GetMapping("/")
     public String getMainRedirect() {
@@ -51,7 +51,8 @@ public class IndexController {
         return "dashboard";
     }
 
-    @GetMapping("ae-storage-info")
+    @Deprecated
+    //@GetMapping("ae-storage-info")
     private String getAeStorageInfoPageIndex(Model model) {
 
         String iconPath = pa.getPath().getIconPanelPath();
@@ -99,6 +100,42 @@ public class IndexController {
         model.addAttribute("iconPath", iconPath);
         model.addAttribute("assembleItems", assembleItems);
         model.addAttribute("assembleFluids", assembleFluids);
+
+        return "ae/ae-storage-info";
+    }
+
+    @GetMapping("ae-storage-info")
+    public String getInfoPageIndex(Model model) {
+
+        String iconPath = pa.getPath().getIconPanelPath();
+
+        var pair = da.getLatestData();
+
+        List<AEItemDisplay> items = pair.getLeft();
+        List<AEFluidDisplay> fluids = pair.getRight();
+
+        List<AEItemDisplay> itemList = new ArrayList<>();
+        List<Pair<AEFluidDisplay, String>> fluidList = new ArrayList<>();
+
+        for (AEItemDisplay item : items) {
+            if (item.getUn().endsWith("drop$0")) continue;
+            if (Objects.equals(item.getSize(), "0")) continue;
+            itemList.add(item);
+        }
+
+        for (AEFluidDisplay fluid : fluids) {
+            String localSwitched;
+            if (UNI_NAME_MAP_FLUID.containsKey(fluid.getUn())) {
+                localSwitched = UNI_NAME_MAP_FLUID.get(fluid.getUn());
+            } else {
+                localSwitched = fluid.getLocal();
+            }
+            fluidList.add(Pair.of(fluid, localSwitched));
+        }
+
+        model.addAttribute("iconPath", iconPath);
+        model.addAttribute("itemList", itemList);
+        model.addAttribute("fluidList", fluidList);
 
         return "ae/ae-storage-info";
     }

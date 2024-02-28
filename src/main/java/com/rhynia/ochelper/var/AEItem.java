@@ -20,7 +20,7 @@ public class AEItem {
     private boolean hasTag;
     private boolean isCraftable;
 
-    private String processRawAeSize() {
+    public String processRawAeSize() {
         if (size.contains("E") || size.contains("e")) {
             BigDecimal bd = new BigDecimal(size);
             return bd.toPlainString();
@@ -42,5 +42,9 @@ public class AEItem {
         if (Objects.equals(temp, out))
             return "-";
         return "(" + out + ")";
+    }
+
+    public String getUniqueName() {
+        return "item$" + Format.removeUnavailableChar(this.name) + "$" + this.damage;
     }
 }

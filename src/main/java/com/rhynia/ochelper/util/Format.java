@@ -1,5 +1,8 @@
 package com.rhynia.ochelper.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
 
 public class Format {
@@ -22,5 +25,21 @@ public class Format {
         if (NAME_MAP_FLUID_SWITCH.containsKey(s))
             return NAME_MAP_FLUID_SWITCH.get(s);
         return s;
+    }
+
+    public static String removeUnavailableChar(String s) {
+        String regEx = "[\n`~!@#$%^&*()+=\\-_|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？]";
+        String str = "_";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(s);
+        return m.replaceAll(str).trim();
+    }
+
+    public static String assembleItemUName(String name, int meta) {
+        return "item$" + Format.removeUnavailableChar(name) + "$" + meta;
+    }
+
+    public static String assembleFluidUName(String name) {
+        return "fluid$" + Format.removeUnavailableChar(name);
     }
 }

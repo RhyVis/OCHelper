@@ -2,3 +2,9 @@
 path:
   csv-path: D:/Workbench/Java_Project/OCHelper/table/dumpCSV/
   json-path: D:/Workbench/Java_Project/OCHelper/table/
+##Database
+spring:
+  datasource:
+    url: jdbc:sqlite:D:/Workbench/Java_Project/OCHelper/database/DATA.db
+    driver-class-name: org.sqlite.JDBC
+    type: com.zaxxer.hikari.HikariDataSource

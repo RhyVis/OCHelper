@@ -124,22 +124,22 @@
 
                 <!--begin::Row-->
                 <div class="row">
-                    <div class="col-12 col-sm-6 col-md-3" th:each="assembleItem:${assembleItems}">
+                    <div class="col-12 col-sm-6 col-md-3" th:each="item:${itemList}">
                         <div class="info-box">
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
-                                <img th:src="${iconPath + assembleItem.getLeft() + '.png'}" alt="ICON"
+                                <img th:src="${iconPath + item.getLocal() + '.png'}" alt="ICON"
                                      style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;">
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text" style="font-weight: bold"
-                                      th:text="${(assembleItem.getRight().isHasTag()) ? assembleItem.getRight().getLabel() : assembleItem.getLeft()}">
+                                      th:text="${item.getLocal()}">
                                 </span>
                                 <span class="info-box-number" style="max-width: fit-content;font-size: smaller;"
-                                      th:text="${assembleItem.getRight().getAeSizeDisplay()}">
+                                      th:text="${item.getAeSizeDisplay()}">
                                 </span>
                                 <span class="info-box-number" style="max-width: fit-content;font-size: smaller"
-                                      th:text="${assembleItem.getRight().getAeSizeByteDisplay()}">
+                                      th:text="${item.getAeSizeByteDisplay()}">
                                 </span>
                             </div> <!-- /.info-box-content -->
                         </div> <!-- /.info-box -->
@@ -153,22 +153,22 @@
 
                 <!--begin::Row-->
                 <div class="row">
-                    <div class="col-12 col-sm-6 col-md-3" th:each="assembleFluid:${assembleFluids}">
+                    <div class="col-12 col-sm-6 col-md-3" th:each="fluid:${fluidList}">
                         <div class="info-box">
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
-                                <img th:src="${iconPath + assembleFluid.getLeft() + '单元.png'}" alt="ICON"
+                                <img th:src="${iconPath + fluid.getRight() + '单元.png'}" alt="ICON"
                                      style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;">
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text" style="font-weight: bold"
-                                      th:text="${assembleFluid.getLeft()}">
+                                      th:text="${fluid.getLeft().getLocal()}">
                                 </span>
                                 <span class="info-box-number" style="max-width: fit-content;font-size: smaller;"
-                                      th:text="${assembleFluid.getRight().getAeSizeDisplay()}">
+                                      th:text="${fluid.getLeft().getAeSizeDisplay()}">
                                 </span>
                                 <span class="info-box-number" style="max-width: fit-content;font-size: smaller"
-                                      th:text="${assembleFluid.getRight().getAeSizeByteDisplay()}">
+                                      th:text="${fluid.getLeft().getAeSizeByteDisplay()}">
                                 </span>
                             </div> <!-- /.info-box-content -->
                         </div> <!-- /.info-box -->

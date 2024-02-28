@@ -17,7 +17,7 @@ public class AEFluid {
     private String label;
     private String amount;
 
-    private String processRawAeSize() {
+    public String processRawAeSize() {
         if (amount.contains("E") || amount.contains("e")) {
             BigDecimal bd = new BigDecimal(amount);
             return bd.toPlainString();
@@ -39,5 +39,9 @@ public class AEFluid {
         if (Objects.equals(temp, out))
             return "";
         return "(" + out + ")";
+    }
+
+    public String getUniqueName() {
+        return "fluid$" + Format.removeUnavailableChar(this.name);
     }
 }
