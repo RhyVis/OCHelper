@@ -8,12 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "path")
 public class Path {
-
     private String csvPath;
+    private String csvItemName;
+    private String csvFluidName;
     private String jsonPath;
-
-    @Override
-    public String toString() {
-        return "Path:" + csvPath + "|" + jsonPath;
-    }
+    private String jsonItemName;
+    private String jsonFluidName;
+    private String iconPanelPath;
 }

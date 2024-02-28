@@ -1,6 +1,18 @@
 #Default port
 server:
   port: 21314
+#Profile switch
 spring:
   profiles:
     active: test
+  thymeleaf:
+    cache: true
+    mode: HTML
+    suffix: .html
+#File name
+path:
+  csv-item-name: itempanel.csv
+  csv-fluid-name: fluid.csv
+  json-item-name: indexItem.json
+  json-fluid-name: indexFluid.json
+  icon-panel-path: res/item_table/

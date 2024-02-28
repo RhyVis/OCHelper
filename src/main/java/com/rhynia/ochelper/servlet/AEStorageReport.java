@@ -1,7 +1,7 @@
 package com.rhynia.ochelper.servlet;
 
-import com.rhynia.ochelper.dao.AEFluidDao;
-import com.rhynia.ochelper.dao.AEItemDao;
+import com.rhynia.ochelper.accessor.AEFluidAccessor;
+import com.rhynia.ochelper.accessor.AEItemAccessor;
 import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.var.AEFluid;
 import com.rhynia.ochelper.var.AEItem;
@@ -22,13 +22,13 @@ import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID;
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_ITEM;
 
 @Component
-@WebServlet(name = "ae-storage-report", value = "/ae-storage-report")
+@WebServlet(name = "ae-storage-report-servlet", value = "/ae-storage-report-servlet")
 public class AEStorageReport extends HttpServlet {
 
-    private final AEItemDao aei;
-    private final AEFluidDao aef;
+    private final AEItemAccessor aei;
+    private final AEFluidAccessor aef;
 
-    AEStorageReport(AEItemDao aei, AEFluidDao aef) {
+    AEStorageReport(AEItemAccessor aei, AEFluidAccessor aef) {
         this.aei = aei;
         this.aef = aef;
     }
@@ -87,8 +87,8 @@ public class AEStorageReport extends HttpServlet {
             out.println("<div class=\"info-box-content\"> <span class=\"info-box-text\">"
                     + (item.isHasTag() ? item.getLabel() : local)
                     + "</span> <span class=\"info-box-number\" style=\"min-width: 180px;\">"
-                    + Format.formatStringSizeDisplay(item.getSize()) + " "
-                    + Format.formatStringSizeByte(item.getSize()) + "</span> </div> </div>");
+                    + item.getAeSizeDisplay() + " "
+                    + item.getAeSizeByteDisplay() + "</span> </div> </div>");
             out.println("</div>");
         }
         out.println("</div></div>");
@@ -112,8 +112,8 @@ public class AEStorageReport extends HttpServlet {
             out.println("<div class=\"info-box\"> <span class=\"info-box-icon text-bg-light shadow-sm\" style=\"min-width: 80px;min-height: 80px;\">" + imgLocal + "</span>");
             out.println("<div class=\"info-box-content\"> <span class=\"info-box-text\">"
                     + local + "</span> <span class=\"info-box-number\" style=\"min-width: 180px;\">"
-                    + Format.formatStringSizeDisplay(fluid.getAmount()) + " "
-                    + Format.formatStringSizeByte(fluid.getAmount()) + "</span> </div> </div>");
+                    + fluid.getAeSizeDisplay() + " "
+                    + fluid.getAeSizeByteDisplay() + "</span> </div> </div>");
             out.println("</div>");
         }
         out.println("</div></div>");

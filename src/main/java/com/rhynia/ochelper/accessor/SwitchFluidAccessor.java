@@ -1,4 +1,4 @@
-package com.rhynia.ochelper.dao;
+package com.rhynia.ochelper.accessor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
-public class SwitchFluidDao {
+public class SwitchFluidAccessor {
 
     @Value("classpath:/config/switch_fluid.json")
     private Resource sfSource;
