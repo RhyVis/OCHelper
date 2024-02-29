@@ -3,18 +3,18 @@
 
 <head>
     <title>AE Storage Insight</title>
-    <th:block th:insert="shared/head-shared::head"></th:block>
+    <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary"> <!--begin::App Wrapper-->
 <div class="app-wrapper">
 
     <!--begin::Header-->
-    <th:block th:insert="shared/navbar-shared::navbar"></th:block>
+    <th:block th:insert="~{shared/navbar-shared::navbar}"></th:block>
     <!--end::Header-->
 
     <!--begin::Sidebar-->
-    <th:block th:insert="shared/sidebar-shared::sidebar"></th:block>
+    <th:block th:insert="~{shared/sidebar-shared::sidebar}"></th:block>
     <!--end::Sidebar-->
 
     <!--begin::App Main-->
@@ -104,7 +104,7 @@
         <!--end::Copyright-->
     </footer> <!--end::Footer-->
 </div> <!--end::App Wrapper-->
-<!--begin::Script--><th:block th:insert="shared/script-shared::script"></th:block>
+<th:block th:insert="~{shared/script-shared::script}"></th:block>
 <!--begin::OverlayScrollbars Configure-->
 <script>
     const SELECTOR_SIDEBAR_WRAPPER = ".sidebar-wrapper";
@@ -129,7 +129,7 @@
         }
     });
 </script> <!--end::OverlayScrollbars Configure-->
-<script th:src="@{../../../dist/js/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{dist/js/apexcharts/apexcharts.min.js}"></script>
 <script>
     function formatBytes(bytes) {
         if (bytes === 0) return 0;
