@@ -35,7 +35,4 @@ public interface AEDataMapper {
     @Delete("DELETE FROM ${un} WHERE id NOT IN (SELECT id FROM ${un} ORDER BY id DESC LIMIT ${keepSize});")
     void cleanupAEData(@Param("un") String un, @Param("keepSize") int keepSize);
 
-    @Select("CREATE TABLE IF NOT EXISTS \" + un + \" (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
-    void createIfNotExist(@Param("un") String un);
-
 }

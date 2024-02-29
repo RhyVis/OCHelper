@@ -24,7 +24,8 @@ public class DatabaseUpdater {
     private final Snowflake sid = new Snowflake(1);
 
     private void checkDatabaseOrCreate(String un) {
-        mp.createIfNotExist(un);
+        String sql = "CREATE TABLE IF NOT EXISTS " + un + " (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+        jt.execute(sql);
     }
 
     public void configDatabase() {
