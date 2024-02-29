@@ -8,3 +8,6 @@ spring:
     url: jdbc:sqlite:D:/Workbench/Java_Project/OCHelper/database/DATA.db
     driver-class-name: org.sqlite.JDBC
     type: com.zaxxer.hikari.HikariDataSource
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, file:D:/Workbench/Java_Project/OCHelper/table

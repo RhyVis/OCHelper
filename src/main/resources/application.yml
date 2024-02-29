@@ -9,6 +9,9 @@ spring:
     cache: true
     mode: HTML
     suffix: .html
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, ${user.dir}/public/
 #File name
 path:
   csv-item-name: itempanel.csv

@@ -18,6 +18,7 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 @Component
 @AllArgsConstructor
 public class DatabaseAccessor {
+
     private final AEDataAccessor aed;
     private final AEDataMapper mp;
 

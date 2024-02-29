@@ -2,93 +2,19 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>AE Storage Insight</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Rhynia">
-    <meta name="keywords"
-          content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-          integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q=" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/styles/overlayscrollbars.min.css"
-          integrity="sha256-dSokZseQNT08wYEWiz5iLI8QPlKxG+TswNRD8k35cpg=" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css"
-          integrity="sha256-Qsx5lrStHZyR9REqhUF8iQt73X06c8LGIUPzpOhwRrI=" crossorigin="anonymous">
-    <link rel="stylesheet" th:href="@{../../../dist/css/adminlte.css}">
-    <link rel="icon" th:href="@{res/icon.png}" sizes="16x16">
+    <th:block th:insert="shared/head-shared::head"></th:block>
 </head> <!--begin::Body-->
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary"> <!--begin::App Wrapper-->
-<div class="app-wrapper"> <!--begin::Header-->
-    <nav class="app-header navbar navbar-expand bg-body"> <!--begin::Container-->
-        <div class="container-fluid"> <!--begin::Start Navbar Links-->
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"> <i
-                        class="bi bi-list"></i> </a></li>
-                <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
-                <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li>
-            </ul> <!--end::Start Navbar Links-->
-            <!--begin::End Navbar Links-->
-            <ul class="navbar-nav ms-auto">
-                <!--begin::Navbar Search-->
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="navbar-search" href="#"
-                       role="button">
-                        <i class="bi bi-search"></i>
-                    </a>
-                </li>
-                <!--end::Navbar Search-->
-                <!--begin::Fullscreen Toggle-->
-                <li class="nav-item"><a class="nav-link" href="#" data-lte-toggle="fullscreen"> <i
-                        data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
-                    <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none;"></i>
-                </a></li>
-                <!--end::Fullscreen Toggle-->
-            </ul> <!--end::End Navbar Links-->
-        </div> <!--end::Container-->
-    </nav> <!--end::Header--> <!--begin::Sidebar-->
-    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+<div class="app-wrapper">
 
-        <!--begin::Sidebar Brand-->
-        <div class="sidebar-brand">
-            <a th:href="@{dashboard}" class="brand-link">
-                <img th:src="@{res/icon.png}" alt="AdminLTE Logo"
-                     class="brand-image opacity-75 shadow">
-                <span class="brand-text fw-light">OC Insight</span>
-            </a>
-        </div>
-        <!--end::Sidebar Brand-->
+    <!--begin::Header-->
+    <th:block th:insert="shared/navbar-shared::navbar"></th:block>
+    <!--end::Header-->
 
-        <!--begin::Sidebar Wrapper-->
-        <div class="sidebar-wrapper">
-            <nav class="mt-2"> <!--begin::Sidebar Menu-->
-                <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
-                    <li class="nav-item">
-                        <a th:href="@{dashboard}" class="nav-link"> <i class="nav-icon bi bi-speedometer"></i>
-                            <p>Dashboard</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"> <i class="nav-icon bi bi-box-seam-fill"></i>
-                            <p>
-                                AE Components
-                                <i class="nav-arrow bi bi-chevron-right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a th:href="@{ae-storage-info}" class="nav-link"> <i
-                                        class="nav-icon bi bi-circle"></i>
-                                    <p>Storage Insight</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul> <!--end::Sidebar Menu-->
-            </nav>
-        </div>
-        <!--end::Sidebar Wrapper-->
-    </aside>
+    <!--begin::Sidebar-->
+    <th:block th:insert="shared/sidebar-shared::sidebar"></th:block>
     <!--end::Sidebar-->
 
     <!--begin::App Main-->
@@ -102,9 +28,9 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
                             <li class="breadcrumb-item active" aria-current="page">
-                                Info Box
+                                AE Storage Insight
                             </li>
                         </ol>
                     </div>
@@ -177,17 +103,8 @@
         All rights reserved.
         <!--end::Copyright-->
     </footer> <!--end::Footer-->
-</div> <!--end::App Wrapper--> <!--begin::Script--> <!--begin::Third Party Plugin(OverlayScrollbars)-->
-<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/browser/overlayscrollbars.browser.es6.min.js"
-        integrity="sha256-H2VM7BKda+v2Z4+DRy69uknwxjyDRhszjXFhsL4gD3w=" crossorigin="anonymous"></script>
-<!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script>
-<!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-        integrity="sha256-YMa+wAM6QkVyz999odX7lPRxkoYAan8suedu4k2Zur8=" crossorigin="anonymous"></script>
-<!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-<script src="../../../dist/js/adminlte.js"></script> <!--end::Required Plugin(AdminLTE)-->
+</div> <!--end::App Wrapper-->
+<!--begin::Script--><th:block th:insert="shared/script-shared::script"></th:block>
 <!--begin::OverlayScrollbars Configure-->
 <script>
     const SELECTOR_SIDEBAR_WRAPPER = ".sidebar-wrapper";

@@ -1,0 +1,66 @@
+[
+  {
+    "pre": "item$dreamcraft_item_CircuitULV$0",
+    "alt": "任意ULV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitLV$0",
+    "alt": "任意LV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitMV$0",
+    "alt": "任意MV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitMV$0",
+    "alt": "任意MV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitHV$0",
+    "alt": "任意HV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitEV$0",
+    "alt": "任意EV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitIV$0",
+    "alt": "任意IV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitIV$0",
+    "alt": "任意IV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitLuV$0",
+    "alt": "任意LuV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitZPM$0",
+    "alt": "任意ZPM芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitUV$0",
+    "alt": "任意UV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitUHV$0",
+    "alt": "任意UHV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitUEV$0",
+    "alt": "任意UEV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitUIV$0",
+    "alt": "任意UIV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitUMV$0",
+    "alt": "任意UMV芯片"
+  },
+  {
+    "pre": "item$dreamcraft_item_CircuitUXV$0",
+    "alt": "任意UXV芯片"
+  }
+]

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class PathAccessor {
+
     private final Path path;
     private final String path_csv_item;
     private final String path_csv_fluid;

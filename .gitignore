@@ -33,8 +33,11 @@ build/
 .vscode/
 /table/
 /src/main/resources/static/dist/assets/img/item_table/
-/src/main/resources/static/dist/
 /src/main/resources/static/res/item_table/
 /dev/
 /database/
 /drivers/
+/data/
+/src/main/resources/static/dist/pages/
+/src/main/resources/static/dist/assets/img/
+/src/main/resources/static/dist/js/apexcharts/locales/

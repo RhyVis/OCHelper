@@ -33,6 +33,7 @@ import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_ITEM;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
 @Controller
 @AllArgsConstructor
@@ -80,7 +81,12 @@ public class IndexController {
             if (item.getUn().endsWith("drop$0")) continue;
             if (Objects.equals(item.getSize(), "0")) continue;
             if (item.getLocal() == null) {
-                AEItemDisplay missing = new AEItemDisplay(item.getUn(), item.getUn(), item.getSize());
+                AEItemDisplay missing;
+                if (UNI_NAME_MAP_ITEM_SWITCH.containsKey(item.getUn())) {
+                    missing = new AEItemDisplay(item.getUn(), UNI_NAME_MAP_ITEM_SWITCH.get(item.getUn()), item.getSize());
+                } else {
+                    missing = new AEItemDisplay(item.getUn(), item.getUn(), item.getSize());
+                }
                 itemList.add(missing);
                 continue;
             }
@@ -126,9 +132,8 @@ public class IndexController {
         BigDecimal older = new BigDecimal(list.get(list.size() - 1).getSize());
         BigDecimal newer = new BigDecimal(list.get(0).getSize());
         BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR);
-        double rate_p = rate_raw.doubleValue();
-        String rate = nf.format(rate_p);
-        boolean increase = rate_p > 1D;
+        String rate = nf.format(rate_raw);
+        boolean increase = rate_raw.compareTo(BigDecimal.ONE) > -1;
 
         model.addAttribute("bdl", bdl.toArray(new BigDecimal[0][0]));
         model.addAttribute("name_to_display", name);

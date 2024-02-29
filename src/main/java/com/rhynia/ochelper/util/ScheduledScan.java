@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ScheduledScan {
+
     private final CommonValue cv;
     private final AEItemAccessor aei;
     private final AEFluidAccessor aef;

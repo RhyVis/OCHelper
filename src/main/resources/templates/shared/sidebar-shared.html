@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar</title>
+</head>
+<body>
+
+<!--begin::Sidebar-->
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" th:fragment="sidebar">
+
+    <!--begin::Sidebar Brand-->
+    <div class="sidebar-brand">
+        <a th:href="@{dashboard}" class="brand-link">
+            <img th:src="@{res/icon.png}" alt="Center Logo"
+                 class="brand-image opacity-75 shadow">
+            <span class="brand-text fw-light">OC Center</span>
+        </a>
+    </div>
+    <!--end::Sidebar Brand-->
+
+    <!--begin::Sidebar Wrapper-->
+    <div class="sidebar-wrapper">
+        <nav class="mt-2"> <!--begin::Sidebar Menu-->
+            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a th:href="@{dashboard}" class="nav-link"> <i class="nav-icon bi bi-speedometer"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> <i class="nav-icon bi bi-box-seam-fill"></i>
+                        <p>
+                            AE Components
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a th:href="@{ae-storage-info}" class="nav-link"> <i
+                                    class="nav-icon bi bi-circle"></i>
+                                <p>Storage Center</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul> <!--end::Sidebar Menu-->
+        </nav>
+    </div>
+    <!--end::Sidebar Wrapper-->
+</aside>
+
+<!--end::Sidebar-->
+</body>
+</html>

@@ -3,8 +3,10 @@ package com.rhynia.ochelper.component;
 import com.csvreader.CsvReader;
 import com.rhynia.ochelper.accessor.PathAccessor;
 import com.rhynia.ochelper.accessor.SwitchFluidAccessor;
+import com.rhynia.ochelper.accessor.SwitchItemAccessor;
 import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.var.SwitchFluid;
+import com.rhynia.ochelper.var.SwitchItem;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,6 +22,7 @@ import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_ITEM;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
 @Slf4j
 @Component
@@ -27,8 +30,9 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 public class Preloader implements ApplicationRunner {
 
     private final PathAccessor pa;
-    private final SwitchFluidAccessor sf;
     private final DatabaseUpdater dbu;
+    private final SwitchFluidAccessor sf;
+    private final SwitchItemAccessor si;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -59,11 +63,15 @@ public class Preloader implements ApplicationRunner {
         for (SwitchFluid sf : sf_List) {
             NAME_MAP_FLUID_SWITCH.put(sf.getPre(), sf.getAlt());
         }
+        List<SwitchItem> si_list = si.getSIList();
+        for (SwitchItem si : si_list) {
+            UNI_NAME_MAP_ITEM_SWITCH.put(si.getPre(), si.getAlt());
+        }
 
         // Database init
         dbu.configDatabase();
         dbu.initDatabase();
-        
+
         log.info("Preload complete.");
 
     }

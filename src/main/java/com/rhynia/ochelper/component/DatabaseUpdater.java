@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class DatabaseUpdater {
+
     private final JdbcTemplate jt;
     private final CommonValue cv;
     private final AEDataAccessor aed;
