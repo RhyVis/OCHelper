@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @MapperScan("com.rhynia.ochelper.mapper")
-@ServletComponentScan(basePackages = "com.rhynia.ochelper.servlet")
+@ServletComponentScan("com.rhynia.ochelper.servlet")
 public class OcHelperApplication {
 
     public static void main(String[] args) {

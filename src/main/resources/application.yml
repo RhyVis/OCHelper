@@ -18,7 +18,7 @@ path:
   icon-panel-path: res/item_table/
 #Scheduled scan time (set to "-" to disable)
 scheduled:
-  cron: 0/45 * * * * ?
+  cron: 0/30 * * * * ?
 #Clean
 c-value:
   keep-size: 500

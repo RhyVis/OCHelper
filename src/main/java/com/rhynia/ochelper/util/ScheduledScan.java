@@ -24,6 +24,10 @@ public class ScheduledScan {
 
     @Scheduled(cron = "${scheduled.cron}")
     public void scanJsonData() throws Exception {
+        doScan();
+    }
+
+    private void doScan() throws Exception {
         if (cleanIndex <= cv.getCleanSchedule()) {
             long m = System.currentTimeMillis();
             int k = scanJsonItemData();

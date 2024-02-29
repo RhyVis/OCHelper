@@ -23,9 +23,7 @@ public class DatabaseUpdater {
     private final Snowflake sid = new Snowflake(1);
 
     private void checkDatabaseOrCreate(String un) {
-        if (un == null || un.isEmpty()) return;
-        String sql = "CREATE TABLE IF NOT EXISTS " + un + " (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
-        jt.execute(sql);
+        mp.createIfNotExist(un);
     }
 
     public void configDatabase() {
@@ -41,8 +39,8 @@ public class DatabaseUpdater {
         for (String un : aed.mapName()) {
             checkDatabaseOrCreate(un);
             cleanupData(un);
-            freeDataSize();
         }
+        freeDataSize();
         log.info("Database sheets init, cleaning done.");
     }
 

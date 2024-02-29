@@ -8,7 +8,8 @@ import com.rhynia.ochelper.var.SwitchFluid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -23,14 +24,14 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class Preloader implements CommandLineRunner {
+public class Preloader implements ApplicationRunner {
 
     private final PathAccessor pa;
     private final SwitchFluidAccessor sf;
     private final DatabaseUpdater dbu;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(ApplicationArguments args) throws Exception {
 
         // CSV Loader
         CsvReader csvItem = new CsvReader(pa.getPath_csv_item(), ',', StandardCharsets.UTF_8);
@@ -62,7 +63,7 @@ public class Preloader implements CommandLineRunner {
         // Database init
         dbu.configDatabase();
         dbu.initDatabase();
-
+        
         log.info("Preload complete.");
 
     }
