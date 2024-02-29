@@ -1,11 +1,12 @@
 package com.rhynia.ochelper.accessor;
 
+import com.rhynia.ochelper.mapper.AEDataMapper;
 import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEFluidDisplay;
 import com.rhynia.ochelper.var.AEItemData;
 import com.rhynia.ochelper.var.AEItemDisplay;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,14 +16,10 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 
 @Component
+@AllArgsConstructor
 public class DatabaseAccessor {
-    private final JdbcTemplate jt;
     private final AEDataAccessor aed;
-
-    DatabaseAccessor(JdbcTemplate jt, AEDataAccessor aed) {
-        this.jt = jt;
-        this.aed = aed;
-    }
+    private final AEDataMapper mp;
 
     public Pair<List<AEItemDisplay>, List<AEFluidDisplay>> getLatestData() {
         List<AEItemDisplay> aeidp_l = new ArrayList<>();
@@ -30,30 +27,32 @@ public class DatabaseAccessor {
 
         for (String un : aed.getUniqueNameList()) {
             if (un.startsWith("item$")) {
-                String sql = "SELECT * FROM " + un + " ORDER BY id DESC LIMIT 1;";
-                List<AEItemData> aeid_l = jt.query(sql, (rs, rowNum) -> new AEItemData(
-                        rs.getLong(1),
-                        rs.getString(2),
-                        rs.getString(3)
-                ));
-                if (aeid_l.isEmpty()) continue;
-                AEItemData aeid = aeid_l.get(0);
+                AEItemData aeid = mp.getAEItemDataLatest(un);
                 String local = UNI_NAME_MAP_ITEM.get(un);
                 aeidp_l.add(new AEItemDisplay(un, local, aeid.getSize()));
             } else if (un.startsWith("fluid$")) {
-                String sql = "SELECT * FROM " + un + " ORDER BY id DESC LIMIT 1;";
-                List<AEFluidData> aefd_l = jt.query(sql, (rs, rowNum) -> new AEFluidData(
-                        rs.getLong(1),
-                        rs.getString(2),
-                        rs.getString(3)
-                ));
-                if (aefd_l.isEmpty()) continue;
-                AEFluidData aefd = aefd_l.get(0);
+                AEFluidData aefd = mp.getAEFluidDataLatest(un);
                 String local = UNI_NAME_MAP_FLUID.get(un);
                 aefdp_l.add(new AEFluidDisplay(un, local, aefd.getSize()));
             }
         }
 
         return Pair.of(aeidp_l, aefdp_l);
+    }
+
+    public List<AEItemData> getItemDataLate5(String un) {
+        return mp.getAEItemDataLate5(un);
+    }
+
+    public List<AEFluidData> getFluidDataLate5(String un) {
+        return mp.getAEFluidDataLate5(un);
+    }
+
+    public List<AEItemData> getItemDataLateN(String un, int size) {
+        return mp.getAEItemDataLateN(un, size);
+    }
+
+    public List<AEFluidData> getFluidDataLateN(String un, int size) {
+        return mp.getAEFluidDataLateN(un, size);
     }
 }

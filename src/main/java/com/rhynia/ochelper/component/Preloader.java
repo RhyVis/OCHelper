@@ -1,12 +1,12 @@
 package com.rhynia.ochelper.component;
 
 import com.csvreader.CsvReader;
-import com.rhynia.ochelper.accessor.DatabaseAccessor;
 import com.rhynia.ochelper.accessor.PathAccessor;
 import com.rhynia.ochelper.accessor.SwitchFluidAccessor;
 import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.var.SwitchFluid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -20,14 +20,14 @@ import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_ITEM;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class Preloader implements CommandLineRunner {
 
     private final PathAccessor pa;
     private final SwitchFluidAccessor sf;
-    private final DatabaseUpdater di;
-    private final DatabaseAccessor da;
+    private final DatabaseUpdater dbu;
 
     @Override
     public void run(String... args) throws Exception {
@@ -60,7 +60,10 @@ public class Preloader implements CommandLineRunner {
         }
 
         // Database init
-        di.initDatabase();
+        dbu.configDatabase();
+        dbu.initDatabase();
+
+        log.info("Preload complete.");
 
     }
 }

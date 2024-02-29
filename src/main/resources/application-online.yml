@@ -1,10 +1,10 @@
 ##Path
 path:
-  csv-path: /usr/games/csv/
-  json-path: /usr/games/gtnh/server/worlds/world/opencomputers/05a91030-506b-4dc5-89e5-24accb2bce2c/home/
+  csv-path: /mnt/data/csv/
+  json-path: /mnt/data/gtnh/server/worlds/world/opencomputers/05a91030-506b-4dc5-89e5-24accb2bce2c/home/
 ##Database
 spring:
   datasource:
-    url: jdbc:sqlite:/usr/games/db/DATA.db
+    url: jdbc:sqlite:/mnt/data/db/DATA.db
     driver-class-name: org.sqlite.JDBC
     type: com.zaxxer.hikari.HikariDataSource

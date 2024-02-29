@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>AE Storage Center</title>
+    <title>AE Storage Insight</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Rhynia">
     <meta name="keywords"
@@ -54,7 +54,7 @@
             <a th:href="@{dashboard}" class="brand-link">
                 <img th:src="@{res/icon.png}" alt="AdminLTE Logo"
                      class="brand-image opacity-75 shadow">
-                <span class="brand-text fw-light">OC Center</span>
+                <span class="brand-text fw-light">OC Insight</span>
             </a>
         </div>
         <!--end::Sidebar Brand-->
@@ -79,7 +79,7 @@
                             <li class="nav-item">
                                 <a th:href="@{ae-storage-info}" class="nav-link"> <i
                                         class="nav-icon bi bi-circle"></i>
-                                    <p>Storage Center</p>
+                                    <p>Storage Insight</p>
                                 </a>
                             </li>
                         </ul>
@@ -118,65 +118,52 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Item</h5>
+                <h5 class="mb-2" th:text="${name_to_display}">Insight</h5>
 
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header border-0">
+                            <div class="d-flex justify-content-between">
+                                <h3 class="card-title">Storage Amount Sheet</h3>
+                                <a href="javascript:void(0);"
+                                   class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">View
+                                    Report</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <p class="d-flex flex-column">
+                                    <span class="fw-bold fs-5" th:text="${size_latest}">0</span>
+                                    <span>Present Size</span>
+                                </p>
+                                <p class="ms-auto d-flex flex-column text-end">
+                                    <span class="text-success" th:if="${increase}">
+                                        <i class="bi bi-arrow-up"></i>
+                                        <th:block th:text="${rate}">0</th:block>
+                                    </span>
+                                    <span class="text-danger" th:if="!${increase}">
+                                        <i class="bi bi-arrow-down"></i>
+                                        <th:block th:text="${rate}">0</th:block>
+                                    </span>
+                                    <span class="text-secondary">Since <th:block th:text="${insight_size}">0</th:block> scans</span>
+                                </p>
+                            </div> <!-- /.d-flex -->
+                            <div class="position-relative mb-4">
+                                <div id="stat_chart"></div>
+                            </div>
+                            <div class="d-flex flex-row justify-content-end">
+                                <span class="me-2">
+                                    <i class="bi bi-square-fill text-primary"></i>
+                                    Stack Trend
+                                        </span>
+                            </div>
+                        </div>
+                    </div> <!-- /.card -->
+                </div> <!-- /.col-md-6 -->
                 <!--begin::Row-->
                 <div class="row">
-                    <div class="col-12 col-sm-6 col-md-3" th:each="item:${itemList}">
-                        <div class="info-box">
-                            <span class="info-box-icon text-bg-primary shadow-sm"
-                                  style="min-width: 80px;min-height: 80px;">
-                                <a th:href="@{insight-item(it_un = ${item.getUn()}, latest = ${item.getAeSizeByteDisplay()})}">
-                                <img th:src="${iconPath + item.getLocal() + '.png'}" alt="ICON"
-                                     style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;">
-                                </a>
-                            </span>
-                            <div class="info-box-content">
-                                <span class="info-box-text" style="font-weight: bold"
-                                      th:text="${item.getLocal()}">
-                                </span>
-                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller;"
-                                      th:text="${item.getAeSizeDisplay()}">
-                                </span>
-                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller"
-                                      th:text="${item.getAeSizeByteDisplay()}">
-                                </span>
-                            </div> <!-- /.info-box-content -->
-                        </div> <!-- /.info-box -->
-                    </div> <!-- /.col -->
-                </div>
-                <!--end::Row-->
 
-                <br/>
-
-                <h5 class="mb-2">Fluid</h5>
-
-                <!--begin::Row-->
-                <div class="row">
-                    <div class="col-12 col-sm-6 col-md-3" th:each="fluid:${fluidList}">
-                        <div class="info-box">
-                            <span class="info-box-icon text-bg-primary shadow-sm"
-                                  style="min-width: 80px;min-height: 80px;">
-                                <a th:href="@{insight-fluid(it_un = ${fluid.getLeft().getUn()}, latest = ${fluid.getLeft().getAeSizeByteDisplay()})}">
-                                <img th:src="${iconPath + fluid.getRight() + '单元.png'}" alt="ICON"
-                                     style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;">
-                                </a>
-                            </span>
-                            <div class="info-box-content">
-                                <span class="info-box-text" style="font-weight: bold"
-                                      th:text="${fluid.getLeft().getLocal()}">
-                                </span>
-                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller;"
-                                      th:text="${fluid.getLeft().getAeSizeDisplay()}">
-                                </span>
-                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller"
-                                      th:text="${fluid.getLeft().getAeSizeByteDisplay()}">
-                                </span>
-                            </div> <!-- /.info-box-content -->
-                        </div> <!-- /.info-box -->
-                    </div> <!-- /.col -->
-                </div>
-                <!--end::Row-->
+                </div> <!--end::Row-->
 
             </div> <!--end::Container-->
         </div> <!--end::App Content-->
@@ -224,7 +211,85 @@
             });
         }
     });
-</script> <!--end::OverlayScrollbars Configure--> <!--end::Script-->
+</script> <!--end::OverlayScrollbars Configure-->
+<script th:src="@{../../../dist/js/apexcharts/apexcharts.min.js}"></script>
+<script>
+    function formatBytes(bytes) {
+        if (bytes === 0) return 0;
+        const k = 1000, sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+            i = Math.floor(Math.log(bytes) / Math.log(k));
+        let temp;
+        if (sizes[i]) {
+            temp = bytes / Math.pow(k, i);
+            temp = temp.toFixed(temp < 10 ? 2 : (temp < 100 ? 1 : 0));
+            return temp + sizes[i];
+        }
+        return bytes
+    }
+</script>
+<script th:inline="javascript">
+    const bdl = [[${bdl}]];
+    const name_to_display = [[${name_to_display}]]
+
+    const stat_options = {
+        series: [
+            {
+                name: name_to_display,
+                data: bdl
+            }
+        ],
+        chart: {
+            height: 200,
+            type: "line",
+            toolbar: {
+                show: true,
+            },
+        },
+        colors: ["#0d6efd"],
+        stroke: {
+            dashArray: 1,
+            curve: "smooth",
+        },
+        grid: {
+            borderColor: "#e7e7e7"
+        },
+        legend: {
+            show: false,
+        },
+        markers: {
+            size: 1,
+        },
+        yaxis: {
+          label: {
+              formatter: function formatBytes(bytes) {
+                  if (bytes === 0) return 0;
+                  const k = 1000, sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+                      i = Math.floor(Math.log(bytes) / Math.log(k));
+                  let temp;
+                  if (sizes[i]) {
+                      temp = bytes / Math.pow(k, i);
+                      temp = temp.toFixed(temp < 10 ? 2 : (temp < 100 ? 1 : 0));
+                      return temp + sizes[i];
+                  }
+                  return bytes
+              }
+          }
+        },
+        yaxis: {
+            type: 'numeric'
+        },
+        xaxis: {
+            type: 'datetime'
+        },
+    };
+
+    const stat_chart = new ApexCharts(
+        document.querySelector("#stat_chart"),
+        stat_options
+    );
+    stat_chart.render();
+</script>
+<!--end::Script-->
 </body><!--end::Body-->
 
 </html>

@@ -16,3 +16,15 @@ path:
   json-item-name: indexItem.json
   json-fluid-name: indexFluid.json
   icon-panel-path: res/item_table/
+#Scheduled scan time (set to "-" to disable)
+scheduled:
+  cron: 0/45 * * * * ?
+#Clean
+c-value:
+  keep-size: 500
+  clean-schedule: 1000
+  insight-size: 240
+##Database
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

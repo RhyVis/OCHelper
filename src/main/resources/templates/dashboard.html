@@ -3,12 +3,10 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>AdminLTE | OC Center</title>
+    <title>OC Center</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="title" content="AdminLTE | OC Center">
-    <meta name="author" content="ColorlibHQ">
-    <meta name="description"
-          content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS.">
+    <meta name="title" content="OC Center">
+    <meta name="author" content="Rhynia">
     <meta name="keywords"
           content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
@@ -20,6 +18,7 @@
     <link rel="stylesheet" th:href="@{../../dist/css/adminlte.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
           integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0=" crossorigin="anonymous">
+    <link rel="icon" th:href="@{res/icon.png}" sizes="16x16">
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary"> <!--begin::App Wrapper-->
@@ -50,7 +49,7 @@
         <!--begin::Sidebar Brand-->
         <div class="sidebar-brand">
             <a th:href="@{dashboard}" class="brand-link">
-                <img src="../../dist/assets/img/AdminLTELogo.png" alt="AdminLTE Logo"
+                <img th:src="@{res/icon.png}" alt="AdminLTE Logo"
                      class="brand-image opacity-75 shadow">
                 <span class="brand-text fw-light">OC Center</span>
             </a>
@@ -336,9 +335,6 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
         integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8=" crossorigin="anonymous"></script>
 <script>
-    // NOTICE!! DO NOT USE ANY OF THIS JAVASCRIPT
-    // IT'S ALL JUST JUNK FOR DEMO
-    // ++++++++++++++++++++++++++++++++++++++++++
 
     const visitors_chart_options = {
         series: [{
@@ -452,7 +448,8 @@
         sales_chart_options
     );
     sales_chart.render();
-</script> <!--end::Script-->
+</script>
+<!--end::Script-->
 </body><!--end::Body-->
 
 </html>
