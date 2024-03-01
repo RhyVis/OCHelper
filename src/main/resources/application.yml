@@ -3,15 +3,17 @@ server:
   port: 21314
 #Profile switch
 spring:
-  profiles:
-    active: test
+  datasource:
+    url: jdbc:sqlite:D:/Workbench/Java_Project/OCHelper/database/DATA.db
+    driver-class-name: org.sqlite.JDBC
+    type: com.zaxxer.hikari.HikariDataSource
   thymeleaf:
     cache: true
     mode: HTML
     suffix: .html
   web:
     resources:
-      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, ${user.dir}/public/
+      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, ${user.dir}/public/, file:D:/Workbench/Java_Project/OCHelper/table
 #File name
 path:
   csv-item-name: itempanel.csv
@@ -19,6 +21,8 @@ path:
   json-item-name: indexItem.json
   json-fluid-name: indexFluid.json
   icon-panel-path: res/item_table/
+  csv-path: D:/Workbench/Java_Project/OCHelper/table/dumpCSV/
+  json-path: D:/Workbench/Java_Project/OCHelper/table/
 #Scheduled scan time (set to "-" to disable)
 scheduled:
   cron: 0/30 * * * * ?
