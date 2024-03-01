@@ -35,11 +35,11 @@ public class Format {
         return m.replaceAll(str).trim();
     }
 
-    public static String assembleItemUName(String name, int meta) {
+    public static String assembleItemUN(String name, int meta) {
         return "item$" + Format.removeUnavailableChar(name) + "$" + meta;
     }
 
-    public static String assembleFluidUName(String name) {
+    public static String assembleFluidUN(String name) {
         return "fluid$" + Format.removeUnavailableChar(name);
     }
 }

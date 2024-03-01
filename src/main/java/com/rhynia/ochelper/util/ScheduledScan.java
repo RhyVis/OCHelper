@@ -4,8 +4,6 @@ import com.rhynia.ochelper.accessor.AEFluidAccessor;
 import com.rhynia.ochelper.accessor.AEItemAccessor;
 import com.rhynia.ochelper.component.DatabaseUpdater;
 import com.rhynia.ochelper.config.CommonValue;
-import com.rhynia.ochelper.var.AEFluid;
-import com.rhynia.ochelper.var.AEItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -47,32 +45,24 @@ public class ScheduledScan {
     }
 
     private int scanJsonItemData() throws Exception {
-        for (AEItem item : aei.getAEItemList()) {
-            dbu.updateItemDatabase(item);
-        }
+        dbu.updateItemDatabase(aei.getAEItemList());
         return aei.getAEItemList().size();
     }
 
     private int scanJsonFluidData() throws Exception {
-        for (AEFluid fluid : aef.getAEFluidList()) {
-            dbu.updateFluidDatabase(fluid);
-        }
+        dbu.updateFluidDatabase(aef.getAEFluidList());
         return aef.getAEFluidList().size();
     }
 
     private int scanJsonItemDataWithClean() throws Exception {
-        for (AEItem item : aei.getAEItemList()) {
-            dbu.updateItemDatabase(item);
-            dbu.cleanupData(item.getUniqueName());
-        }
+        dbu.updateItemDatabase(aei.getAEItemList());
+        dbu.cleanupDatabase(aei.getAEItemList());
         return aei.getAEItemList().size();
     }
 
     private int scanJsonFluidDataWithClean() throws Exception {
-        for (AEFluid fluid : aef.getAEFluidList()) {
-            dbu.updateFluidDatabase(fluid);
-            dbu.cleanupData(fluid.getUniqueName());
-        }
+        dbu.updateFluidDatabase(aef.getAEFluidList());
+        dbu.cleanupDatabase(aef.getAEFluidList());
         return aef.getAEFluidList().size();
     }
 }

@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 @Component
 @RequiredArgsConstructor
@@ -17,13 +16,13 @@ public class AEDataAccessor {
     private final AEFluidAccessor aef;
 
     @Getter
-    private List<String> uniqueItemNameList = new ArrayList<>();
+    private HashSet<String> uniqueItemNameList = new HashSet<>();
     @Getter
-    private List<String> uniqueFluidNameList = new ArrayList<>();
+    private HashSet<String> uniqueFluidNameList = new HashSet<>();
     @Getter
-    private List<String> uniqueNameList = new ArrayList<>();
+    private HashSet<String> uniqueNameList = new HashSet<>();
 
-    public List<String> mapName() throws Exception {
+    public HashSet<String> mapName() throws Exception {
         for (AEItem item : aei.getAEItemList()) {
             uniqueItemNameList.add(item.getUniqueName());
         }

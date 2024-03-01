@@ -114,10 +114,13 @@ public class IndexController {
     public String transportItemData(String it_un, String latest, Model model) throws ParseException {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DecimalFormat nf = new DecimalFormat("0.000%");
+        long current = System.currentTimeMillis();
+
         if (it_un == null) return getInfoPageIndex(model);
 
         int insight_size = cv.getInsightSize();
         var list = da.getItemDataLateN(it_un, insight_size);
+        long sync = current - df.parse(list.get(0).getTime()).getTime();
         ArrayList<BigDecimal[]> bdl = new ArrayList<>();
 
         String name = "Insight - " + UNI_NAME_MAP_ITEM.get(it_un);
@@ -131,9 +134,9 @@ public class IndexController {
 
         BigDecimal older = new BigDecimal(list.get(list.size() - 1).getSize());
         BigDecimal newer = new BigDecimal(list.get(0).getSize());
-        BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR);
+        BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
         String rate = nf.format(rate_raw);
-        boolean increase = rate_raw.compareTo(BigDecimal.ONE) > -1;
+        boolean increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
 
         model.addAttribute("bdl", bdl.toArray(new BigDecimal[0][0]));
         model.addAttribute("name_to_display", name);
@@ -149,10 +152,13 @@ public class IndexController {
     public String transportFluidData(String it_un, String latest, Model model) throws ParseException {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DecimalFormat nf = new DecimalFormat("0.000%");
+        long current = System.currentTimeMillis();
+
         if (it_un == null) return getInfoPageIndex(model);
 
         int insight_size = cv.getInsightSize();
         var list = da.getFluidDataLateN(it_un, insight_size);
+        long sync = current - df.parse(list.get(0).getTime()).getTime();
         ArrayList<BigDecimal[]> bdl = new ArrayList<>();
 
         String name = "Insight - " + UNI_NAME_MAP_FLUID.get(it_un);
@@ -166,10 +172,9 @@ public class IndexController {
 
         BigDecimal older = new BigDecimal(list.get(list.size() - 1).getSize());
         BigDecimal newer = new BigDecimal(list.get(0).getSize());
-        BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR);
-        double rate_p = rate_raw.doubleValue();
-        String rate = nf.format(rate_p);
-        boolean increase = rate_p > 1D;
+        BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
+        String rate = nf.format(rate_raw);
+        boolean increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
 
         model.addAttribute("bdl", bdl.toArray(new BigDecimal[0][0]));
         model.addAttribute("name_to_display", name);

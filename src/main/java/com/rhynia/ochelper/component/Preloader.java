@@ -46,7 +46,7 @@ public class Preloader implements ApplicationRunner {
             int meta = Integer.parseInt(csvItem.get(2));
 
             NAME_MAP_ITEM.put(Pair.of(name, meta), local);
-            UNI_NAME_MAP_ITEM.put(Format.assembleItemUName(name, meta), local);
+            UNI_NAME_MAP_ITEM.put(Format.assembleItemUN(name, meta), local);
         }
         CsvReader fluidCSV = new CsvReader(pa.getPath_csv_fluid(), ',', StandardCharsets.UTF_8);
         fluidCSV.readHeaders();
@@ -55,7 +55,7 @@ public class Preloader implements ApplicationRunner {
             String local = fluidCSV.get(2);
 
             NAME_MAP_FLUID.put(name, local);
-            UNI_NAME_MAP_FLUID.put(Format.assembleFluidUName(name), local);
+            UNI_NAME_MAP_FLUID.put(Format.assembleFluidUN(name), local);
         }
 
         // JSON Loader
@@ -69,7 +69,6 @@ public class Preloader implements ApplicationRunner {
         }
 
         // Database init
-        dbu.configDatabase();
         dbu.initDatabase();
 
         log.info("Preload complete.");
