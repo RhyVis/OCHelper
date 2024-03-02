@@ -29,7 +29,7 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">
+                            <li aria-current="page" class="breadcrumb-item active">
                                 AE Storage Insight
                             </li>
                         </ol>
@@ -51,8 +51,8 @@
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between">
                                 <h3 class="card-title">Storage Amount Sheet</h3>
-                                <a href="javascript:void(0);"
-                                   class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">View
+                                <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                   href="javascript:void(0);">View
                                     Report</a>
                             </div>
                         </div>
@@ -90,8 +90,8 @@
                     <div class="card mb-4">
                         <div class="card-header border-0">
                             <h3 class="card-title">Detail</h3>
-                            <div class="card-tools"><a href="#" class="btn btn-tool btn-sm"> <i
-                                    class="bi bi-download"></i> </a> <a href="#" class="btn btn-tool btn-sm"> <i
+                            <div class="card-tools"><a class="btn btn-tool btn-sm" href="#"> <i
+                                    class="bi bi-download"></i> </a> <a class="btn btn-tool btn-sm" href="#"> <i
                                     class="bi bi-list"></i> </a></div>
                         </div>
                         <div class="card-body table-responsive p-0">
@@ -104,8 +104,8 @@
                                 </thead>
                                 <tbody>
                                 <tr th:each="obj:${list}">
-                                    <td><img th:src="${imgLink}" alt="IMG"
-                                             class="rounded-circle img-size-32 me-2">
+                                    <td><img alt="IMG" class="rounded-circle img-size-32 me-2"
+                                             th:src="${imgLink}">
                                         <th:block th:text="${obj.getSize()}"></th:block>
                                     </td>
                                     <td>
@@ -114,7 +114,7 @@
                                         </small>
                                     </td>
                                     <td>
-                                        <a href="#" class="text-secondary"> <i class="bi bi-search"></i> </a>
+                                        <a class="text-secondary" href="#"> <i class="bi bi-search"></i> </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -129,16 +129,12 @@
 
             </div> <!--end::Container-->
         </div> <!--end::App Content-->
-    </main> <!--end::App Main--> <!--begin::Footer-->
-    <footer class="app-footer"> <!--begin::To the end-->
-        <div class="float-end d-none d-sm-inline">Anything you want</div> <!--end::To the end--> <!--begin::Copyright-->
-        <strong>
-            Copyright &copy; 2014-2024&nbsp;
-            <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
-        </strong>
-        All rights reserved.
-        <!--end::Copyright-->
-    </footer> <!--end::Footer-->
+    </main> <!--end::App Main-->
+
+    <!--begin::Footer-->
+    <th:block th:insert="~{shared/footer-shared::footer}"></th:block>
+    <!--end::Footer-->
+
 </div> <!--end::App Wrapper-->
 <th:block th:insert="~{shared/script-shared::script}"></th:block>
 <!--begin::OverlayScrollbars Configure-->

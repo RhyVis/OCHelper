@@ -29,7 +29,7 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">
+                            <li aria-current="page" class="breadcrumb-item active">
                                 AE Storage Indo
                             </li>
                         </ol>
@@ -53,8 +53,8 @@
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
                                 <a th:href="@{insight-item(it_un = ${item.getUn()}, latest = ${item.getAeSizeByteDisplay()})}">
-                                <img th:src="${iconPath + item.getLocal() + '.png'}" alt="ICON"
-                                     style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;">
+                                <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
+                                     th:src="${iconPath + item.getLocal() + '.png'}">
                                 </a>
                             </span>
                             <div class="info-box-content">
@@ -84,8 +84,8 @@
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
                                 <a th:href="@{insight-fluid(it_un = ${fluid.getLeft().getUn()}, latest = ${fluid.getLeft().getAeSizeByteDisplay()})}">
-                                <img th:src="${iconPath + fluid.getRight() + '单元.png'}" alt="ICON"
-                                     style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;">
+                                <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
+                                     th:src="${iconPath + fluid.getRight() + '单元.png'}">
                                 </a>
                             </span>
                             <div class="info-box-content">
@@ -106,16 +106,13 @@
 
             </div> <!--end::Container-->
         </div> <!--end::App Content-->
-    </main> <!--end::App Main--> <!--begin::Footer-->
-    <footer class="app-footer"> <!--begin::To the end-->
-        <div class="float-end d-none d-sm-inline">Anything you want</div> <!--end::To the end--> <!--begin::Copyright-->
-        <strong>
-            Copyright &copy; 2014-2024&nbsp;
-            <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
-        </strong>
-        All rights reserved.
-        <!--end::Copyright-->
-    </footer> <!--end::Footer-->
+    </main> <!--end::App Main-->
+
+    <!--begin::Footer-->
+    <th:block th:insert="~{shared/footer-shared::footer}"></th:block>
+    <!--end::Footer-->
+
+    <!--end::Footer-->
 </div> <!--end::App Wrapper-->
 <!--begin::Script-->
 <th:block th:insert="~{shared/script-shared::script}"></th:block>

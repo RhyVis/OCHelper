@@ -11,9 +11,9 @@
 
     <!--begin::Sidebar Brand-->
     <div class="sidebar-brand">
-        <a th:href="@{dashboard}" class="brand-link">
-            <img th:src="@{res/icon.png}" alt="Center Logo"
-                 class="brand-image opacity-75 shadow">
+        <a class="brand-link" th:href="@{dashboard}">
+            <img alt="Center Logo" class="brand-image opacity-75 shadow"
+                 th:src="@{res/icon.png}">
             <span class="brand-text fw-light">OC Center</span>
         </a>
     </div>
@@ -22,14 +22,14 @@
     <!--begin::Sidebar Wrapper-->
     <div class="sidebar-wrapper">
         <nav class="mt-2"> <!--begin::Sidebar Menu-->
-            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+            <ul class="nav sidebar-menu flex-column" data-accordion="false" data-lte-toggle="treeview" role="menu">
                 <li class="nav-item">
-                    <a th:href="@{dashboard}" class="nav-link"> <i class="nav-icon bi bi-speedometer"></i>
+                    <a class="nav-link" th:href="@{dashboard}"> <i class="nav-icon bi bi-speedometer"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link"> <i class="nav-icon bi bi-box-seam-fill"></i>
+                    <a class="nav-link" href="#"> <i class="nav-icon bi bi-box-seam-fill"></i>
                         <p>
                             AE Components
                             <i class="nav-arrow bi bi-chevron-right"></i>
@@ -37,7 +37,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a th:href="@{ae-storage-info}" class="nav-link"> <i
+                            <a class="nav-link" th:href="@{ae-storage-info}"> <i
                                     class="nav-icon bi bi-circle"></i>
                                 <p>Storage Center</p>
                             </a>
