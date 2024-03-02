@@ -86,6 +86,42 @@
                         </div>
                     </div> <!-- /.card -->
                 </div> <!-- /.col-md-6 -->
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header border-0">
+                            <h3 class="card-title">Detail</h3>
+                            <div class="card-tools"><a href="#" class="btn btn-tool btn-sm"> <i
+                                    class="bi bi-download"></i> </a> <a href="#" class="btn btn-tool btn-sm"> <i
+                                    class="bi bi-list"></i> </a></div>
+                        </div>
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-striped align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="obj:${list}">
+                                    <td><img th:src="${imgLink}" alt="IMG"
+                                             class="rounded-circle img-size-32 me-2">
+                                        <th:block th:text="${obj.getSize()}"></th:block>
+                                    </td>
+                                    <td>
+                                        <small class="text-success me-1">
+                                            <th:block th:text="${obj.getTime()}"></th:block>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="text-secondary"> <i class="bi bi-search"></i> </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- /.card -->
+                </div>
                 <!--begin::Row-->
                 <div class="row">
 
@@ -164,7 +200,6 @@
         },
         colors: ["#0d6efd"],
         stroke: {
-            dashArray: 1,
             curve: "smooth",
         },
         grid: {
@@ -173,27 +208,22 @@
         legend: {
             show: false,
         },
-        markers: {
-            size: 1,
-        },
         yaxis: {
-          label: {
-              formatter: function formatBytes(bytes) {
-                  if (bytes === 0) return 0;
-                  const k = 1000, sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
-                      i = Math.floor(Math.log(bytes) / Math.log(k));
-                  let temp;
-                  if (sizes[i]) {
-                      temp = bytes / Math.pow(k, i);
-                      temp = temp.toFixed(temp < 10 ? 2 : (temp < 100 ? 1 : 0));
-                      return temp + sizes[i];
-                  }
-                  return bytes
-              }
-          }
-        },
-        yaxis: {
-            type: 'numeric'
+            type: 'numeric',
+            label: {
+                formatter: function formatBytes(bytes) {
+                    if (bytes === 0) return 0;
+                    const k = 1000, sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+                        i = Math.floor(Math.log(bytes) / Math.log(k));
+                    let temp;
+                    if (sizes[i]) {
+                        temp = bytes / Math.pow(k, i);
+                        temp = temp.toFixed(temp < 10 ? 2 : (temp < 100 ? 1 : 0));
+                        return temp + sizes[i];
+                    }
+                    return bytes
+                }
+            }
         },
         xaxis: {
             type: 'datetime'

@@ -13,7 +13,7 @@ spring:
     suffix: .html
   web:
     resources:
-      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, ${user.dir}/public/, file:D:/Workbench/Java_Project/OCHelper/table
+      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, ${user.dir}/public/, file:D:/Workbench/Java_Project/OCHelper/table/public/
 #File name
 path:
   csv-item-name: itempanel.csv
@@ -23,9 +23,11 @@ path:
   icon-panel-path: res/item_table/
   csv-path: D:/Workbench/Java_Project/OCHelper/table/dumpCSV/
   json-path: D:/Workbench/Java_Project/OCHelper/table/
-#Scheduled scan time (set to "-" to disable)
+  lua-scripts-path: D:/Workbench/Java_Project/OCHelper/table/scripts/
+#Scheduled scan time (in ms)
 scheduled:
-  cron: 0/30 * * * * ?
+  init: 20000
+  rate: 30000
 #Clean
 c-value:
   keep-size: 500

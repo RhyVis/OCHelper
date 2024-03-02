@@ -15,4 +15,5 @@ public class Path {
     private String jsonItemName;
     private String jsonFluidName;
     private String iconPanelPath;
+    private String luaScriptsPath;
 }

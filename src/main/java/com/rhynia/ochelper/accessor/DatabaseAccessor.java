@@ -1,6 +1,6 @@
 package com.rhynia.ochelper.accessor;
 
-import com.rhynia.ochelper.mapper.AEDataMapper;
+import com.rhynia.ochelper.mapper.DataMapper;
 import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEFluidDisplay;
 import com.rhynia.ochelper.var.AEItemData;
@@ -19,14 +19,14 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 @AllArgsConstructor
 public class DatabaseAccessor {
 
-    private final AEDataAccessor aed;
-    private final AEDataMapper mp;
+    private final DataMapper mp;
 
     public Pair<List<AEItemDisplay>, List<AEFluidDisplay>> getLatestData() {
         List<AEItemDisplay> aeidp_l = new ArrayList<>();
         List<AEFluidDisplay> aefdp_l = new ArrayList<>();
+        List<String> un_l = mp.getAllNamesInDataBase();
 
-        for (String un : aed.getUniqueNameList()) {
+        for (String un : un_l) {
             if (un.startsWith("item$")) {
                 AEItemData aeid = mp.getAEItemDataLatest(un);
                 String local = UNI_NAME_MAP_ITEM.get(un);

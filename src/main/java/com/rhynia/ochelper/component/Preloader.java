@@ -5,6 +5,7 @@ import com.rhynia.ochelper.accessor.PathAccessor;
 import com.rhynia.ochelper.accessor.SwitchFluidAccessor;
 import com.rhynia.ochelper.accessor.SwitchItemAccessor;
 import com.rhynia.ochelper.util.Format;
+import com.rhynia.ochelper.util.LuaScriptFactory;
 import com.rhynia.ochelper.var.SwitchFluid;
 import com.rhynia.ochelper.var.SwitchItem;
 import lombok.AllArgsConstructor;
@@ -33,43 +34,55 @@ public class Preloader implements ApplicationRunner {
     private final DatabaseUpdater dbu;
     private final SwitchFluidAccessor sf;
     private final SwitchItemAccessor si;
+    private final LuaScriptFactory lp;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
 
         // CSV Loader
-        CsvReader csvItem = new CsvReader(pa.getPath_csv_item(), ',', StandardCharsets.UTF_8);
-        csvItem.readHeaders();
-        while (csvItem.readRecord()) {
-            String name = csvItem.get(0);
-            String local = csvItem.get(4);
-            int meta = Integer.parseInt(csvItem.get(2));
+        try {
+            CsvReader csvItem = new CsvReader(pa.getPath_csv_item(), ',', StandardCharsets.UTF_8);
+            csvItem.readHeaders();
+            while (csvItem.readRecord()) {
+                String name = csvItem.get(0);
+                String local = csvItem.get(4);
+                int meta = Integer.parseInt(csvItem.get(2));
 
-            NAME_MAP_ITEM.put(Pair.of(name, meta), local);
-            UNI_NAME_MAP_ITEM.put(Format.assembleItemUN(name, meta), local);
-        }
-        CsvReader fluidCSV = new CsvReader(pa.getPath_csv_fluid(), ',', StandardCharsets.UTF_8);
-        fluidCSV.readHeaders();
-        while (fluidCSV.readRecord()) {
-            String name = fluidCSV.get(1);
-            String local = fluidCSV.get(2);
+                NAME_MAP_ITEM.put(Pair.of(name, meta), local);
+                UNI_NAME_MAP_ITEM.put(Format.assembleItemUN(name, meta), local);
+            }
+            CsvReader fluidCSV = new CsvReader(pa.getPath_csv_fluid(), ',', StandardCharsets.UTF_8);
+            fluidCSV.readHeaders();
+            while (fluidCSV.readRecord()) {
+                String name = fluidCSV.get(1);
+                String local = fluidCSV.get(2);
 
-            NAME_MAP_FLUID.put(name, local);
-            UNI_NAME_MAP_FLUID.put(Format.assembleFluidUN(name), local);
+                NAME_MAP_FLUID.put(name, local);
+                UNI_NAME_MAP_FLUID.put(Format.assembleFluidUN(name), local);
+            }
+        } catch (Exception e) {
+            log.error("Exception in CSV loading, please check if exists.", e);
         }
 
         // JSON Loader
-        List<SwitchFluid> sf_List = sf.getSFList();
-        for (SwitchFluid sf : sf_List) {
-            NAME_MAP_FLUID_SWITCH.put(sf.getPre(), sf.getAlt());
-        }
-        List<SwitchItem> si_list = si.getSIList();
-        for (SwitchItem si : si_list) {
-            UNI_NAME_MAP_ITEM_SWITCH.put(si.getPre(), si.getAlt());
+        try {
+            List<SwitchFluid> sf_List = sf.getSFList();
+            for (SwitchFluid sf : sf_List) {
+                NAME_MAP_FLUID_SWITCH.put(sf.getPre(), sf.getAlt());
+            }
+            List<SwitchItem> si_list = si.getSIList();
+            for (SwitchItem si : si_list) {
+                UNI_NAME_MAP_ITEM_SWITCH.put(si.getPre(), si.getAlt());
+            }
+        } catch (Exception e) {
+            log.error("Exception in JSON build-in config loading, please check if exists.", e);
         }
 
         // Database init
         dbu.initDatabase();
+
+        // Init lua script base
+        lp.initLuaScript();
 
         log.info("Preload complete.");
 

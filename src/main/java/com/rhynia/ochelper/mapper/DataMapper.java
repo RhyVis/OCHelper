@@ -7,7 +7,10 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-public interface AEDataMapper {
+public interface DataMapper {
+
+    @Select("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
+    List<String> getAllNamesInDataBase();
 
     @Select("SELECT * FROM ${un} ORDER BY id DESC LIMIT 1")
     AEItemData getAEItemDataLatest(@Param("un") String un);

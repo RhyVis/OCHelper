@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.rhynia</groupId>
     <artifactId>OCHelper</artifactId>
-    <version>0.3.3</version>
+    <version>0.3.5</version>
     <name>OCHelper</name>
     <description>OCHelper</description>
     <properties>
@@ -81,6 +81,19 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.26</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

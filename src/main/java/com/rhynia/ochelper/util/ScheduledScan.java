@@ -6,9 +6,9 @@ import com.rhynia.ochelper.component.DatabaseUpdater;
 import com.rhynia.ochelper.config.CommonValue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+@Deprecated
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class ScheduledScan {
 
     private int cleanIndex = 0;
 
-    @Scheduled(cron = "${scheduled.cron}")
+    //@Scheduled(cron = "${scheduled.cron}")
     public void scanJsonData() throws Exception {
         doScan();
     }

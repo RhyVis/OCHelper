@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
+@Deprecated
 public class AEItemAccessor {
 
     private final String item_loc;

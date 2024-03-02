@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
+@Deprecated
 public class AEFluidAccessor {
 
     private final String fluid_loc;

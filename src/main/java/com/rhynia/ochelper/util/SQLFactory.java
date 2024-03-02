@@ -12,7 +12,7 @@ import java.util.List;
 public class SQLFactory {
     private final Snowflake sid = new Snowflake(1);
 
-    public String[] generateBatchCheck(HashSet<String> un) {
+    public String[] generateBatchCheck(List<String> un) {
         HashSet<String> set = new HashSet<>();
         for (String s : un) {
             String l = "CREATE TABLE IF NOT EXISTS " +
@@ -23,7 +23,7 @@ public class SQLFactory {
         return set.toArray(new String[0]);
     }
 
-    public String[] generateCleanup(HashSet<String> un, int keepSize) {
+    public String[] generateCleanup(List<String> un, int keepSize) {
         HashSet<String> set = new HashSet<>();
         for (String s : un) {
             String l = "DELETE FROM " + s + " WHERE id NOT IN (SELECT id FROM " + s + " ORDER BY id DESC LIMIT " + keepSize + ");";

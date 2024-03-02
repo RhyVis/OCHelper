@@ -1,9 +1,7 @@
 package com.rhynia.ochelper.component;
 
-import cn.hutool.core.lang.Snowflake;
-import com.rhynia.ochelper.accessor.AEDataAccessor;
 import com.rhynia.ochelper.config.CommonValue;
-import com.rhynia.ochelper.mapper.AEDataMapper;
+import com.rhynia.ochelper.mapper.DataMapper;
 import com.rhynia.ochelper.util.SQLFactory;
 import com.rhynia.ochelper.var.AEFluid;
 import com.rhynia.ochelper.var.AEItem;
@@ -12,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -20,13 +18,11 @@ import java.util.List;
 @AllArgsConstructor
 public class DatabaseUpdater {
 
-    private final JdbcTemplate jt;
-    private final CommonValue cv;
-    private final AEDataAccessor aed;
-    private final AEDataMapper mp;
-    private final SQLFactory sf;
 
-    private final Snowflake sid = new Snowflake(1);
+    private final CommonValue cv;
+    private final JdbcTemplate jt;
+    private final DataMapper mp;
+    private final SQLFactory sf;
 
     private void configDatabase() {
         jt.execute("""
@@ -37,16 +33,17 @@ public class DatabaseUpdater {
         );
     }
 
-    private void initCreateDatabase() throws Exception {
-        jt.batchUpdate(sf.generateBatchCheck(aed.mapName()));
-        jt.batchUpdate(sf.generateCleanup(aed.mapName(), cv.getKeepSize()));
+    private void initCreateDatabase() {
+        List<String> init_l = mp.getAllNamesInDataBase();
+        jt.batchUpdate(sf.generateBatchCheck(init_l));
+        jt.batchUpdate(sf.generateCleanup(init_l, cv.getKeepSize()));
         freeDataSize();
     }
 
     @SuppressWarnings("unchecked")
     private void createIfNotExist(List<?> list) {
         var k = list.get(0);
-        HashSet<String> unl = new HashSet<>();
+        List<String> unl = new ArrayList<>();
         if (k instanceof AEItem) {
             for (AEItem item : (List<AEItem>) list) {
                 unl.add(item.getUniqueName());
@@ -65,7 +62,7 @@ public class DatabaseUpdater {
     @SuppressWarnings("unchecked")
     public void cleanupDatabase(List<?> list) {
         var k = list.get(0);
-        HashSet<String> unl = new HashSet<>();
+        List<String> unl = new ArrayList<>();
         if (k instanceof AEItem) {
             for (AEItem item : (List<AEItem>) list) {
                 unl.add(item.getUniqueName());
@@ -81,12 +78,19 @@ public class DatabaseUpdater {
         jt.batchUpdate(sf.generateCleanup(unl, cv.getKeepSize()));
     }
 
+    public void cleanupAllDataBase() {
+        List<String> un_l = mp.getAllNamesInDataBase();
+        jt.batchUpdate(sf.generateCleanup(un_l, cv.getKeepSize()));
+    }
+
     public void updateItemDatabase(List<AEItem> itemList) {
+        if (itemList == null || itemList.isEmpty()) return;
         createIfNotExist(itemList);
         jt.batchUpdate(sf.generateItemBatchInsert(itemList));
     }
 
     public void updateFluidDatabase(List<AEFluid> fluidList) {
+        if (fluidList == null || fluidList.isEmpty()) return;
         createIfNotExist(fluidList);
         jt.batchUpdate(sf.generateFluidBatchInsert(fluidList));
     }
