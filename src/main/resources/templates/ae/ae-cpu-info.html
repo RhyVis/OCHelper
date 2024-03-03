@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>OC Component List</title>
+    <title>AE CPU Info</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,13 +24,13 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Components</h3>
+                        <h3 class="mb-0">AE CPU Info</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
                             <li aria-current="page" class="breadcrumb-item active">
-                                Component List
+                                CPU Raw Insight
                             </li>
                         </ol>
                     </div>
@@ -44,14 +44,14 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Components</h5>
+                <h5 class="mb-2">CPU Basic Info List</h5>
 
                 <!--begin::Row-->
                 <div class="row">
                     <div class="col-12"> <!-- Default box -->
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Component List</h3>
+                                <h3 class="card-title">CPU</h3>
                                 <div class="card-tools">
                                     <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
                                             type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
@@ -63,24 +63,37 @@
                                     <table class="table table-striped align-middle">
                                         <thead>
                                         <tr>
-                                            <th>Component</th>
-                                            <th>Address</th>
-                                            <th>Detail</th>
+                                            <th>Name</th>
+                                            <th>Coprocessors</th>
+                                            <th>Storage</th>
+                                            <th>Busy</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="component:${c_list}">
+                                        <tr th:each="c:${c_list}">
                                             <td>
-                                                <th:block th:text="${component.getName()}"></th:block>
+                                                <th:block th:text="${c.getName()}"></th:block>
                                             </td>
                                             <td>
-                                                <small class="text-success me-1">
-                                                    <th:block th:text="${component.getAddress()}"></th:block>
+                                                <small class="text-primary me-1">
+                                                    <th:block th:text="${c.getCoprocessors()}"></th:block>
                                                 </small>
                                             </td>
                                             <td>
-                                                <a class="text-secondary"
-                                                   th:href="@{oc-components-detail(name = ${component.getName()}, address = ${component.getAddress()})}">
+                                                <small class="text-primary me-1">
+                                                    <th:block th:text="${c.getStorage()}"></th:block>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <small class="text-bg-danger me-1" th:if="${c.isBusy()}">
+                                                    Busy
+                                                </small>
+                                                <small class="text-success me-1" th:if="!${c.isBusy()}">
+                                                    Free
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <a class="text-secondary">
                                                     <i class="bi bi-search"></i>
                                                 </a>
                                             </td>
@@ -89,8 +102,7 @@
                                     </table>
                                 </div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer">Component Name - Address</div> <!-- /.card-footer-->
-
+                            <div class="card-footer">Crafting CPUs</div> <!-- /.card-footer-->
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->

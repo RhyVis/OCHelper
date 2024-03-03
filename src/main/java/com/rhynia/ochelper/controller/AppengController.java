@@ -2,6 +2,7 @@ package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.accessor.DatabaseAccessor;
 import com.rhynia.ochelper.accessor.PathAccessor;
+import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.config.CommonValue;
 import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEFluidDisplay;
@@ -33,8 +34,9 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 public class AppengController {
 
     private final PathAccessor pa;
-    private final DatabaseAccessor da;
     private final CommonValue cv;
+    private final DatabaseAccessor da;
+    private final DataProcessor dp;
 
     @GetMapping("ae-storage-info")
     public String getInfoPageIndex(Model model) {
@@ -169,6 +171,13 @@ public class AppengController {
         model.addAttribute("list", list);
 
         return "ae/ae-storage-insight";
+    }
+
+    @GetMapping("ae-cpu-info")
+    public String requestCpuInfo(Model model) {
+        var list = dp.requestAeCpuInfo();
+        model.addAttribute("c_list", list);
+        return "ae/ae-cpu-info";
     }
 
 }

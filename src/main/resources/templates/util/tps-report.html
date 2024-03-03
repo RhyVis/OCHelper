@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>OC Component List</title>
+    <title>TPS Report</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,13 +24,13 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Components</h3>
+                        <h3 class="mb-0">TPS Report</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
                             <li aria-current="page" class="breadcrumb-item active">
-                                Component List
+                                TPS Report
                             </li>
                         </ol>
                     </div>
@@ -44,34 +44,60 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Component
-                    <th:block th:text="${component_name}"></th:block>
-                </h5>
+                <h5 class="mb-2">World MSPT & TPS List</h5>
 
                 <!--begin::Row-->
                 <div class="row">
                     <div class="col-12"> <!-- Default box -->
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Component Detail</h3>
+                                <h3 class="card-title">Dims</h3>
                                 <div class="card-tools">
                                     <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
                                             type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
                                             class="bi bi-dash-lg" data-lte-icon="collapse"></i></button>
                                 </div>
                             </div>
-                            <div class="card-body" th:each="doc:${d_list}">
-                                <div>
-                                    <span class="badge rounded-pill text-bg-primary" th:text="${doc.getMethod()}">
-                                        Method
-                                    </span>
-                                </div>
-                                <div th:text="${doc.getDoc()}">
-                                    Doc
+                            <div class="card-body">
+                                <div class="card-body table-responsive p-0">
+                                    <table class="table table-striped align-middle">
+                                        <thead>
+                                        <tr>
+                                            <th>Dim</th>
+                                            <th>MSPT</th>
+                                            <th>TPS</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="ms:${m_list}">
+                                            <td>
+                                                <th:block th:text="${ms.getDim()}"></th:block>
+                                            </td>
+                                            <td>
+                                                <small class="text-primary me-1">
+                                                    <th:block th:text="${ms.getMspt()}"></th:block>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <small class="text-success me-1" th:if="${ms.isHealthy()}">
+                                                    <th:block th:text="${ms.getTps()}"></th:block>
+                                                </small>
+                                                <small class="text-danger me-1" th:if="!${ms.isHealthy()}">
+                                                    <th:block th:text="${ms.getTps()}"></th:block>
+                                                    <th:block>😡</th:block>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <a class="text-secondary">
+                                                    <i class="bi bi-search"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer">Method Name - Doc</div> <!-- /.card-footer-->
-
+                            <div class="card-footer">Worlds - Condition</div> <!-- /.card-footer-->
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->

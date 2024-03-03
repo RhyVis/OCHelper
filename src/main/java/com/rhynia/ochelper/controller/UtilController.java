@@ -14,9 +14,16 @@ public class UtilController {
 
     private final DataProcessor dp;
 
-    @GetMapping("util/tps-report")
-    public ResponseEntity<String> requestTPS(Model model) {
-        //String k = dp.requestTPSReport();
+    @GetMapping("tps-report")
+    public String requestTPS(Model model) {
+        var list = dp.requestTPSReport();
+        model.addAttribute("m_list", list);
+        return "util/tps-report";
+    }
+
+    @GetMapping("sss")
+    public ResponseEntity<String> test(Model model) {
+        dp.test();
         return new ResponseEntity<>("TEST", HttpStatus.OK);
     }
 }
