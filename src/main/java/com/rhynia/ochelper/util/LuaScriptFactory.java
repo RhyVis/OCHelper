@@ -5,6 +5,7 @@ import com.rhynia.ochelper.accessor.PathAccessor;
 import com.rhynia.ochelper.var.CommandPack;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,8 @@ public class LuaScriptFactory {
     private final List<CommandPack> commonPackNormal = List.of(
             CommandPackEnum.AE_GET_ITEM.getPack(),
             CommandPackEnum.AE_GET_FLUID.getPack());
+    @Setter
+    private boolean preloadCompleted = false;
     private String luaScriptsBase = "";
     private List<CommandPack> commandPacks = Stream.of(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack()).collect(Collectors.toList());
 
@@ -75,8 +78,10 @@ public class LuaScriptFactory {
                 String codeChunk = codeBase + div + cp.getCommand();
                 map.put(cp.getType(), codeChunk);
             }
+        } else if (!preloadCompleted) {
+            map.put(CommandPackEnum.NULL.getKey(), CommandPackEnum.NULL.getCommand());
         } else {
-            map.put("ERROR", "return \"ERROR\"");
+            map.put(CommandPackEnum.ERROR.getKey(), CommandPackEnum.ERROR.getCommand());
         }
         String jsonMappedScript = "";
         try {

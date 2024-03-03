@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public enum CommandPackEnum {
     NULL("return \"NULL\""),
+    ERROR("return \"ERROR\""),
     AE_GET_ITEM("return aeItem()"),
     AE_GET_FLUID("return aeFluid()"),
     AE_GET_CPU_INFO("return aeCpuInfo()"),

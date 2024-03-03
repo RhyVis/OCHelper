@@ -14,7 +14,6 @@ public class MsSet {
         this.mspt = mspt;
         double temp = 1000D / mspt > 20 ? 20 : 1000D / mspt;
         this.tps = temp;
-        //this.healthy = temp >= 19.99999D;
-        this.healthy = (temp == 0);
+        this.healthy = temp >= 19.99999D;
     }
 }

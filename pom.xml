@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.rhynia</groupId>
     <artifactId>OCHelper</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <name>OCHelper</name>
     <description>OCHelper</description>
     <properties>

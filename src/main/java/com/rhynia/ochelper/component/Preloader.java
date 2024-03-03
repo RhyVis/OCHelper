@@ -83,6 +83,7 @@ public class Preloader implements ApplicationRunner {
 
         // Init lua script base
         lp.initLuaScript();
+        lp.setPreloadCompleted(true);
 
         log.info("Preload complete.");
 
