@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
+
+<head>
+    <title>OC Component List</title>
+    <th:block th:insert="~{shared/head-shared::head}"></th:block>
+</head> <!--begin::Body-->
+
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary"> <!--begin::App Wrapper-->
+<div class="app-wrapper">
+
+    <!--begin::Header-->
+    <th:block th:insert="~{shared/navbar-shared::navbar}"></th:block>
+    <!--end::Header-->
+
+    <!--begin::Sidebar-->
+    <th:block th:insert="~{shared/sidebar-shared::sidebar}"></th:block>
+    <!--end::Sidebar-->
+
+    <!--begin::App Main-->
+    <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header"> <!--begin::Container-->
+            <div class="container-fluid"> <!--begin::Row-->
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3 class="mb-0">Components</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-end">
+                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
+                            <li aria-current="page" class="breadcrumb-item active">
+                                Component List
+                            </li>
+                        </ol>
+                    </div>
+                </div> <!--end::Row-->
+            </div> <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+
+        <!--begin::App Content-->
+        <div class="app-content">
+            <!--begin::Container-->
+            <div class="container-fluid">
+
+                <h5 class="mb-2">Components</h5>
+
+                <!--begin::Row-->
+                <div class="row">
+                    <div class="col-12"> <!-- Default box -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Component List</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
+                                            type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
+                                            class="bi bi-dash-lg" data-lte-icon="collapse"></i></button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-body table-responsive p-0">
+                                    <table class="table table-striped align-middle">
+                                        <thead>
+                                        <tr>
+                                            <th>Component</th>
+                                            <th>Address</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="component:${c_list}">
+                                            <td>
+                                                <th:block th:text="${component.getName()}"></th:block>
+                                            </td>
+                                            <td>
+                                                <small class="text-success me-1">
+                                                    <th:block th:text="${component.getAddress()}"></th:block>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <a class="text-secondary"
+                                                   th:href="@{oc-components-detail(name = ${component.getName()}, address = ${component.getAddress()})}">
+                                                    <i class="bi bi-search"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div> <!-- /.card-body -->
+                            <div class="card-footer">Component Name - Address</div> <!-- /.card-footer-->
+
+                        </div> <!-- /.card -->
+                    </div>
+                </div> <!--end::Row-->
+                <!--end::Row-->
+
+                <br/>
+
+            </div> <!--end::Container-->
+        </div> <!--end::App Content-->
+    </main> <!--end::App Main-->
+
+    <!--begin::Footer-->
+    <th:block th:insert="~{shared/footer-shared::footer}"></th:block>
+    <!--end::Footer-->
+
+    <!--end::Footer-->
+</div> <!--end::App Wrapper-->
+<!--begin::Script-->
+<th:block th:insert="~{shared/script-shared::script}"></th:block>
+<!--end::Script-->
+</body><!--end::Body-->
+
+</html>

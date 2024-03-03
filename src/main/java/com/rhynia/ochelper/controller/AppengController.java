@@ -7,7 +7,7 @@ import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEFluidDisplay;
 import com.rhynia.ochelper.var.AEItemData;
 import com.rhynia.ochelper.var.AEItemDisplay;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,27 +29,12 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
 @Controller
-@AllArgsConstructor
-public class IndexController {
+@RequiredArgsConstructor
+public class AppengController {
 
     private final PathAccessor pa;
     private final DatabaseAccessor da;
     private final CommonValue cv;
-
-    @GetMapping("/")
-    public String getMainRedirect() {
-        return "dashboard";
-    }
-
-    @GetMapping("dashboard")
-    private String getDIndex() {
-        return "dashboard";
-    }
-
-    @GetMapping("examples")
-    private String getIndex() {
-        return "redirect:dist/pages/index.html";
-    }
 
     @GetMapping("ae-storage-info")
     public String getInfoPageIndex(Model model) {

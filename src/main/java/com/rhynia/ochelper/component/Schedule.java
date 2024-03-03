@@ -4,7 +4,6 @@ import com.rhynia.ochelper.config.CommonValue;
 import com.rhynia.ochelper.util.LuaScriptFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -18,7 +17,7 @@ public class Schedule {
 
     private int sign = 0;
 
-    @Scheduled(initialDelayString = "${scheduled.init}", fixedRateString = "${scheduled.rate}")
+    //@Scheduled(initialDelayString = "${scheduled.init}", fixedRateString = "${scheduled.rate}")
     public void scheduledTask() {
         doSchedule();
         sign++;

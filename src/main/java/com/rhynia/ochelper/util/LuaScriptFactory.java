@@ -12,11 +12,14 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -25,17 +28,14 @@ public class LuaScriptFactory {
 
     private final PathAccessor pa;
     @Getter
-    private final HashSet<CommandPack> commonPackNormal = new HashSet<>(
-            Arrays.asList(
-                    CommandPackEnum.AE_GET_ITEM.getPack(),
-                    CommandPackEnum.AE_GET_FLUID.getPack()
-            )
-    );
+    private final List<CommandPack> commonPackNormal = List.of(
+            CommandPackEnum.AE_GET_ITEM.getPack(),
+            CommandPackEnum.AE_GET_FLUID.getPack());
     private String luaScriptsBase = "";
-    private HashSet<CommandPack> commandPacks;
+    private List<CommandPack> commandPacks = Stream.of(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack()).collect(Collectors.toList());
 
     public void initLuaScript() {
-        commandPacks = new HashSet<>(List.of(CommandPackEnum.NULL.getPack()));
+        commandPacks = Stream.of(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack()).collect(Collectors.toList());
         File filePath = new File(pa.getPath().getLuaScriptsPath());
         File[] fileList = filePath.listFiles();
         if (fileList != null) {
@@ -54,16 +54,20 @@ public class LuaScriptFactory {
         }
     }
 
-    public void injectMission(HashSet<CommandPack> packs) {
+    public void injectMission(CommandPack pack) {
+        commandPacks.add(pack);
+    }
+
+    public void injectMission(List<CommandPack> packs) {
         commandPacks.addAll(packs);
     }
 
     public void resetCommandPacks() {
-        commandPacks.clear();
+        commandPacks = new ArrayList<>();
         commandPacks.add(CommandPackEnum.NULL.getPack());
     }
 
-    public String assembleLuaScript(HashSet<CommandPack> packs) {
+    public String assembleLuaScript(List<CommandPack> packs) {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> map = new HashMap<>();
         if (!luaScriptsBase.isEmpty()) {
@@ -74,7 +78,7 @@ public class LuaScriptFactory {
                 map.put(cp.getType(), codeChunk);
             }
         } else {
-            map.put("ERROR", "return ERROR");
+            map.put("ERROR", "return \"ERROR\"");
         }
         String jsonMappedScript = "";
         try {
