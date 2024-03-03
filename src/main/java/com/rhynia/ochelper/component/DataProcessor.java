@@ -44,9 +44,9 @@ public class DataProcessor {
     private final Condition cMethodFetch = lock.newCondition();
     private final Condition cDocFetch = lock.newCondition();
     private final Condition cTPSFetch = lock.newCondition();
+    private final String test = "";
     private boolean duringDocFetch = false;
     private int docIndex = 0;
-    private final String test = "";
 
     private void updateAEItemData(List<AEItem> list) {
         long begin = System.currentTimeMillis();

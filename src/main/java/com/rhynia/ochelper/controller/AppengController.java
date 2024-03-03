@@ -4,6 +4,7 @@ import com.rhynia.ochelper.accessor.DatabaseAccessor;
 import com.rhynia.ochelper.accessor.PathAccessor;
 import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.config.CommonValue;
+import com.rhynia.ochelper.var.AECPU;
 import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEFluidDisplay;
 import com.rhynia.ochelper.var.AEItemData;
@@ -21,8 +22,10 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
@@ -176,6 +179,9 @@ public class AppengController {
     @GetMapping("ae-cpu-info")
     public String requestCpuInfo(Model model) {
         var list = dp.requestAeCpuInfo();
+        list = list.stream()
+                .sorted(Comparator.comparing(AECPU::getName))
+                .collect(Collectors.toList());
         model.addAttribute("c_list", list);
         return "ae/ae-cpu-info";
     }

@@ -1,12 +1,16 @@
 package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.component.DataProcessor;
+import com.rhynia.ochelper.var.MsSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,6 +21,9 @@ public class UtilController {
     @GetMapping("tps-report")
     public String requestTPS(Model model) {
         var list = dp.requestTPSReport();
+        list = list.stream()
+                .sorted(Comparator.comparingDouble(MsSet::getMspt).reversed())
+                .collect(Collectors.toList());
         model.addAttribute("m_list", list);
         return "util/tps-report";
     }
