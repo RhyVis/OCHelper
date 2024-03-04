@@ -10,11 +10,11 @@
     </parent>
     <groupId>com.rhynia</groupId>
     <artifactId>OCHelper</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.2</version>
     <name>OCHelper</name>
     <description>OCHelper</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
     </properties>
     <dependencies>
         <dependency>

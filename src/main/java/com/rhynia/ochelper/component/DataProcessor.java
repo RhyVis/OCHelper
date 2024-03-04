@@ -48,10 +48,13 @@ public class DataProcessor {
     private final Condition cDocFetch = lock.newCondition();
     private final Condition cTPSFetch = lock.newCondition();
     private final Condition cCustomFetch = lock.newCondition();
-    private Pair<List<AEItem>[], String> cpuDetail;
+    private final AEItem dummy = new AEItem("无", "NULL", 0, false, false, "0");
+    @SuppressWarnings("unchecked")
+    private final List<AEItem>[] cpuDetailList = new ArrayList[3];
+    private String cpuDetailFinal = "";
     private String customReturn = "";
-    private boolean duringDocFetch = false;
-    private int docIndex = 0;
+    private boolean duringDocFetch = false, duringCpuDetailFetch = false;
+    private int docIndex = 0, cpuDetailIndex = 0;
 
     private void updateAEItemData(List<AEItem> list) {
         long begin = System.currentTimeMillis();
@@ -193,18 +196,24 @@ public class DataProcessor {
             return cpus;
         } else {
             log.error("Fetched no cpus.");
-            return List.of(new AECPU(0, 0, 0, true, "NO_CPU"));
+            return List.of(new AECPU(0, 0, "0", true, "NO_CPU"));
         }
     }
 
     public Pair<List<AEItem>[], String> requestAeCpuDetail(int cpuid) {
 
         log.info("Requesting CPU detail.");
-        var cp = new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey(), "return aeCpuDetail(" + cpuid + ")");
+        cpuDetailIndex = 0;
+        var cpl = List.of(
+                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_ACTIVE", "return aeCpuDetail1(" + cpuid + ")"),
+                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_STORE", "return aeCpuDetail2(" + cpuid + ")"),
+                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_PENDING", "return aeCpuDetail3(" + cpuid + ")"),
+                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_FINAL", "return aeCpuDetail4(" + cpuid + ")"));
         boolean timeout = false;
+        duringCpuDetailFetch = true;
         lock.lock();
         try {
-            ls.injectMission(cp);
+            ls.injectMission(cpl);
             timeout = !cCpuDetailFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
@@ -214,7 +223,7 @@ public class DataProcessor {
                 log.error("Timeout in requesting.");
             }
         }
-        return cpuDetail;
+        return Pair.of(cpuDetailList, cpuDetailFinal);
     }
 
     public List<MsSet> requestTPSReport() {
@@ -261,7 +270,53 @@ public class DataProcessor {
             if (Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"")) {
                 log.error("Received ERROR report.");
             }
-            if (!k.startsWith("OC_GET_COMPONENT_DOC_")) {
+            if (k.startsWith("OC_GET_COMPONENT_DOC_")) {
+                String method = k.substring(21);
+                componentDocs.add(new OCComponentDoc(method, v));
+            } else if (k.startsWith("AE_GET_CPU_DETAIL_")) {
+                switch (k) {
+                    case "AE_GET_CPU_DETAIL_ACTIVE" -> {
+                        if (Objects.equals(v, "[]")) {
+                            cpuDetailList[0] = List.of(dummy);
+                        } else {
+                            try {
+                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                });
+                                cpuDetailList[0] = temp;
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        }
+                    }
+                    case "AE_GET_CPU_DETAIL_STORE" -> {
+                        if (Objects.equals(v, "[]")) {
+                            cpuDetailList[0] = List.of(dummy);
+                        } else {
+                            try {
+                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                });
+                                cpuDetailList[1] = temp;
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        }
+                    }
+                    case "AE_GET_CPU_DETAIL_PENDING" -> {
+                        if (Objects.equals(v, "[]")) {
+                            cpuDetailList[0] = List.of(dummy);
+                        } else {
+                            try {
+                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                });
+                                cpuDetailList[2] = temp;
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        }
+                    }
+                    case "AE_GET_CPU_DETAIL_FINAL" -> cpuDetailFinal = v;
+                }
+            } else {
                 switch (k) {
                     case "AE_GET_ITEM" -> {
                         try {
@@ -290,52 +345,6 @@ public class DataProcessor {
                             lock.lock();
                             try {
                                 cCpuFetch.signal();
-                            } finally {
-                                lock.unlock();
-                            }
-                        } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
-                        }
-                    }
-                    case "AE_GET_CPU_DETAIL" -> {
-                        try {
-                            var spi = v.substring(1, v.length() - 1);
-                            spi = spi.replace("\\\"", "\"");
-                            var result = spi.split("#@#");
-
-                            var dummy = new AEItem("无", "NULL", 0, false, false, "0");
-                            List<AEItem> activeList, storeList, pendingList;
-                            List<AEItem>[] tmp = new ArrayList[3];
-                            if (!Objects.equals(result[0], "[]")) {
-                                activeList = mapper.readValue(result[0], new TypeReference<>() {
-                                });
-                            } else {
-                                activeList = new ArrayList<>();;
-                                activeList.add(dummy);
-                            }
-                            tmp[0] = activeList;
-                            if (!Objects.equals(result[1], "[]")) {
-                                storeList = mapper.readValue(result[1], new TypeReference<>() {
-                                });
-                            } else {
-                                storeList = new ArrayList<>();;
-                                storeList.add(dummy);
-                            }
-                            tmp[1] = storeList;
-                            if (!Objects.equals(result[2], "[]")) {
-                                pendingList = mapper.readValue(result[2], new TypeReference<>() {
-                                });
-                            } else {
-                                pendingList = new ArrayList<>();;
-                                pendingList.add(dummy);
-                            }
-                            tmp[2] = pendingList;
-
-                            cpuDetail = Pair.of(tmp, result[3]);
-
-                            lock.lock();
-                            try {
-                                cCpuDetailFetch.signal();
                             } finally {
                                 lock.unlock();
                             }
@@ -414,9 +423,6 @@ public class DataProcessor {
                         log.error("The content of result is: " + v);
                     }
                 }
-            } else {
-                String method = k.substring(21);
-                componentDocs.add(new OCComponentDoc(method, v));
             }
         });
         if (duringDocFetch && componentDocs.size() >= docIndex) {
@@ -427,6 +433,16 @@ public class DataProcessor {
             } finally {
                 lock.unlock();
                 duringDocFetch = false;
+            }
+        }
+        if (duringCpuDetailFetch && cpuDetailIndex >= 4) {
+            log.info("CPU information fetch complete.");
+            lock.lock();
+            try {
+                cCpuDetailFetch.signal();
+            } finally {
+                lock.unlock();
+                duringCpuDetailFetch = false;
             }
         }
     }
