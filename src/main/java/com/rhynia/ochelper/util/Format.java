@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
 
 public class Format {
-    private static final String[] byteList = {"", "K", "M", "G", "T", "P", "E", "Z", "Y", "Tell me if you cheated"};
+    private static final String[] byteList = {"", "K", "M", "G", "T", "P", "E", "Z", "Y", "KZ", "MZ", "GZ", "TZ", "PZ", "EZ"};
 
     public static String formatStringByte(String val) {
         if (val == null)
@@ -47,14 +47,24 @@ public class Format {
     }
 
     public static String formatSizeDisplay(String val) {
-        BigDecimal tmp = new BigDecimal(val);
+        return formatSizeDisplay(new BigDecimal(val));
+    }
+
+    public static String formatSizeDisplay(BigDecimal val) {
         DecimalFormat df = new DecimalFormat("#,###");
-        return df.format(tmp);
+        return df.format(val);
     }
 
     public static String formatSizeByteDisplay(String val) {
         String tmp = formatStringByte(val);
         if (Objects.equals(val, tmp))
+            return "-";
+        return "(" + tmp + ")";
+    }
+
+    public static String formatSizeByteDisplay(BigDecimal val) {
+        String tmp = formatStringByte(val.toPlainString());
+        if (Objects.equals(val.toPlainString(), tmp))
             return "-";
         return "(" + tmp + ")";
     }

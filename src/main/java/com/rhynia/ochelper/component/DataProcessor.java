@@ -448,7 +448,6 @@ public class DataProcessor {
                         }
                     }
                     case "GT_GET_ENERGY_WIRELESS" -> {
-                        log.info("Fetched sensor information of " + v + ", trying to covert to wireless energy info.");
                         if (!error) {
                             try {
                                 List<String> tmp = mapper.readValue(v, new TypeReference<>() {
@@ -458,7 +457,7 @@ public class DataProcessor {
                                         .map(s -> s.substring(21))
                                         .toList().getFirst();
                                 log.info("Fetched energy information of " + tmp1);
-                                var tmp2 = new BigDecimal(tmp1);
+                                var tmp2 = new BigDecimal(tmp1.replaceAll(",", ""));
                                 du.updateEnergyDatabase(tmp2);
                             } catch (Exception e) {
                                 log.error("Map fail in " + k + ":", e);

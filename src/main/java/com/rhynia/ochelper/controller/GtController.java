@@ -54,7 +54,7 @@ public class GtController {
         String rate = nf.format(rate_raw);
         boolean increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
 
-        String latest = newer.toPlainString() + " (" + Format.formatStringByte(newer.toPlainString()) + ")";
+        String latest = Format.formatSizeDisplay(newer) + Format.formatSizeByteDisplay(newer);
 
         model.addAttribute("bdl", bdl.toArray(new BigDecimal[0][0]));
         model.addAttribute("rate", rate);
