@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>AE Storage Center</title>
+    <title>AE CPU Detail</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,13 +24,13 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">AE CPU Detail</h3>
+                        <h3 class="mb-0">AE CPU Crafting Status</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
                             <li aria-current="page" class="breadcrumb-item active">
-                                AE Storage Info
+                                AE CPU Detail
                             </li>
                         </ol>
                     </div>
@@ -140,11 +140,17 @@
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
                                 <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
-                                     th:src="@{res/icon.png}">
+                                     th:src="${iconPath + final.getLocal() + '.png'}">
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text" style="font-weight: bold"
-                                      th:text="${final}">
+                                      th:text="${final.getLocal()}">
+                                </span>
+                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller;"
+                                      th:text="${final.getSizeFormatted()}">
+                                </span>
+                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller"
+                                      th:text="${final.getSizeByte()}">
                                 </span>
                             </div> <!-- /.info-box-content -->
                         </div> <!-- /.info-box -->

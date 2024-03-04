@@ -5,16 +5,17 @@ import lombok.Getter;
 
 @Getter
 public enum CommandPackEnum {
-    NULL("return \"NULL\""),
+    NULL(),
     ERROR("return \"ERROR\""),
-    CUSTOM("return \"NULL\""), //Just a reminder
+    CUSTOM(),
     AE_GET_ITEM("return aeItem()"),
     AE_GET_FLUID("return aeFluid()"),
     AE_GET_CPU_INFO("return aeCpuInfo()"),
-    AE_GET_CPU_DETAIL("return aeCpuDetail(val)"), //Just a reminder
+    AE_GET_CPU_DETAIL(),
     OC_GET_COMPONENT("return c.list()"),
-    OC_GET_COMPONENT_METHOD("return \"NULL\""), //Just a reminder
-    OC_GET_COMPONENT_DOC("return \"NULL\""), //Just a reminder
+    OC_GET_COMPONENT_METHOD(),
+    OC_GET_COMPONENT_DOC(),
+    GT_GET_SENSOR("return c.proxy('val').getSensorInformation()"),
     TPS_ALL_TICK_TIMES("return tpsAll()"),
     ;
 
@@ -25,8 +26,20 @@ public enum CommandPackEnum {
         this.command = command;
     }
 
+    CommandPackEnum() {
+        this.key = this.toString();
+        this.command = "return \"NULL\"";
+    }
+
     public CommandPack getPack() {
         return new CommandPack(this.key, this.command);
+    }
+
+    /**
+     * Override certain pack with command.
+     */
+    public CommandPack ofCommand(String command) {
+        return new CommandPack(this.key, command);
     }
 
 }

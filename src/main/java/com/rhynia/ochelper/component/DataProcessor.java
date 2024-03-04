@@ -47,14 +47,16 @@ public class DataProcessor {
     private final Condition cMethodFetch = lock.newCondition();
     private final Condition cDocFetch = lock.newCondition();
     private final Condition cTPSFetch = lock.newCondition();
+    private final Condition cGtSensorFetch = lock.newCondition();
     private final Condition cCustomFetch = lock.newCondition();
     private final AEItem dummy = new AEItem("无", "NULL", 0, false, false, "0");
     @SuppressWarnings("unchecked")
     private final List<AEItem>[] cpuDetailList = new ArrayList[3];
-    private String cpuDetailFinal = "";
+    private AEItem cpuDetailFinal = dummy;
     private String customReturn = "";
     private boolean duringDocFetch = false, duringCpuDetailFetch = false;
     private int docIndex = 0, cpuDetailIndex = 0;
+    private String test = "";
 
     private void updateAEItemData(List<AEItem> list) {
         long begin = System.currentTimeMillis();
@@ -103,7 +105,7 @@ public class DataProcessor {
         boolean timeout = false;
         lock.lock();
         try {
-            ls.injectMission(new CommandPack(CommandPackEnum.OC_GET_COMPONENT_METHOD.getKey(), fetchMethodCommand));
+            ls.injectMission(CommandPackEnum.OC_GET_COMPONENT_METHOD.ofCommand(fetchMethodCommand));
             timeout = !cMethodFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
@@ -200,9 +202,13 @@ public class DataProcessor {
         }
     }
 
-    public Pair<List<AEItem>[], String> requestAeCpuDetail(int cpuid) {
+    public Pair<List<AEItem>[], AEItem> requestAeCpuDetail(int cpuid) {
 
         log.info("Requesting CPU detail.");
+        cpuDetailList[0] = List.of(dummy);
+        cpuDetailList[1] = List.of(dummy);
+        cpuDetailList[2] = List.of(dummy);
+        cpuDetailFinal = dummy;
         cpuDetailIndex = 0;
         var cpl = List.of(
                 new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_ACTIVE", "return aeCpuDetail1(" + cpuid + ")"),
@@ -224,6 +230,26 @@ public class DataProcessor {
             }
         }
         return Pair.of(cpuDetailList, cpuDetailFinal);
+    }
+
+    public String requestGtMachineSensor(String proxyAddress) {
+
+        log.info("Requesting GT Sensor of " + proxyAddress);
+        boolean timeout = false;
+        var cc = CommandPackEnum.GT_GET_SENSOR.ofCommand("return c.proxy(\"" + proxyAddress + "\".getSensorInformation()");
+        lock.lock();
+        try {
+            ls.injectMission(cc);
+            timeout = !cGtSensorFetch.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.error("Method interrupted.", e);
+        } finally {
+            lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
+        }
+        return test;
     }
 
     public List<MsSet> requestTPSReport() {
@@ -268,54 +294,11 @@ public class DataProcessor {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         map.forEach((k, v) -> {
             if (Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"")) {
-                log.error("Received ERROR report.");
+                log.error("Received ERROR report in action " + k);
             }
             if (k.startsWith("OC_GET_COMPONENT_DOC_")) {
                 String method = k.substring(21);
                 componentDocs.add(new OCComponentDoc(method, v));
-            } else if (k.startsWith("AE_GET_CPU_DETAIL_")) {
-                switch (k) {
-                    case "AE_GET_CPU_DETAIL_ACTIVE" -> {
-                        if (Objects.equals(v, "[]")) {
-                            cpuDetailList[0] = List.of(dummy);
-                        } else {
-                            try {
-                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
-                                });
-                                cpuDetailList[0] = temp;
-                            } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
-                            }
-                        }
-                    }
-                    case "AE_GET_CPU_DETAIL_STORE" -> {
-                        if (Objects.equals(v, "[]")) {
-                            cpuDetailList[0] = List.of(dummy);
-                        } else {
-                            try {
-                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
-                                });
-                                cpuDetailList[1] = temp;
-                            } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
-                            }
-                        }
-                    }
-                    case "AE_GET_CPU_DETAIL_PENDING" -> {
-                        if (Objects.equals(v, "[]")) {
-                            cpuDetailList[0] = List.of(dummy);
-                        } else {
-                            try {
-                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
-                                });
-                                cpuDetailList[2] = temp;
-                            } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
-                            }
-                        }
-                    }
-                    case "AE_GET_CPU_DETAIL_FINAL" -> cpuDetailFinal = v;
-                }
             } else {
                 switch (k) {
                     case "AE_GET_ITEM" -> {
@@ -352,6 +335,62 @@ public class DataProcessor {
                             log.error("Map fail in " + k + ":", e);
                         }
                     }
+                    case "AE_GET_CPU_DETAIL_ACTIVE" -> {
+                        if (Objects.equals(v, "[]")) {
+                            cpuDetailList[0] = List.of(dummy);
+                        } else {
+                            try {
+                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                });
+                                cpuDetailList[0] = temp;
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        }
+                        cpuDetailIndex++;
+                    }
+                    case "AE_GET_CPU_DETAIL_STORE" -> {
+                        if (Objects.equals(v, "[]")) {
+                            cpuDetailList[0] = List.of(dummy);
+                        } else {
+                            try {
+                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                });
+                                cpuDetailList[1] = temp;
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        }
+                        cpuDetailIndex++;
+                    }
+                    case "AE_GET_CPU_DETAIL_PENDING" -> {
+                        if (Objects.equals(v, "[]")) {
+                            cpuDetailList[0] = List.of(dummy);
+                        } else {
+                            try {
+                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                });
+                                cpuDetailList[2] = temp;
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        }
+                        cpuDetailIndex++;
+                    }
+                    case "AE_GET_CPU_DETAIL_FINAL" -> {
+                        if (Objects.equals(v, "null") || Objects.equals(v, "[]")) {
+                            cpuDetailFinal = dummy;
+                        } else {
+                            try {
+                                cpuDetailFinal = mapper.readValue(v, new TypeReference<>() {
+                                });
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        }
+                        cpuDetailIndex++;
+                    }
+
                     case "OC_GET_COMPONENT" -> {
                         try {
                             var temp = mapper.readValue(v, Map.class);
@@ -387,6 +426,16 @@ public class DataProcessor {
                             }
                         } catch (Exception e) {
                             log.error("Map fail in " + k + ":", e);
+                        }
+                    }
+                    case "GT_GET_SENSOR" -> {
+                        log.info(v);
+                        test = v;
+                        lock.lock();
+                        try {
+                            cGtSensorFetch.signal();
+                        } finally {
+                            lock.unlock();
                         }
                     }
                     case "TPS_ALL_TICK_TIMES" -> {
@@ -434,6 +483,7 @@ public class DataProcessor {
                 lock.unlock();
                 duringDocFetch = false;
             }
+            return;
         }
         if (duringCpuDetailFetch && cpuDetailIndex >= 4) {
             log.info("CPU information fetch complete.");
@@ -443,6 +493,7 @@ public class DataProcessor {
             } finally {
                 lock.unlock();
                 duringCpuDetailFetch = false;
+                docIndex = 0;
             }
         }
     }

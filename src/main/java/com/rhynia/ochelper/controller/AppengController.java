@@ -7,6 +7,7 @@ import com.rhynia.ochelper.config.CommonValue;
 import com.rhynia.ochelper.var.AECPU;
 import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEFluidDisplay;
+import com.rhynia.ochelper.var.AEItem;
 import com.rhynia.ochelper.var.AEItemData;
 import com.rhynia.ochelper.var.AEItemDisplay;
 import lombok.RequiredArgsConstructor;
@@ -145,8 +146,8 @@ public class AppengController {
             bdl.add(temp);
         }
 
-        BigDecimal older = new BigDecimal(list.get(list.size() - 1).getSize());
-        BigDecimal newer = new BigDecimal(list.get(0).getSize());
+        BigDecimal older = new BigDecimal(list.getLast().getSize());
+        BigDecimal newer = new BigDecimal(list.getFirst().getSize());
         BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
         String rate = nf.format(rate_raw);
         boolean increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
@@ -176,20 +177,17 @@ public class AppengController {
         String iconPath = pa.getPath().getIconPanelPath();
         var pair = dp.requestAeCpuDetail(cpuid);
         var listP = pair.getLeft();
-        var finalOutput = pair.getRight();
+        var finalOutput = pair.getRight().getDisplay();
 
-        List<AEItemDisplay> active = new ArrayList<>();
-        List<AEItemDisplay> store = new ArrayList<>();
-        List<AEItemDisplay> pending = new ArrayList<>();
-        for (var item : listP[0]) {
-            active.add(item.getDisplay());
-        }
-        for (var item : listP[1]) {
-            store.add(item.getDisplay());
-        }
-        for (var item : listP[2]) {
-            pending.add(item.getDisplay());
-        }
+        List<AEItemDisplay> active = listP[0].stream()
+                .map(AEItem::getDisplay)
+                .collect(Collectors.toList());
+        List<AEItemDisplay> store = listP[1].stream()
+                .map(AEItem::getDisplay)
+                .collect(Collectors.toList());
+        List<AEItemDisplay> pending = listP[2].stream()
+                .map(AEItem::getDisplay)
+                .collect(Collectors.toList());
 
         model.addAttribute("iconPath", iconPath);
         model.addAttribute("active", active);

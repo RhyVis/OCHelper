@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
+
+<head>
+    <title>GT Sensor Info</title>
+    <th:block th:insert="~{shared/head-shared::head}"></th:block>
+</head> <!--begin::Body-->
+
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary"> <!--begin::App Wrapper-->
+<div class="app-wrapper">
+
+    <!--begin::Header-->
+    <th:block th:insert="~{shared/navbar-shared::navbar}"></th:block>
+    <!--end::Header-->
+
+    <!--begin::Sidebar-->
+    <th:block th:insert="~{shared/sidebar-shared::sidebar}"></th:block>
+    <!--end::Sidebar-->
+
+    <!--begin::App Main-->
+    <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header"> <!--begin::Container-->
+            <div class="container-fluid"> <!--begin::Row-->
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3 class="mb-0">Sensor Information</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-end">
+                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
+                            <li aria-current="page" class="breadcrumb-item active">
+                                GT Sensor Info
+                            </li>
+                        </ol>
+                    </div>
+                </div> <!--end::Row-->
+            </div> <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+
+        <!--begin::App Content-->
+        <div class="app-content">
+            <!--begin::Container-->
+            <div class="container-fluid">
+
+                <h5 class="mb-2">Info</h5>
+
+                <!--begin::Row-->
+                <div class="row">
+                    <div class="col-12"> <!-- Default box -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Main Page</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
+                                            type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
+                                            class="bi bi-dash-lg" data-lte-icon="collapse"></i></button>
+                                    <button class="btn btn-tool" data-lte-toggle="card-remove" title="Remove"
+                                            type="button"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div th:text="${result}"></div>
+                            </div> <!-- /.card-body -->
+                            <div class="card-footer">Info</div> <!-- /.card-footer-->
+                        </div> <!-- /.card -->
+                    </div>
+                </div>
+                <!--end::Row-->
+
+            </div> <!--end::Container-->
+        </div> <!--end::App Content-->
+    </main> <!--end::App Main-->
+
+    <!--begin::Footer-->
+    <th:block th:insert="~{shared/footer-shared::footer}"></th:block>
+    <!--end::Footer-->
+
+    <!--end::Footer-->
+</div> <!--end::App Wrapper-->
+<!--begin::Script-->
+<th:block th:insert="~{shared/script-shared::script}"></th:block>
+<!--end::Script-->
+</body><!--end::Body-->
+
+</html>
