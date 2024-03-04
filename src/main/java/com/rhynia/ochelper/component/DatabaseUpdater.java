@@ -46,11 +46,11 @@ public class DatabaseUpdater {
         List<String> unl = new ArrayList<>();
         if (k instanceof AEItem) {
             for (AEItem item : (List<AEItem>) list) {
-                unl.add(item.getUniqueName());
+                unl.add(item.getUn());
             }
         } else if (k instanceof AEFluid) {
             for (AEFluid fluid : (List<AEFluid>) list) {
-                unl.add(fluid.getUniqueName());
+                unl.add(fluid.getUn());
             }
         } else {
             log.error("Wrong list of " + k.toString());
@@ -65,11 +65,11 @@ public class DatabaseUpdater {
         List<String> unl = new ArrayList<>();
         if (k instanceof AEItem) {
             for (AEItem item : (List<AEItem>) list) {
-                unl.add(item.getUniqueName());
+                unl.add(item.getUn());
             }
         } else if (k instanceof AEFluid) {
             for (AEFluid fluid : (List<AEFluid>) list) {
-                unl.add(fluid.getUniqueName());
+                unl.add(fluid.getUn());
             }
         } else {
             log.error("Wrong list of " + k.toString());

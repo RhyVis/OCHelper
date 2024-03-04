@@ -37,10 +37,10 @@ public class SQLFactory {
         for (int i = 0; i < rl.size(); i++) {
             AEItem item = rl.get(i);
             String l = "INSERT INTO " +
-                    item.getUniqueName() +
+                    item.getUn() +
                     " (id, size) VALUES ('" +
                     sid.nextIdStr() + "', '" +
-                    item.processRawAeSize() +
+                    item.getSizeString() +
                     "'); ";
             s[i] = l;
         }
@@ -52,10 +52,10 @@ public class SQLFactory {
         for (int i = 0; i < rl.size(); i++) {
             AEFluid fluid = rl.get(i);
             String l = "INSERT INTO " +
-                    fluid.getUniqueName() +
+                    fluid.getUn() +
                     " (id, size) VALUES ('" +
                     sid.nextIdStr() + "', '" +
-                    fluid.processRawAeSize() +
+                    fluid.getSizeString() +
                     "'); ";
             s[i] = l;
         }

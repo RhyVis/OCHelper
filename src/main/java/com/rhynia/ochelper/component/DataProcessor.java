@@ -15,6 +15,7 @@ import com.rhynia.ochelper.var.OCComponentDoc;
 import com.rhynia.ochelper.var.OCComponentMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,11 +42,14 @@ public class DataProcessor {
     private final List<MsSet> msSets = new ArrayList<>();
     private final Lock lock = new ReentrantLock();
     private final Condition cCpuFetch = lock.newCondition();
+    private final Condition cCpuDetailFetch = lock.newCondition();
     private final Condition cComponentFetch = lock.newCondition();
     private final Condition cMethodFetch = lock.newCondition();
     private final Condition cDocFetch = lock.newCondition();
     private final Condition cTPSFetch = lock.newCondition();
-    private final String test = "";
+    private final Condition cCustomFetch = lock.newCondition();
+    private Pair<List<AEItem>[], String> cpuDetail;
+    private String customReturn = "";
     private boolean duringDocFetch = false;
     private int docIndex = 0;
 
@@ -65,14 +70,18 @@ public class DataProcessor {
     public List<OCComponent> requestComponentList() {
 
         log.info("Requesting component list.");
+        boolean timeout = false;
         lock.lock();
         try {
             ls.injectMission(CommandPackEnum.OC_GET_COMPONENT.getPack());
-            cComponentFetch.await();
+            timeout = !cComponentFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
         } finally {
             lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
         }
 
         if (!components.isEmpty()) {
@@ -88,14 +97,18 @@ public class DataProcessor {
 
         log.info("Start requesting component detail.");
         String fetchMethodCommand = "return c.methods(\"" + address + "\")";
+        boolean timeout = false;
         lock.lock();
         try {
             ls.injectMission(new CommandPack(CommandPackEnum.OC_GET_COMPONENT_METHOD.getKey(), fetchMethodCommand));
-            cMethodFetch.await();
+            timeout = !cMethodFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
         } finally {
             lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
         }
 
         if (componentMethods.isEmpty()) {
@@ -114,11 +127,14 @@ public class DataProcessor {
         try {
             ls.injectMission(fetchDocCommands);
             duringDocFetch = true;
-            cDocFetch.await();
+            timeout = !cDocFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
         } finally {
             lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
         }
 
         if (!componentDocs.isEmpty()) {
@@ -135,44 +151,87 @@ public class DataProcessor {
         componentDocs.clear();
     }
 
-    public void test() {
-        requestAeCpuInfo();
-        requestTPSReport();
+    public String executeCustomCommand(String command) {
+
+        log.info("Requested executing a custom command:" + command);
+        var cc = new CommandPack(CommandPackEnum.CUSTOM.getKey(), command);
+        boolean timeout = false;
+        lock.lock();
+        try {
+            ls.injectMission(cc);
+            timeout = !cCustomFetch.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.error("Method interrupted.", e);
+        } finally {
+            lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
+        }
+        return customReturn;
     }
 
     public List<AECPU> requestAeCpuInfo() {
 
         log.info("Requested CPU info.");
+        boolean timeout = false;
         lock.lock();
         try {
             ls.injectMission(CommandPackEnum.AE_GET_CPU_INFO.getPack());
-            cCpuFetch.await();
+            timeout = !cCpuFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
         } finally {
             lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
         }
 
         if (!cpus.isEmpty()) {
-            log.info("AE Cpu info successfully fetched.");
+            log.info("AE CPU info successfully fetched.");
             return cpus;
         } else {
             log.error("Fetched no cpus.");
-            return List.of(new AECPU(0, 0, true, "NO_CPU"));
+            return List.of(new AECPU(0, 0, 0, true, "NO_CPU"));
         }
+    }
+
+    public Pair<List<AEItem>[], String> requestAeCpuDetail(int cpuid) {
+
+        log.info("Requesting CPU detail.");
+        var cp = new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey(), "return aeCpuDetail(" + cpuid + ")");
+        boolean timeout = false;
+        lock.lock();
+        try {
+            ls.injectMission(cp);
+            timeout = !cCpuDetailFetch.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.error("Method interrupted.", e);
+        } finally {
+            lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
+        }
+        return cpuDetail;
     }
 
     public List<MsSet> requestTPSReport() {
 
         log.info("Requested TPS.");
+        boolean timeout = false;
         lock.lock();
         try {
             ls.injectMission(CommandPackEnum.TPS_ALL_TICK_TIMES.getPack());
-            cTPSFetch.await();
+            timeout = !cTPSFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
         } finally {
             lock.unlock();
+            if (timeout) {
+                log.error("Timeout in fetching.");
+            }
         }
 
         if (!msSets.isEmpty()) {
@@ -199,7 +258,7 @@ public class DataProcessor {
     public void processResult(Map<String, String> map) {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         map.forEach((k, v) -> {
-            if (Objects.equals(v, "ERROR")) {
+            if (Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"")) {
                 log.error("Received ERROR report.");
             }
             if (!k.startsWith("OC_GET_COMPONENT_DOC_")) {
@@ -231,6 +290,52 @@ public class DataProcessor {
                             lock.lock();
                             try {
                                 cCpuFetch.signal();
+                            } finally {
+                                lock.unlock();
+                            }
+                        } catch (Exception e) {
+                            log.error("Map fail in " + k + ":", e);
+                        }
+                    }
+                    case "AE_GET_CPU_DETAIL" -> {
+                        try {
+                            var spi = v.substring(1, v.length() - 1);
+                            spi = spi.replace("\\\"", "\"");
+                            var result = spi.split("#@#");
+
+                            var dummy = new AEItem("无", "NULL", 0, false, false, "0");
+                            List<AEItem> activeList, storeList, pendingList;
+                            List<AEItem>[] tmp = new ArrayList[3];
+                            if (!Objects.equals(result[0], "[]")) {
+                                activeList = mapper.readValue(result[0], new TypeReference<>() {
+                                });
+                            } else {
+                                activeList = new ArrayList<>();;
+                                activeList.add(dummy);
+                            }
+                            tmp[0] = activeList;
+                            if (!Objects.equals(result[1], "[]")) {
+                                storeList = mapper.readValue(result[1], new TypeReference<>() {
+                                });
+                            } else {
+                                storeList = new ArrayList<>();;
+                                storeList.add(dummy);
+                            }
+                            tmp[1] = storeList;
+                            if (!Objects.equals(result[2], "[]")) {
+                                pendingList = mapper.readValue(result[2], new TypeReference<>() {
+                                });
+                            } else {
+                                pendingList = new ArrayList<>();;
+                                pendingList.add(dummy);
+                            }
+                            tmp[2] = pendingList;
+
+                            cpuDetail = Pair.of(tmp, result[3]);
+
+                            lock.lock();
+                            try {
+                                cCpuDetailFetch.signal();
                             } finally {
                                 lock.unlock();
                             }
@@ -289,6 +394,16 @@ public class DataProcessor {
                             }
                         } catch (Exception e) {
                             log.error("Map fail in " + k + ":", e);
+                        }
+                    }
+                    case "CUSTOM" -> {
+                        log.info("Received CUSTOM pack respond.");
+                        customReturn = v;
+                        lock.lock();
+                        try {
+                            cCustomFetch.signal();
+                        } finally {
+                            lock.unlock();
                         }
                     }
                     case "NULL" -> log.info("Received request from OC.");

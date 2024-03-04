@@ -64,6 +64,7 @@
                                         <thead>
                                         <tr>
                                             <th>Name</th>
+                                            <th>ID</th>
                                             <th>Coprocessors</th>
                                             <th>Storage</th>
                                             <th>Busy</th>
@@ -73,6 +74,11 @@
                                         <tr th:each="c:${c_list}">
                                             <td>
                                                 <th:block th:text="${c.getName()}"></th:block>
+                                            </td>
+                                            <td>
+                                                <small class="text-secondary me-1">
+                                                    <th:block th:text="${c.getCpuid()}"></th:block>
+                                                </small>
                                             </td>
                                             <td>
                                                 <small class="text-primary me-1">
@@ -93,7 +99,7 @@
                                                 </small>
                                             </td>
                                             <td>
-                                                <a class="text-secondary">
+                                                <a class="text-secondary" th:href="@{ae-cpu-detail(cpuid = ${c.getCpuid()})}">
                                                     <i class="bi bi-search"></i>
                                                 </a>
                                             </td>

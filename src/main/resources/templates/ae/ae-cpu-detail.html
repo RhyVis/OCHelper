@@ -24,7 +24,7 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Storage</h3>
+                        <h3 class="mb-0">AE CPU Detail</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
@@ -44,18 +44,45 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Item</h5>
+                <h5 class="mb-2">Active Item</h5>
 
                 <!--begin::Row-->
                 <div class="row">
-                    <div class="col-12 col-sm-6 col-md-3" th:each="item:${itemList}">
+                    <div class="col-12 col-sm-6 col-md-3" th:each="item:${active}">
                         <div class="info-box">
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
-                                <a th:href="@{insight-item(it_un = ${item.getUn()}, latest = ${item.getSizeByte()})}">
+                                <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
+                                     th:src="${iconPath + item.getLocalFromUn() + '.png'}">
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text" style="font-weight: bold"
+                                      th:text="${item.getLocalFromUn()}">
+                                </span>
+                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller;"
+                                      th:text="${item.getSizeFormatted()}">
+                                </span>
+                                <span class="info-box-number" style="max-width: fit-content;font-size: smaller"
+                                      th:text="${item.getSizeByte()}">
+                                </span>
+                            </div> <!-- /.info-box-content -->
+                        </div> <!-- /.info-box -->
+                    </div> <!-- /.col -->
+                </div>
+                <!--end::Row-->
+
+                <br/>
+
+                <h5 class="mb-2">Store Item</h5>
+
+                <!--begin::Row-->
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-3" th:each="item:${store}">
+                        <div class="info-box">
+                            <span class="info-box-icon text-bg-primary shadow-sm"
+                                  style="min-width: 80px;min-height: 80px;">
                                 <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
                                      th:src="${iconPath + item.getLocal() + '.png'}">
-                                </a>
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text" style="font-weight: bold"
@@ -75,28 +102,49 @@
 
                 <br/>
 
-                <h5 class="mb-2">Fluid</h5>
+                <h5 class="mb-2">Pending Item</h5>
 
                 <!--begin::Row-->
                 <div class="row">
-                    <div class="col-12 col-sm-6 col-md-3" th:each="fluid:${fluidList}">
+                    <div class="col-12 col-sm-6 col-md-3" th:each="item:${pending}">
                         <div class="info-box">
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
-                                <a th:href="@{insight-fluid(it_un = ${fluid.getLeft().getUn()}, latest = ${fluid.getLeft().getSizeByte()})}">
                                 <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
-                                     th:src="${iconPath + fluid.getRight() + '单元.png'}">
-                                </a>
+                                     th:src="${iconPath + item.getLocal() + '.png'}">
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text" style="font-weight: bold"
-                                      th:text="${fluid.getLeft().getLocal()}">
+                                      th:text="${item.getLocal()}">
                                 </span>
                                 <span class="info-box-number" style="max-width: fit-content;font-size: smaller;"
-                                      th:text="${fluid.getLeft().getSizeFormatted()}">
+                                      th:text="${item.getSizeFormatted()}">
                                 </span>
                                 <span class="info-box-number" style="max-width: fit-content;font-size: smaller"
-                                      th:text="${fluid.getLeft().getSizeByte()}">
+                                      th:text="${item.getSizeByte()}">
+                                </span>
+                            </div> <!-- /.info-box-content -->
+                        </div> <!-- /.info-box -->
+                    </div> <!-- /.col -->
+                </div>
+                <!--end::Row-->
+
+                <br/>
+
+                <h5 class="mb-2">Final Output</h5>
+
+                <!--begin::Row-->
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="info-box">
+                            <span class="info-box-icon text-bg-primary shadow-sm"
+                                  style="min-width: 80px;min-height: 80px;">
+                                <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
+                                     th:src="@{res/icon.png}">
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text" style="font-weight: bold"
+                                      th:text="${final}">
                                 </span>
                             </div> <!-- /.info-box-content -->
                         </div> <!-- /.info-box -->

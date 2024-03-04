@@ -2,6 +2,8 @@ package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.util.LuaScriptFactory;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,11 +28,11 @@ public class RemoteController {
         return new ResponseEntity<>(jsonPackedScript, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/oc", method = RequestMethod.POST)
-    public ResponseEntity<String> resultHandler(@RequestBody String req) {
-        var result = dp.readResult(req);
+    @RequestMapping(value = "/api/oc", method = RequestMethod.POST, consumes = "text/plain", produces = "text/plain;charset=UTF-8")
+    public ResponseEntity<String> resultHandler(@RequestBody String rb) {
+        var result = dp.readResult(rb);
         dp.processResult(result);
-        return new ResponseEntity<>("Received message.", HttpStatus.OK);
+        return new ResponseEntity<>("Received", HttpStatus.OK);
     }
 
 }

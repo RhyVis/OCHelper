@@ -1,30 +1,29 @@
 package com.rhynia.ochelper.var;
 
 import com.rhynia.ochelper.util.Format;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.Objects;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 
 @Data
-@AllArgsConstructor
 public class AEItemDisplay {
+
     private final String un;
     private final String local;
-    private final String size;
+    private final String sizeRaw;
+    private final String sizeFormatted;
+    private final String sizeByte;
 
-    public String getAeSizeDisplay() {
-        BigDecimal bd = new BigDecimal(this.size);
-        DecimalFormat df = new DecimalFormat("#,###");
-        return df.format(bd);
+    public AEItemDisplay(String un, String local, String sizeRaw) {
+        this.un = un;
+        this.local = local;
+        this.sizeRaw = sizeRaw;
+        this.sizeFormatted = Format.formatSizeDisplay(sizeRaw);
+        this.sizeByte = Format.formatSizeByteDisplay(sizeRaw);
     }
 
-    public String getAeSizeByteDisplay() {
-        String out = Format.formatStringByte(this.size);
-        if (Objects.equals(this.size, out))
-            return "-";
-        return "(" + out + ")";
+    public String getLocalFromUn() {
+        return UNI_NAME_MAP_ITEM.getOrDefault(this.un, this.un);
     }
+
 }

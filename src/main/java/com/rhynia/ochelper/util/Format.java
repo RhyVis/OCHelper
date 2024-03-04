@@ -1,5 +1,8 @@
 package com.rhynia.ochelper.util;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,5 +44,18 @@ public class Format {
 
     public static String assembleFluidUN(String name) {
         return "fluid$" + Format.removeUnavailableChar(name);
+    }
+
+    public static String formatSizeDisplay(String val) {
+        BigDecimal tmp = new BigDecimal(val);
+        DecimalFormat df = new DecimalFormat("#,###");
+        return df.format(tmp);
+    }
+
+    public static String formatSizeByteDisplay(String val) {
+        String tmp = formatStringByte(val);
+        if (Objects.equals(val, tmp))
+            return "-";
+        return "(" + tmp + ")";
     }
 }

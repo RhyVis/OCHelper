@@ -1,34 +1,47 @@
 package com.rhynia.ochelper.var;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rhynia.ochelper.util.Format;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class AEItem {
-    private String name;
-    private String label;
-    private String size;
-    private int damage;
-    private boolean hasTag;
-    private boolean isCraftable;
 
-    public String processRawAeSize() {
-        if (size.contains("E") || size.contains("e")) {
-            BigDecimal bd = new BigDecimal(size);
-            return bd.toPlainString();
-        }
-        if (size.contains(".0"))
-            return size.substring(0, size.indexOf("."));
-        return size;
+    private final String name;
+    private final String un;
+    private final String label;
+    private final String sizeRaw;
+    private final String sizeString;
+    private final BigDecimal size;
+    private final int meta;
+    private final boolean hasTag;
+    private final boolean isCraftable;
+
+    @JsonCreator
+    public AEItem(
+            @JsonProperty("label") String label,
+            @JsonProperty("name") String name,
+            @JsonProperty("damage") int damage,
+            @JsonProperty("hasTag") boolean hasTag,
+            @JsonProperty("isCraftable") boolean isCraftable,
+            @JsonProperty("size") String size) {
+        BigDecimal tmpSize = new BigDecimal(size);
+        this.name = name;
+        this.un = Format.assembleItemUN(name, damage);
+        this.label = label;
+        this.meta = damage;
+        this.sizeRaw = size;
+        this.size = tmpSize;
+        this.sizeString = tmpSize.toPlainString();
+        this.hasTag = hasTag;
+        this.isCraftable = isCraftable;
     }
 
-    public String getUniqueName() {
-        return "item$" + Format.removeUnavailableChar(this.name) + "$" + this.damage;
+    public AEItemDisplay getDisplay() {
+        return new AEItemDisplay(this.un, this.label, this.sizeString);
     }
+
 }

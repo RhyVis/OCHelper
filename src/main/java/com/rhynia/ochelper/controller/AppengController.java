@@ -11,9 +11,12 @@ import com.rhynia.ochelper.var.AEItemData;
 import com.rhynia.ochelper.var.AEItemDisplay;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.context.support.ServletContextResource;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -56,14 +59,9 @@ public class AppengController {
 
         for (AEItemDisplay item : items) {
             if (item.getUn().endsWith("drop$0")) continue;
-            if (Objects.equals(item.getSize(), "0")) continue;
+            if (Objects.equals(item.getSizeRaw(), "0")) continue;
             if (item.getLocal() == null) {
-                AEItemDisplay missing;
-                if (UNI_NAME_MAP_ITEM_SWITCH.containsKey(item.getUn())) {
-                    missing = new AEItemDisplay(item.getUn(), UNI_NAME_MAP_ITEM_SWITCH.get(item.getUn()), item.getSize());
-                } else {
-                    missing = new AEItemDisplay(item.getUn(), item.getUn(), item.getSize());
-                }
+                AEItemDisplay missing = new AEItemDisplay(item.getUn(), UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(item.getUn(), item.getUn()), item.getSizeRaw());
                 itemList.add(missing);
                 continue;
             }
@@ -71,12 +69,7 @@ public class AppengController {
         }
 
         for (AEFluidDisplay fluid : fluids) {
-            String localSwitched;
-            if (NAME_MAP_FLUID_SWITCH.containsKey(fluid.getLocal())) {
-                localSwitched = NAME_MAP_FLUID_SWITCH.get(fluid.getLocal());
-            } else {
-                localSwitched = fluid.getLocal();
-            }
+            String localSwitched = NAME_MAP_FLUID_SWITCH.getOrDefault(fluid.getLocal(), fluid.getLocal());
             fluidList.add(Pair.of(fluid, localSwitched));
         }
 
@@ -98,10 +91,7 @@ public class AppengController {
         int insight_size = cv.getInsightSize();
         var list = da.getItemDataLateN(it_un, insight_size);
         long sync = current - df.parse(list.get(0).getTime()).getTime();
-        String nameLocal;
-        if (UNI_NAME_MAP_ITEM.containsKey(it_un)) {
-            nameLocal = UNI_NAME_MAP_ITEM.get(it_un);
-        } else nameLocal = UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(it_un, it_un);
+        String nameLocal = UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(it_un, it_un);
         String imgLink = pa.getPath().getIconPanelPath() + nameLocal + ".png";
         ArrayList<BigDecimal[]> bdl = new ArrayList<>();
 
@@ -179,11 +169,37 @@ public class AppengController {
     @GetMapping("ae-cpu-info")
     public String requestCpuInfo(Model model) {
         var list = dp.requestAeCpuInfo();
-        list = list.stream()
-                .sorted(Comparator.comparing(AECPU::getName))
-                .collect(Collectors.toList());
+        list = list.stream().sorted(Comparator.comparing(AECPU::getName)).collect(Collectors.toList());
         model.addAttribute("c_list", list);
         return "ae/ae-cpu-info";
+    }
+
+    @GetMapping("ae-cpu-detail")
+    public String requestCpuDetail(int cpuid, Model model) {
+        String iconPath = pa.getPath().getIconPanelPath();
+        var pair = dp.requestAeCpuDetail(cpuid);
+        var listP = pair.getLeft();
+        var finalOutput = pair.getRight();
+
+        List<AEItemDisplay> active = new ArrayList<>();
+        List<AEItemDisplay> store = new ArrayList<>();
+        List<AEItemDisplay> pending = new ArrayList<>();
+        for (var item : listP[0]) {
+            active.add(item.getDisplay());
+        }
+        for (var item : listP[1]) {
+            store.add(item.getDisplay());
+        }
+        for (var item : listP[2]) {
+            pending.add(item.getDisplay());
+        }
+
+        model.addAttribute("iconPath", iconPath);
+        model.addAttribute("active", active);
+        model.addAttribute("store", store);
+        model.addAttribute("pending", pending);
+        model.addAttribute("final", finalOutput);
+        return "ae/ae-cpu-detail";
     }
 
 }

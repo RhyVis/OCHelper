@@ -1,31 +1,34 @@
 package com.rhynia.ochelper.var;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rhynia.ochelper.util.Format;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class AEFluid {
-    private String name;
-    private String label;
-    private String amount;
 
-    public String processRawAeSize() {
-        if (amount.contains("E") || amount.contains("e")) {
-            BigDecimal bd = new BigDecimal(amount);
-            return bd.toPlainString();
-        }
-        if (amount.contains(".0"))
-            return amount.substring(0, amount.indexOf("."));
-        return amount;
+    private final String name;
+    private final String un;
+    private final String label;
+    private final String sizeRaw;
+    private final String sizeString;
+    private final BigDecimal size;
+
+    @JsonCreator
+    public AEFluid(
+            @JsonProperty("name") String name,
+            @JsonProperty("label") String label,
+            @JsonProperty("amount") String amount) {
+        BigDecimal tmpSize = new BigDecimal(amount);
+        this.name = name;
+        this.un = Format.assembleFluidUN(name);
+        this.label = label;
+        this.sizeRaw = amount;
+        this.size = tmpSize;
+        this.sizeString = tmpSize.toPlainString();
     }
 
-    public String getUniqueName() {
-        return "fluid$" + Format.removeUnavailableChar(this.name);
-    }
 }

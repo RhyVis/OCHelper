@@ -2,12 +2,10 @@ package com.rhynia.ochelper.component;
 
 import com.csvreader.CsvReader;
 import com.rhynia.ochelper.accessor.PathAccessor;
-import com.rhynia.ochelper.accessor.SwitchFluidAccessor;
-import com.rhynia.ochelper.accessor.SwitchItemAccessor;
+import com.rhynia.ochelper.accessor.SwitchLocalAccessor;
 import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.util.LuaScriptFactory;
-import com.rhynia.ochelper.var.SwitchFluid;
-import com.rhynia.ochelper.var.SwitchItem;
+import com.rhynia.ochelper.var.SwitchLocal;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -16,7 +14,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID;
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
@@ -32,8 +29,7 @@ public class Preloader implements ApplicationRunner {
 
     private final PathAccessor pa;
     private final DatabaseUpdater dbu;
-    private final SwitchFluidAccessor sf;
-    private final SwitchItemAccessor si;
+    private final SwitchLocalAccessor sl;
     private final LuaScriptFactory lp;
 
     @Override
@@ -66,12 +62,12 @@ public class Preloader implements ApplicationRunner {
 
         // JSON Loader
         try {
-            List<SwitchFluid> sf_List = sf.getSFList();
-            for (SwitchFluid sf : sf_List) {
+            var sf_List = sl.getSFList();
+            for (SwitchLocal sf : sf_List) {
                 NAME_MAP_FLUID_SWITCH.put(sf.getPre(), sf.getAlt());
             }
-            List<SwitchItem> si_list = si.getSIList();
-            for (SwitchItem si : si_list) {
+            var si_list = sl.getSIList();
+            for (SwitchLocal si : si_list) {
                 UNI_NAME_MAP_ITEM_SWITCH.put(si.getPre(), si.getAlt());
             }
         } catch (Exception e) {
