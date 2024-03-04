@@ -62,4 +62,20 @@ public class SQLFactory {
         return s;
     }
 
+    public String generateEnergyDataCheck() {
+        return "CREATE TABLE IF NOT EXISTS energy$wireless (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
+    }
+
+    public String generateEnergyDataClean(int keepSize) {
+        return "DELETE FROM energy$wireless WHERE id NOT IN (SELECT id FROM energy$wireless ORDER BY id DESC LIMIT " + keepSize + ");";
+    }
+
+    public String generateEnergyDataInsert(String size) {
+        return "INSERT INTO energy$wireless (id, size) VALUES ('" +
+                sid.nextIdStr() + "', '" +
+                size +
+                "'); ";
+    }
+
+
 }

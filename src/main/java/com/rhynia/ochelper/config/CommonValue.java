@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "c-value")
 public class CommonValue {
-    private int keepSize;
+    private int aeDataKeepSize;
+    private int energyDataKeepSize;
     private int cleanSchedule;
     private int insightSize;
+    private String energyStationAddressForRecord;
 }

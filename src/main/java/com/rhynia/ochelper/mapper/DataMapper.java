@@ -2,6 +2,8 @@ package com.rhynia.ochelper.mapper;
 
 import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEItemData;
+import com.rhynia.ochelper.var.EnergyData;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -29,5 +31,11 @@ public interface DataMapper {
 
     @Select("SELECT * FROM ${un} ORDER BY id DESC LIMIT ${n}")
     List<AEFluidData> getAEFluidDataLateN(@Param("un") String un, @Param("n") int n);
+
+    @Select("SELECT * FROM energy$wireless ORDER BY id DESC LIMIT ${n}")
+    List<EnergyData> getEnergyInfoLateN(@Param("n") int n);
+
+    @Insert("INSERT INTO energy$wireless (id, size) VALUES (${id}, ${size})")
+    void updateEnergyInfo(@Param("id") long id, @Param("size") String size);
 
 }

@@ -2,6 +2,7 @@ package com.rhynia.ochelper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhynia.ochelper.accessor.PathAccessor;
+import com.rhynia.ochelper.config.CommonValue;
 import com.rhynia.ochelper.var.CommandPack;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,13 @@ import java.util.stream.Stream;
 public class LuaScriptFactory {
 
     private final PathAccessor pa;
+    private final CommonValue cv;
+
     @Getter
     private final List<CommandPack> commonPackNormal = List.of(
             CommandPackEnum.AE_GET_ITEM.getPack(),
-            CommandPackEnum.AE_GET_FLUID.getPack());
+            CommandPackEnum.AE_GET_FLUID.getPack()
+    );
     @Setter
     private boolean preloadCompleted = false;
     private String luaScriptsBase = "";

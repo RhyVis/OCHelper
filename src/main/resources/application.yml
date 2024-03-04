@@ -28,11 +28,13 @@ path:
 scheduled:
   init: 20000
   rate: 30000
-#Clean
+#More settings
 c-value:
   keep-size: 500
   clean-schedule: 1000
   insight-size: 240
+  energy-station-address-for-record: 44a2cc68-baff-4045-92a0-ce0a0fa09b61
+  energy-data-keep-size: 3000
 ##Database
 mybatis:
   configuration:

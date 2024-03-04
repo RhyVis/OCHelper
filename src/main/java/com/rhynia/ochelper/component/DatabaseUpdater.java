@@ -1,5 +1,6 @@
 package com.rhynia.ochelper.component;
 
+import cn.hutool.core.lang.Snowflake;
 import com.rhynia.ochelper.config.CommonValue;
 import com.rhynia.ochelper.mapper.DataMapper;
 import com.rhynia.ochelper.util.SQLFactory;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,8 @@ public class DatabaseUpdater {
     private final DataMapper mp;
     private final SQLFactory sf;
 
+    private final Snowflake sid = new Snowflake(1);
+
     private void configDatabase() {
         jt.execute("""
                 PRAGMA journal_mode = WAL;
@@ -35,14 +39,16 @@ public class DatabaseUpdater {
 
     private void initCreateDatabase() {
         List<String> init_l = mp.getAllNamesInDataBase();
+        jt.update(sf.generateEnergyDataCheck());
+        jt.update(sf.generateEnergyDataClean(cv.getEnergyDataKeepSize()));
         jt.batchUpdate(sf.generateBatchCheck(init_l));
-        jt.batchUpdate(sf.generateCleanup(init_l, cv.getKeepSize()));
+        jt.batchUpdate(sf.generateCleanup(init_l, cv.getAeDataKeepSize()));
         freeDataSize();
     }
 
     @SuppressWarnings("unchecked")
     private void createIfNotExist(List<?> list) {
-        var k = list.get(0);
+        var k = list.getFirst();
         List<String> unl = new ArrayList<>();
         if (k instanceof AEItem) {
             for (AEItem item : (List<AEItem>) list) {
@@ -61,7 +67,7 @@ public class DatabaseUpdater {
 
     @SuppressWarnings("unchecked")
     public void cleanupDatabase(List<?> list) {
-        var k = list.get(0);
+        var k = list.getFirst();
         List<String> unl = new ArrayList<>();
         if (k instanceof AEItem) {
             for (AEItem item : (List<AEItem>) list) {
@@ -75,12 +81,12 @@ public class DatabaseUpdater {
             log.error("Wrong list of " + k.toString());
             return;
         }
-        jt.batchUpdate(sf.generateCleanup(unl, cv.getKeepSize()));
+        jt.batchUpdate(sf.generateCleanup(unl, cv.getAeDataKeepSize()));
     }
 
     public void cleanupAllDataBase() {
         List<String> un_l = mp.getAllNamesInDataBase();
-        jt.batchUpdate(sf.generateCleanup(un_l, cv.getKeepSize()));
+        jt.batchUpdate(sf.generateCleanup(un_l, cv.getAeDataKeepSize()));
     }
 
     public void updateItemDatabase(List<AEItem> itemList) {
@@ -93,6 +99,10 @@ public class DatabaseUpdater {
         if (fluidList == null || fluidList.isEmpty()) return;
         createIfNotExist(fluidList);
         jt.batchUpdate(sf.generateFluidBatchInsert(fluidList));
+    }
+
+    public void updateEnergyDatabase(BigDecimal val) {
+        mp.updateEnergyInfo(sid.nextId(), val.toPlainString());
     }
 
     public void initDatabase() {

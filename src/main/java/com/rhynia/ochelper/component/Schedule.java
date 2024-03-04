@@ -1,6 +1,7 @@
 package com.rhynia.ochelper.component;
 
 import com.rhynia.ochelper.config.CommonValue;
+import com.rhynia.ochelper.util.CommandPackEnum;
 import com.rhynia.ochelper.util.LuaScriptFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class Schedule {
             log.info("Committed a cleanup.");
         }
         ls.injectMission(ls.getCommonPackNormal());
+        ls.injectMission(CommandPackEnum.GT_GET_ENERGY_WIRELESS.ofCommand("return c.proxy(\"" + cv.getEnergyStationAddressForRecord() + "\").getSensorInformation()"));
         log.info("Normal command pack set.");
     }
 }

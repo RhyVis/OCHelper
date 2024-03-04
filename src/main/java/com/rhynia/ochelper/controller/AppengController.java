@@ -130,7 +130,7 @@ public class AppengController {
 
         int insight_size = cv.getInsightSize();
         var list = da.getFluidDataLateN(it_un, insight_size);
-        long sync = current - df.parse(list.get(0).getTime()).getTime();
+        long sync = current - df.parse(list.getFirst().getTime()).getTime();
         String nameLocal, nameLocalSwitch;
         nameLocal = UNI_NAME_MAP_FLUID.get(it_un);
         nameLocalSwitch = NAME_MAP_FLUID_SWITCH.getOrDefault(nameLocal, nameLocal);

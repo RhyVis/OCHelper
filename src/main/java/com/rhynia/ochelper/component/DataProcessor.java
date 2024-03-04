@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -40,6 +42,7 @@ public class DataProcessor {
     private final List<OCComponentMethod> componentMethods = new ArrayList<>();
     private final List<OCComponentDoc> componentDocs = new ArrayList<>();
     private final List<MsSet> msSets = new ArrayList<>();
+    private final List<String> sensorInfo = new ArrayList<>();
     private final Lock lock = new ReentrantLock();
     private final Condition cCpuFetch = lock.newCondition();
     private final Condition cCpuDetailFetch = lock.newCondition();
@@ -56,7 +59,6 @@ public class DataProcessor {
     private String customReturn = "";
     private boolean duringDocFetch = false, duringCpuDetailFetch = false;
     private int docIndex = 0, cpuDetailIndex = 0;
-    private String test = "";
 
     private void updateAEItemData(List<AEItem> list) {
         long begin = System.currentTimeMillis();
@@ -205,9 +207,6 @@ public class DataProcessor {
     public Pair<List<AEItem>[], AEItem> requestAeCpuDetail(int cpuid) {
 
         log.info("Requesting CPU detail.");
-        cpuDetailList[0] = List.of(dummy);
-        cpuDetailList[1] = List.of(dummy);
-        cpuDetailList[2] = List.of(dummy);
         cpuDetailFinal = dummy;
         cpuDetailIndex = 0;
         var cpl = List.of(
@@ -232,11 +231,11 @@ public class DataProcessor {
         return Pair.of(cpuDetailList, cpuDetailFinal);
     }
 
-    public String requestGtMachineSensor(String proxyAddress) {
+    public List<String> requestGtMachineSensor(String proxyAddress) {
 
         log.info("Requesting GT Sensor of " + proxyAddress);
         boolean timeout = false;
-        var cc = CommandPackEnum.GT_GET_SENSOR.ofCommand("return c.proxy(\"" + proxyAddress + "\".getSensorInformation()");
+        var cc = CommandPackEnum.GT_GET_SENSOR.ofCommand("return c.proxy(\"" + proxyAddress + "\").getSensorInformation()");
         lock.lock();
         try {
             ls.injectMission(cc);
@@ -249,7 +248,7 @@ public class DataProcessor {
                 log.error("Timeout in requesting.");
             }
         }
-        return test;
+        return sensorInfo;
     }
 
     public List<MsSet> requestTPSReport() {
@@ -293,7 +292,8 @@ public class DataProcessor {
     public void processResult(Map<String, String> map) {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         map.forEach((k, v) -> {
-            if (Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"")) {
+            boolean error = Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"");
+            if (error) {
                 log.error("Received ERROR report in action " + k);
             }
             if (k.startsWith("OC_GET_COMPONENT_DOC_")) {
@@ -337,7 +337,8 @@ public class DataProcessor {
                     }
                     case "AE_GET_CPU_DETAIL_ACTIVE" -> {
                         if (Objects.equals(v, "[]")) {
-                            cpuDetailList[0] = List.of(dummy);
+                            cpuDetailList[0] = new ArrayList<>();
+                            cpuDetailList[0].add(dummy);
                         } else {
                             try {
                                 List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
@@ -351,7 +352,8 @@ public class DataProcessor {
                     }
                     case "AE_GET_CPU_DETAIL_STORE" -> {
                         if (Objects.equals(v, "[]")) {
-                            cpuDetailList[0] = List.of(dummy);
+                            cpuDetailList[1] = new ArrayList<>();
+                            cpuDetailList[1].add(dummy);
                         } else {
                             try {
                                 List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
@@ -365,7 +367,8 @@ public class DataProcessor {
                     }
                     case "AE_GET_CPU_DETAIL_PENDING" -> {
                         if (Objects.equals(v, "[]")) {
-                            cpuDetailList[0] = List.of(dummy);
+                            cpuDetailList[2] = new ArrayList<>();
+                            cpuDetailList[2].add(dummy);
                         } else {
                             try {
                                 List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
@@ -390,7 +393,6 @@ public class DataProcessor {
                         }
                         cpuDetailIndex++;
                     }
-
                     case "OC_GET_COMPONENT" -> {
                         try {
                             var temp = mapper.readValue(v, Map.class);
@@ -429,13 +431,40 @@ public class DataProcessor {
                         }
                     }
                     case "GT_GET_SENSOR" -> {
-                        log.info(v);
-                        test = v;
-                        lock.lock();
+                        log.info("Fetched sensor information of " + v);
                         try {
-                            cGtSensorFetch.signal();
-                        } finally {
-                            lock.unlock();
+                            sensorInfo.clear();
+                            List<String> tmp = mapper.readValue(v, new TypeReference<>() {
+                            });
+                            sensorInfo.addAll(tmp);
+                            lock.lock();
+                            try {
+                                cGtSensorFetch.signal();
+                            } finally {
+                                lock.unlock();
+                            }
+                        } catch (Exception e) {
+                            log.error("Map fail in " + k + ":", e);
+                        }
+                    }
+                    case "GT_GET_ENERGY_WIRELESS" -> {
+                        log.info("Fetched sensor information of " + v + ", trying to covert to wireless energy info.");
+                        if (!error) {
+                            try {
+                                List<String> tmp = mapper.readValue(v, new TypeReference<>() {
+                                });
+                                var tmp1 = tmp.stream()
+                                        .filter(s -> s.startsWith("Total wireless EU"))
+                                        .map(s -> s.substring(21))
+                                        .toList().getFirst();
+                                log.info("Fetched energy information of " + tmp1);
+                                var tmp2 = new BigDecimal(tmp1);
+                                du.updateEnergyDatabase(tmp2);
+                            } catch (Exception e) {
+                                log.error("Map fail in " + k + ":", e);
+                            }
+                        } else {
+                            log.error("Caught error in GT_GET_ENERGY_WIRELESS, energy station connection may not set properly.");
                         }
                     }
                     case "TPS_ALL_TICK_TIMES" -> {

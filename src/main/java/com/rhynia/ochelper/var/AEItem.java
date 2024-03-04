@@ -8,6 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
 @Data
 public class AEItem {
@@ -44,12 +45,14 @@ public class AEItem {
 
     public AEItemDisplay getDisplay() {
         if (!this.getUn().endsWith("drop$0")) {
-            return new AEItemDisplay(this.un, this.label, this.sizeString);
+            // Try to translate label
+            String tmp1 = UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(this.un, this.label);
+            return new AEItemDisplay(this.un, tmp1, this.sizeString);
         } else {
             // For drop to cell processing
-            String tmp = this.label.substring(8);
-            String mapLocal = NAME_MAP_FLUID_SWITCH.getOrDefault(tmp, tmp);
-            return new AEItemDisplay(this.un, mapLocal, this.sizeString);
+            String tmp1 = this.label.substring(8);
+            String tmp2 = NAME_MAP_FLUID_SWITCH.getOrDefault(tmp1, tmp1);
+            return new AEItemDisplay(this.un, tmp2 + "单元", this.sizeString);
         }
     }
 

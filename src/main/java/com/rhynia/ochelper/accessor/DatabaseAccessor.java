@@ -5,6 +5,7 @@ import com.rhynia.ochelper.var.AEFluidData;
 import com.rhynia.ochelper.var.AEFluidDisplay;
 import com.rhynia.ochelper.var.AEItemData;
 import com.rhynia.ochelper.var.AEItemDisplay;
+import com.rhynia.ochelper.var.EnergyData;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
@@ -55,5 +56,9 @@ public class DatabaseAccessor {
 
     public List<AEFluidData> getFluidDataLateN(String un, int size) {
         return mp.getAEFluidDataLateN(un, size);
+    }
+
+    public List<EnergyData> getEnergyDataLateN(int size) {
+        return mp.getEnergyInfoLateN(size);
     }
 }

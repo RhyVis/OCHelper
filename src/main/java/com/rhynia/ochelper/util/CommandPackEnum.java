@@ -16,6 +16,7 @@ public enum CommandPackEnum {
     OC_GET_COMPONENT_METHOD(),
     OC_GET_COMPONENT_DOC(),
     GT_GET_SENSOR("return c.proxy('val').getSensorInformation()"),
+    GT_GET_ENERGY_WIRELESS("return c.proxy('val').getSensorInformation()"),
     TPS_ALL_TICK_TIMES("return tpsAll()"),
     ;
 
