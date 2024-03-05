@@ -1,8 +1,8 @@
 package com.rhynia.ochelper.controller;
 
-import com.rhynia.ochelper.accessor.DatabaseAccessor;
 import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.config.CommonValue;
+import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Format;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -37,19 +37,19 @@ public class GtController {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DecimalFormat nf = new DecimalFormat("0.000%");
         int insight_size = 200;
-        var list = da.getEnergyDataLateN(insight_size);
+        var list = da.getEnergyWirelessDataN(insight_size);
 
         ArrayList<BigDecimal[]> bdl = new ArrayList<>();
 
         for (var data : list) {
             BigDecimal[] tmp = new BigDecimal[2];
             tmp[0] = BigDecimal.valueOf(df.parse(data.getTime()).getTime());
-            tmp[1] = new BigDecimal(data.getSize());
+            tmp[1] = data.getSize();
             bdl.add(tmp);
         }
 
-        BigDecimal older = new BigDecimal(list.getLast().getSize());
-        BigDecimal newer = new BigDecimal(list.getFirst().getSize());
+        BigDecimal older = list.getLast().getSize();
+        BigDecimal newer = list.getFirst().getSize();
         BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
         String rate = nf.format(rate_raw);
         boolean increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;

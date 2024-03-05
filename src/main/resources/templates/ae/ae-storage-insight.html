@@ -103,14 +103,14 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr th:each="obj:${list}">
+                                <tr th:each="data:${processed}">
                                     <td><img alt="IMG" class="rounded-circle img-size-32 me-2"
-                                             th:src="${imgLink}">
-                                        <th:block th:text="${obj.getSize()}"></th:block>
+                                             th:src="${data.getImgPath()}">
+                                        <th:block th:text="${data.getSize().toPlainString()}"></th:block>
                                     </td>
                                     <td>
                                         <small class="text-success me-1">
-                                            <th:block th:text="${obj.getTime()}"></th:block>
+                                            <th:block th:text="${data.getTime()}"></th:block>
                                         </small>
                                     </td>
                                     <td>

@@ -1,6 +1,7 @@
 package com.rhynia.ochelper.component;
 
 import com.rhynia.ochelper.config.CommonValue;
+import com.rhynia.ochelper.database.DatabaseUpdater;
 import com.rhynia.ochelper.util.CommandPackEnum;
 import com.rhynia.ochelper.util.LuaScriptFactory;
 import lombok.RequiredArgsConstructor;

@@ -1,59 +1,54 @@
-package com.rhynia.ochelper.var;
+package com.rhynia.ochelper.var.element;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rhynia.ochelper.util.Format;
-import lombok.Data;
-
-import java.math.BigDecimal;
+import com.rhynia.ochelper.var.base.AbstractAeData;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
-@Data
-public class AEItem {
-
-    private final String name;
-    private final String un;
-    private final String label;
-    private final String sizeRaw;
-    private final String sizeString;
-    private final BigDecimal size;
-    private final int meta;
-    private final boolean hasTag;
-    private final boolean isCraftable;
+@Getter
+@ToString
+@EqualsAndHashCode
+public class AeReportItemObj extends AbstractAeData {
+    protected final String name;
+    protected final String label;
+    protected final String local;
+    protected final int meta;
+    protected final boolean hasTag;
+    protected final boolean isCraftable;
 
     @JsonCreator
-    public AEItem(
+    public AeReportItemObj(
             @JsonProperty("label") String label,
             @JsonProperty("name") String name,
             @JsonProperty("damage") int damage,
             @JsonProperty("hasTag") boolean hasTag,
             @JsonProperty("isCraftable") boolean isCraftable,
             @JsonProperty("size") String size) {
-        BigDecimal tmpSize = new BigDecimal(size);
+        super(Format.assembleItemUN(name, damage), size);
         this.name = name;
-        this.un = Format.assembleItemUN(name, damage);
         this.label = label;
+        this.local = UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, UNI_NAME_MAP_ITEM.getOrDefault(un, label));
         this.meta = damage;
-        this.sizeRaw = size;
-        this.size = tmpSize;
-        this.sizeString = tmpSize.toPlainString();
         this.hasTag = hasTag;
         this.isCraftable = isCraftable;
     }
 
-    public AEItemDisplay getDisplay() {
+    public AeDisplayItemObj getDisplay() {
         if (!this.getUn().endsWith("drop$0")) {
             // Try to translate label
-            String tmp1 = UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(this.un, this.label);
-            return new AEItemDisplay(this.un, tmp1, this.sizeString);
+            return new AeDisplayItemObj(this.un, this.local, 0, "2024-01-01 00:00:00");
         } else {
             // For drop to cell processing
             String tmp1 = this.label.substring(8);
             String tmp2 = NAME_MAP_FLUID_SWITCH.getOrDefault(tmp1, tmp1);
-            return new AEItemDisplay(this.un, tmp2 + "单元", this.sizeString);
+            return new AeDisplayItemObj(this.un, tmp2 + "单元", 0, "2024-01-01 00:00:00");
         }
     }
-
 }

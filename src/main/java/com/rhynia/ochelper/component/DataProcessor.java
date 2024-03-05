@@ -3,16 +3,17 @@ package com.rhynia.ochelper.component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rhynia.ochelper.database.DatabaseUpdater;
 import com.rhynia.ochelper.util.CommandPackEnum;
 import com.rhynia.ochelper.util.LuaScriptFactory;
 import com.rhynia.ochelper.var.AECPU;
-import com.rhynia.ochelper.var.AEFluid;
-import com.rhynia.ochelper.var.AEItem;
 import com.rhynia.ochelper.var.CommandPack;
 import com.rhynia.ochelper.var.MsSet;
 import com.rhynia.ochelper.var.OCComponent;
 import com.rhynia.ochelper.var.OCComponentDoc;
 import com.rhynia.ochelper.var.OCComponentMethod;
+import com.rhynia.ochelper.var.element.AeReportFluidObj;
+import com.rhynia.ochelper.var.element.AeReportItemObj;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -52,22 +52,22 @@ public class DataProcessor {
     private final Condition cTPSFetch = lock.newCondition();
     private final Condition cGtSensorFetch = lock.newCondition();
     private final Condition cCustomFetch = lock.newCondition();
-    private final AEItem dummy = new AEItem("无", "NULL", 0, false, false, "0");
+    private final AeReportItemObj dummy = new AeReportItemObj("无", "NULL", 0, false, false, "0");
     @SuppressWarnings("unchecked")
-    private final List<AEItem>[] cpuDetailList = new ArrayList[3];
-    private AEItem cpuDetailFinal = dummy;
+    private final List<AeReportItemObj>[] cpuDetailList = new ArrayList[3];
+    private AeReportItemObj cpuDetailFinal = dummy;
     private String customReturn = "";
     private boolean duringDocFetch = false, duringCpuDetailFetch = false;
     private int docIndex = 0, cpuDetailIndex = 0;
 
-    private void updateAEItemData(List<AEItem> list) {
+    private void updateAEItemData(List<AeReportItemObj> list) {
         long begin = System.currentTimeMillis();
         du.updateItemDatabase(list);
         long end = System.currentTimeMillis();
         log.info("Received item report form OC, size: " + list.size() + ", using " + (end - begin) + " ms.");
     }
 
-    private void updateAEFluidData(List<AEFluid> list) {
+    private void updateAEFluidData(List<AeReportFluidObj> list) {
         long begin = System.currentTimeMillis();
         du.updateFluidDatabase(list);
         long end = System.currentTimeMillis();
@@ -204,7 +204,7 @@ public class DataProcessor {
         }
     }
 
-    public Pair<List<AEItem>[], AEItem> requestAeCpuDetail(int cpuid) {
+    public Pair<List<AeReportItemObj>[], AeReportItemObj> requestAeCpuDetail(int cpuid) {
 
         log.info("Requesting CPU detail.");
         cpuDetailFinal = dummy;
@@ -303,7 +303,7 @@ public class DataProcessor {
                 switch (k) {
                     case "AE_GET_ITEM" -> {
                         try {
-                            List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                            List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
                             });
                             updateAEItemData(temp);
                         } catch (Exception e) {
@@ -312,7 +312,7 @@ public class DataProcessor {
                     }
                     case "AE_GET_FLUID" -> {
                         try {
-                            List<AEFluid> temp = mapper.readValue(v, new TypeReference<>() {
+                            List<AeReportFluidObj> temp = mapper.readValue(v, new TypeReference<>() {
                             });
                             updateAEFluidData(temp);
                         } catch (Exception e) {
@@ -341,7 +341,7 @@ public class DataProcessor {
                             cpuDetailList[0].add(dummy);
                         } else {
                             try {
-                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
                                 });
                                 cpuDetailList[0] = temp;
                             } catch (Exception e) {
@@ -356,7 +356,7 @@ public class DataProcessor {
                             cpuDetailList[1].add(dummy);
                         } else {
                             try {
-                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
                                 });
                                 cpuDetailList[1] = temp;
                             } catch (Exception e) {
@@ -371,7 +371,7 @@ public class DataProcessor {
                             cpuDetailList[2].add(dummy);
                         } else {
                             try {
-                                List<AEItem> temp = mapper.readValue(v, new TypeReference<>() {
+                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
                                 });
                                 cpuDetailList[2] = temp;
                             } catch (Exception e) {
@@ -397,7 +397,8 @@ public class DataProcessor {
                         try {
                             var temp = mapper.readValue(v, Map.class);
                             components.clear();
-                            temp.forEach((m, n) -> components.add(new OCComponent((String) m, (String) n)));
+                            temp.forEach((address, name) -> components.add(OCComponent.builder()
+                                    .address((String) address).name((String) name).build()));
                             lock.lock();
                             try {
                                 cComponentFetch.signal();
@@ -414,7 +415,8 @@ public class DataProcessor {
                             if (!Objects.equals(v, "[]")) {
                                 var temp = mapper.readValue(v, Map.class);
                                 componentMethods.clear();
-                                temp.forEach((m, n) -> componentMethods.add(new OCComponentMethod((String) m, (boolean) n)));
+                                temp.forEach((method, valid) -> componentMethods.add(OCComponentMethod.builder()
+                                        .method((String) method).valid((Boolean) valid).build()));
                                 log.info("Received method info: " + temp);
                             } else {
                                 log.info("Requested a component that has no methods.");
@@ -455,9 +457,9 @@ public class DataProcessor {
                                 var tmp1 = tmp.stream()
                                         .filter(s -> s.startsWith("Total wireless EU"))
                                         .map(s -> s.substring(21))
-                                        .toList().getFirst();
+                                        .findFirst().orElse("0");
                                 log.info("Fetched energy information of " + tmp1);
-                                var tmp2 = new BigDecimal(tmp1.replaceAll(",", ""));
+                                var tmp2 = new BigDecimal(tmp1.replaceAll(",", "")).stripTrailingZeros();
                                 du.updateEnergyDatabase(tmp2);
                             } catch (Exception e) {
                                 log.error("Map fail in " + k + ":", e);
@@ -470,7 +472,7 @@ public class DataProcessor {
                         try {
                             var temp = mapper.readValue(v, Map.class);
                             msSets.clear();
-                            temp.forEach((m, n) -> msSets.add(new MsSet(Integer.parseInt((String) m), (double) n)));
+                            temp.forEach((m, n) -> msSets.add(new MsSet((Integer) m, (Double) n)));
                             lock.lock();
                             try {
                                 log.info("Received TPS report.");
@@ -492,7 +494,7 @@ public class DataProcessor {
                             lock.unlock();
                         }
                     }
-                    case "NULL" -> log.info("Received request from OC.");
+                    case "NULL" -> log.debug("Received request from OC.");
                     case "ERROR" ->
                             log.error("Encountered ERROR key package, seems exception in lua scripts assembling.");
                     default -> {

@@ -1,14 +1,25 @@
 package com.rhynia.ochelper.var;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class EnergyData {
-    private Long id;
-    private String size;
-    private String time;
+    private final long id;
+    private final BigDecimal size;
+    private final String sizeRaw;
+    private final String sizeString;
+    private final String time;
+
+    @Builder
+    public EnergyData(long id, String sizeRaw, String time) {
+        BigDecimal temp = new BigDecimal(sizeRaw).stripTrailingZeros();
+        this.id = id;
+        this.sizeRaw = sizeRaw;
+        this.time = time;
+        this.size = temp;
+        this.sizeString = temp.toPlainString();
+    }
 }

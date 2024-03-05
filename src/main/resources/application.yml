@@ -3,10 +3,6 @@ server:
   port: 21314
 #Profile switch
 spring:
-  datasource:
-    url: jdbc:sqlite:D:/Workbench/Java_Project/OCHelper/database/DATA.db
-    driver-class-name: org.sqlite.JDBC
-    type: com.zaxxer.hikari.HikariDataSource
   thymeleaf:
     cache: true
     mode: HTML
@@ -24,6 +20,7 @@ path:
   csv-path: D:/Workbench/Java_Project/OCHelper/table/dumpCSV/
   json-path: D:/Workbench/Java_Project/OCHelper/table/
   lua-scripts-path: D:/Workbench/Java_Project/OCHelper/table/scripts/
+  database-path: D:/Workbench/Java_Project/OCHelper/database/
 #Scheduled scan time (in ms)
 scheduled:
   init: 20000
@@ -35,7 +32,3 @@ c-value:
   insight-size: 240
   energy-station-address-for-record: 44a2cc68-baff-4045-92a0-ce0a0fa09b61
   energy-data-keep-size: 3000
-##Database
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true

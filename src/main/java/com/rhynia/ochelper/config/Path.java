@@ -16,4 +16,5 @@ public class Path {
     private String jsonFluidName;
     private String iconPanelPath;
     private String luaScriptsPath;
+    private String databasePath;
 }
