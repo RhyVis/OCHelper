@@ -110,7 +110,7 @@
                                 <tbody>
                                 <tr th:each="obj:${list}">
                                     <td>
-                                        <th:block th:text="${obj.getSize()}"></th:block>
+                                        <th:block th:text="${obj.getSize().toPlainString()}"></th:block>
                                     </td>
                                     <td>
                                         <small class="text-success me-1">

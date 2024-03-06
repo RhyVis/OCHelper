@@ -5,6 +5,7 @@ import com.rhynia.ochelper.config.CommonValue;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Format;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class GtController {
@@ -38,26 +40,31 @@ public class GtController {
         DecimalFormat nf = new DecimalFormat("0.000%");
         int insight_size = 200;
         var list = da.getEnergyWirelessDataN(insight_size);
+        ArrayList<BigDecimal[]> tmpBdl = new ArrayList<>();
 
-        ArrayList<BigDecimal[]> bdl = new ArrayList<>();
+        var processed = list.stream()
+                .peek(data -> {
+                    BigDecimal[] tmpArray = new BigDecimal[2];
+                    try {
+                        tmpArray[0] = BigDecimal.valueOf(df.parse(data.getTime()).getTime());
+                    } catch (ParseException e) {
+                        log.error("Error caught in reading date: ", e);
+                        tmpArray[0] = BigDecimal.ONE;
+                    }
+                    tmpArray[1] = data.getSize();
+                    tmpBdl.add(tmpArray);
+                }).toList();
 
-        for (var data : list) {
-            BigDecimal[] tmp = new BigDecimal[2];
-            tmp[0] = BigDecimal.valueOf(df.parse(data.getTime()).getTime());
-            tmp[1] = data.getSize();
-            bdl.add(tmp);
-        }
-
-        BigDecimal older = list.getLast().getSize();
-        BigDecimal newer = list.getFirst().getSize();
-        BigDecimal rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
-        String rate = nf.format(rate_raw);
-        boolean increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
+        var older = processed.getLast().getSize();
+        var newer = processed.getFirst().getSize();
+        var rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
+        var rate_display = nf.format(rate_raw);
+        var increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
 
         String latest = Format.formatSizeDisplay(newer) + Format.formatSizeByteDisplay(newer);
 
-        model.addAttribute("bdl", bdl.toArray(new BigDecimal[0][0]));
-        model.addAttribute("rate", rate);
+        model.addAttribute("bdl", tmpBdl.toArray(new BigDecimal[0][0]));
+        model.addAttribute("rate", rate_display);
         model.addAttribute("latest", latest);
         model.addAttribute("increase", increase);
         model.addAttribute("insight_size", insight_size);

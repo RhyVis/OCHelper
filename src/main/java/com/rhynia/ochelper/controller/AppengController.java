@@ -91,6 +91,7 @@ public class AppengController {
                         tmpArray[0] = BigDecimal.valueOf(df.parse(obj.getTime()).getTime());
                     } catch (ParseException e) {
                         log.error("Error caught in reading date: ", e);
+                        tmpArray[0] = BigDecimal.ZERO;
                     }
                     tmpArray[1] = obj.getSize();
                     tmpBdl.add(tmpArray);
@@ -136,6 +137,7 @@ public class AppengController {
                         tmpArray[0] = BigDecimal.valueOf(df.parse(obj.getTime()).getTime());
                     } catch (ParseException e) {
                         log.error("Error caught in reading date: ", e);
+                        tmpArray[0] = BigDecimal.ZERO;
                     }
                     tmpArray[1] = obj.getSize();
                     tmpBdl.add(tmpArray);

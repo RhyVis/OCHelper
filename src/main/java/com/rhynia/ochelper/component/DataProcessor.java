@@ -472,7 +472,8 @@ public class DataProcessor {
                         try {
                             var temp = mapper.readValue(v, Map.class);
                             msSets.clear();
-                            temp.forEach((m, n) -> msSets.add(new MsSet((Integer) m, (Double) n)));
+                            temp.forEach((dim, mspt) -> MsSet.builder()
+                                    .dim((Integer) dim).mspt((Double) mspt).build());
                             lock.lock();
                             try {
                                 log.info("Received TPS report.");

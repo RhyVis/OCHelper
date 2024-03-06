@@ -40,6 +40,7 @@ public class AeReportItemObj extends AbstractAeData {
         this.isCraftable = isCraftable;
     }
 
+    // Used in CPU detail fetching
     public AeDisplayItemObj getDisplay() {
         if (!this.getUn().endsWith("drop$0")) {
             // Try to translate label

@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class UtilController {
         var list = dp.requestTPSReport();
         list = list.stream()
                 .sorted(Comparator.comparingDouble(MsSet::getMspt).reversed())
-                .collect(Collectors.toList());
+                .toList();
         model.addAttribute("m_list", list);
         return "util/tps-report";
     }

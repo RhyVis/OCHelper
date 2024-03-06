@@ -1,5 +1,6 @@
 package com.rhynia.ochelper.var;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.text.DecimalFormat;
@@ -12,6 +13,7 @@ public class MsSet {
     private final double tps;
     private final boolean healthy;
 
+    @Builder
     public MsSet(int dim, double mspt) {
         DecimalFormat df = new DecimalFormat("0.000000");
         this.dim = dim;

@@ -9,7 +9,8 @@ import java.util.regex.Pattern;
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
 
 public class Format {
-    private static final String[] byteList = {"", "K", "M", "G", "T", "P", "E", "Z", "Y", "KZ", "MZ", "GZ", "TZ", "PZ", "EZ"};
+    private static final String[] byteList = {"", "K", "M", "G", "T", "P", "E", "Z", "Y",
+            "KY", "MY", "GY", "TY", "PY", "EY", "ZY", "YY"};
 
     public static String formatStringByte(String val) {
         if (val == null)

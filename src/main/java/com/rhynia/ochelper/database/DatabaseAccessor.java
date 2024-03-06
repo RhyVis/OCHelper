@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -66,14 +67,15 @@ public class DatabaseAccessor {
     }
 
     public Pair<List<AeDisplayItemObj>, List<AeDisplayFluidObj>> getLatestData() {
-        var tmp1 = getAeItemDataObjLatestList();
-        var tmp2 = getAeFluidDataObjLatestList();
-        if (!tmp1.isEmpty() && !tmp2.isEmpty()) {
-            return Pair.of(tmp1, tmp2);
-        } else {
-            log.error("At least one of the fetched list is empty, the lists are " + tmp1 + ", " + tmp2);
-            return Pair.of(List.of(AeDisplayItemObj.getDummy()), List.of(AeDisplayFluidObj.getDummy()));
-        }
+        var tmp1 = Optional.ofNullable(getAeItemDataObjLatestList());
+        var tmp2 = Optional.ofNullable(getAeFluidDataObjLatestList());
+        return Pair.of(tmp1.orElseGet(() -> {
+            log.error("Null list of ItemData caught.");
+            return List.of(AeDisplayItemObj.getDummy());
+        }), tmp2.orElseGet(() -> {
+            log.error("Null list of FluidData caught.");
+            return List.of(AeDisplayFluidObj.getDummy());
+        }));
     }
 
     public Stream<AeDataSetObj> getAeItemDataObjN(String un, int size) {
