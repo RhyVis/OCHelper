@@ -3,7 +3,6 @@ package com.rhynia.ochelper.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhynia.ochelper.accessor.PathAccessor;
 import com.rhynia.ochelper.var.CommandPack;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +12,13 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.Queue;
 
 @Slf4j
 @Component
@@ -27,19 +27,16 @@ public class LuaScriptFactory {
 
     private final PathAccessor pa;
 
-    @Getter
-    private final List<CommandPack> commonPackNormal = List.of(
-            CommandPackEnum.AE_GET_ITEM.getPack(),
-            CommandPackEnum.AE_GET_FLUID.getPack()
-    );
     private final String div = "\n";
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final Queue<CommandPack> queue = new LinkedList<>();
     @Setter
     private boolean preloadCompleted = false;
     private String luaScriptsBase = "";
-    private List<CommandPack> commandPacks = Stream.of(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack()).toList();
 
     public void initLuaScript() {
-        commandPacks = Stream.of(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack()).collect(Collectors.toList());
+        queue.offer(CommandPackEnum.AE_GET_ITEM.getPack());
+        queue.offer(CommandPackEnum.AE_GET_FLUID.getPack());
         File filePath = new File(pa.getPath().getLuaScriptsPath());
         File[] fileList = filePath.listFiles();
         if (fileList != null) {
@@ -58,43 +55,40 @@ public class LuaScriptFactory {
     }
 
     public void injectMission(CommandPack pack) {
-        commandPacks.add(pack);
+        queue.offer(pack);
     }
 
     public void injectMission(List<CommandPack> packs) {
-        commandPacks.addAll(packs);
+        var opt = Optional.ofNullable(packs);
+        opt.ifPresent(cps -> cps.forEach(queue::offer));
     }
 
-    public void resetCommandPacks() {
-        commandPacks = new ArrayList<>();
-        commandPacks.add(CommandPackEnum.NULL.getPack());
+    public void injectMission(CommandPack... packs) {
+        var opt = Optional.ofNullable(packs);
+        opt.ifPresent(cps -> Arrays.stream(cps).map(queue::offer).close());
     }
 
-    public String assembleLuaScript(List<CommandPack> packs) {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> map = new HashMap<>();
-        if (!luaScriptsBase.isEmpty()) {
-            String codeBase = luaScriptsBase;
-            for (CommandPack cp : packs) {
-                String codeChunk = codeBase + div + cp.getCommand();
-                map.put(cp.getType(), codeChunk);
-            }
-        } else if (!preloadCompleted) {
-            map.put(CommandPackEnum.NULL.getKey(), CommandPackEnum.NULL.getCommand());
-        } else {
-            map.put(CommandPackEnum.ERROR.getKey(), CommandPackEnum.ERROR.getCommand());
-        }
-        String jsonMappedScript = "";
+    private String assembleLuaScript(Map<String, String> map) {
+        var tmp = "";
         try {
-            jsonMappedScript = mapper.writeValueAsString(map);
+            tmp = mapper.writeValueAsString(map);
         } catch (Exception e) {
             log.error("Exception in assembling scripts:", e);
         }
-        return jsonMappedScript;
+        return tmp;
     }
 
-    public String assembleLuaScript() {
-        return assembleLuaScript(commandPacks);
+    public String pullAllQuests() {
+        var tmpMap = new HashMap<String, String>();
+        if (!queue.isEmpty()) {
+            while (!queue.isEmpty()) {
+                var tmp = queue.poll();
+                if (!preloadCompleted) tmp = CommandPackEnum.NULL.getPack();
+                tmpMap.put(tmp.getType(), luaScriptsBase + div + tmp.getCommand());
+            }
+        } else {
+            tmpMap.put(CommandPackEnum.NULL.getKey(), CommandPackEnum.NULL.getCommand());
+        }
+        return assembleLuaScript(tmpMap);
     }
-
 }

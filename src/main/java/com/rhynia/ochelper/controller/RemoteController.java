@@ -21,8 +21,7 @@ public class RemoteController {
 
     @RequestMapping(value = "/api/oc", method = RequestMethod.GET)
     public ResponseEntity<String> commandSender() {
-        String jsonPackedScript = ls.assembleLuaScript();
-        ls.resetCommandPacks();
+        var jsonPackedScript = ls.pullAllQuests();
         return new ResponseEntity<>(jsonPackedScript, HttpStatus.OK);
     }
 

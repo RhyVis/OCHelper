@@ -31,7 +31,7 @@ public class Schedule {
             du.cleanupAllDataBase();
             log.info("Committed a cleanup.");
         }
-        ls.injectMission(ls.getCommonPackNormal());
+        ls.injectMission(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack());
         ls.injectMission(CommandPackEnum.GT_GET_ENERGY_WIRELESS.ofCommand("return c.proxy(\"" + cv.getEnergyStationAddressForRecord() + "\").getSensorInformation()"));
         log.info("Normal command pack set.");
     }

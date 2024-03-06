@@ -6,6 +6,7 @@ import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.var.base.AbstractAeData;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
@@ -18,10 +19,11 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 public class AeReportItemObj extends AbstractAeData {
     protected final String name;
     protected final String label;
-    protected final String local;
     protected final int meta;
     protected final boolean hasTag;
     protected final boolean isCraftable;
+    @Setter
+    protected String local;
 
     @JsonCreator
     public AeReportItemObj(

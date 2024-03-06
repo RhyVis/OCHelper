@@ -6,7 +6,6 @@ import com.rhynia.ochelper.config.CommonValue;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.var.AECPU;
 import com.rhynia.ochelper.var.element.AeDataSetObj;
-import com.rhynia.ochelper.var.element.AeDisplayItemObj;
 import com.rhynia.ochelper.var.element.AeReportItemObj;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
@@ -70,8 +68,8 @@ public class AppengController {
         return "ae/ae-storage-info";
     }
 
-    @GetMapping("insight-item")
-    public String transportItemData(String it_un, String latest, Model model) throws ParseException {
+    @GetMapping("ae-insight-item")
+    public String transportItemData(String it_un, String latest, Model model) {
 
         if (it_un == null) return getInfoPageIndex(model);
 
@@ -90,7 +88,7 @@ public class AppengController {
                     try {
                         tmpArray[0] = BigDecimal.valueOf(df.parse(obj.getTime()).getTime());
                     } catch (ParseException e) {
-                        log.error("Error caught in reading date: ", e);
+                        log.error("Error caught in reading data: ", e);
                         tmpArray[0] = BigDecimal.ZERO;
                     }
                     tmpArray[1] = obj.getSize();
@@ -114,7 +112,7 @@ public class AppengController {
         return "ae/ae-storage-insight";
     }
 
-    @GetMapping("insight-fluid")
+    @GetMapping("ae-insight-fluid")
     public String transportFluidData(String it_un, String latest, Model model) {
 
         if (it_un == null) return getInfoPageIndex(model);
@@ -176,15 +174,15 @@ public class AppengController {
         var listP = pair.getLeft();
         var finalOutput = pair.getRight().getDisplay();
 
-        List<AeDisplayItemObj> active = listP[0].stream()
+        var active = listP[0].stream()
                 .map(AeReportItemObj::getDisplay)
                 .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
                 .toList();
-        List<AeDisplayItemObj> store = listP[1].stream()
+        var store = listP[1].stream()
                 .map(AeReportItemObj::getDisplay)
                 .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
                 .toList();
-        List<AeDisplayItemObj> pending = listP[2].stream()
+        var pending = listP[2].stream()
                 .map(AeReportItemObj::getDisplay)
                 .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
                 .toList();

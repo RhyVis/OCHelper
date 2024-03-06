@@ -21,14 +21,16 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 
 @Slf4j
 @Component
@@ -61,17 +63,30 @@ public class DataProcessor {
     private int docIndex = 0, cpuDetailIndex = 0;
 
     private void updateAEItemData(List<AeReportItemObj> list) {
-        long begin = System.currentTimeMillis();
-        du.updateItemDatabase(list);
-        long end = System.currentTimeMillis();
-        log.info("Received item report form OC, size: " + list.size() + ", using " + (end - begin) + " ms.");
+        var opt = Optional.ofNullable(list);
+        opt.ifPresent(l -> {
+            var d = l.stream()
+                    .peek(obj -> {
+                        if (UNI_NAME_MAP_ITEM.containsKey(obj.getUn())) {
+                            UNI_NAME_MAP_ITEM.put(obj.getUn(), obj.getLabel());
+                            obj.setLocal(obj.getLabel());
+                        }
+                    }).toList();
+            long begin = System.currentTimeMillis();
+            du.updateItemDatabase(d);
+            long end = System.currentTimeMillis();
+            log.info("Received item report form OC, size: {}, using {} ms.", l.size(), end - begin);
+        });
     }
 
     private void updateAEFluidData(List<AeReportFluidObj> list) {
-        long begin = System.currentTimeMillis();
-        du.updateFluidDatabase(list);
-        long end = System.currentTimeMillis();
-        log.info("Received fluid report form OC, size: " + list.size() + ", using " + (end - begin) + " ms.");
+        var opt = Optional.ofNullable(list);
+        opt.ifPresent(l -> {
+            long begin = System.currentTimeMillis();
+            du.updateFluidDatabase(l);
+            long end = System.currentTimeMillis();
+            log.info("Received fluid report form OC, size: {}, using {} ms.", l.size(), end - begin);
+        });
     }
 
     public List<OCComponent> requestComponentList() {
@@ -210,10 +225,10 @@ public class DataProcessor {
         cpuDetailFinal = dummy;
         cpuDetailIndex = 0;
         var cpl = List.of(
-                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_ACTIVE", "return aeCpuDetail1(" + cpuid + ")"),
-                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_STORE", "return aeCpuDetail2(" + cpuid + ")"),
-                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_PENDING", "return aeCpuDetail3(" + cpuid + ")"),
-                new CommandPack(CommandPackEnum.AE_GET_CPU_DETAIL.getKey() + "_FINAL", "return aeCpuDetail4(" + cpuid + ")"));
+                CommandPackEnum.AE_GET_CPU_DETAIL_ACTIVE.ofCommand("return aeCpuDetail1(" + cpuid + ")"),
+                CommandPackEnum.AE_GET_CPU_DETAIL_STORE.ofCommand("return aeCpuDetail2(" + cpuid + ")"),
+                CommandPackEnum.AE_GET_CPU_DETAIL_PENDING.ofCommand("return aeCpuDetail3(" + cpuid + ")"),
+                CommandPackEnum.AE_GET_CPU_DETAIL_FINAL.ofCommand("return aeCpuDetail4(" + cpuid + ")"));
         boolean timeout = false;
         duringCpuDetailFetch = true;
         lock.lock();
@@ -233,7 +248,7 @@ public class DataProcessor {
 
     public List<String> requestGtMachineSensor(String proxyAddress) {
 
-        log.info("Requesting GT Sensor of " + proxyAddress);
+        log.info("Requesting GT Sensor of {}.", proxyAddress);
         boolean timeout = false;
         var cc = CommandPackEnum.GT_GET_SENSOR.ofCommand("return c.proxy(\"" + proxyAddress + "\").getSensorInformation()");
         lock.lock();
@@ -278,7 +293,8 @@ public class DataProcessor {
 
     @SuppressWarnings("unchecked")
     public Map<String, String> readResult(String raw) {
-        Map<String, String> result = new HashMap<>();
+        if (raw == null || raw.isEmpty() || raw.equals("[]")) return Map.of("NULL", "NULL");
+        Map<String, String> result = Map.of("NULL", "NULL");
         try {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             result = mapper.readValue(raw, Map.class);
@@ -307,7 +323,7 @@ public class DataProcessor {
                             });
                             updateAEItemData(temp);
                         } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
+                            log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "AE_GET_FLUID" -> {
@@ -316,7 +332,7 @@ public class DataProcessor {
                             });
                             updateAEFluidData(temp);
                         } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
+                            log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "AE_GET_CPU_INFO" -> {
@@ -332,7 +348,7 @@ public class DataProcessor {
                                 lock.unlock();
                             }
                         } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
+                            log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "AE_GET_CPU_DETAIL_ACTIVE" -> {
@@ -345,7 +361,7 @@ public class DataProcessor {
                                 });
                                 cpuDetailList[0] = temp;
                             } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
+                                log.error("Map fail in {} :", k, e);
                             }
                         }
                         cpuDetailIndex++;
@@ -360,7 +376,7 @@ public class DataProcessor {
                                 });
                                 cpuDetailList[1] = temp;
                             } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
+                                log.error("Map fail in {} :", k, e);
                             }
                         }
                         cpuDetailIndex++;
@@ -375,7 +391,7 @@ public class DataProcessor {
                                 });
                                 cpuDetailList[2] = temp;
                             } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
+                                log.error("Map fail in {} :", k, e);
                             }
                         }
                         cpuDetailIndex++;
@@ -388,7 +404,7 @@ public class DataProcessor {
                                 cpuDetailFinal = mapper.readValue(v, new TypeReference<>() {
                                 });
                             } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
+                                log.error("Map fail in {} :", k, e);
                             }
                         }
                         cpuDetailIndex++;
@@ -407,7 +423,7 @@ public class DataProcessor {
                             }
                             log.info("Received component info: " + temp);
                         } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
+                            log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "OC_GET_COMPONENT_METHOD" -> {
@@ -417,7 +433,7 @@ public class DataProcessor {
                                 componentMethods.clear();
                                 temp.forEach((method, valid) -> componentMethods.add(OCComponentMethod.builder()
                                         .method((String) method).valid((Boolean) valid).build()));
-                                log.info("Received method info: " + temp);
+                                log.info("Received method info: {}", temp);
                             } else {
                                 log.info("Requested a component that has no methods.");
                                 componentMethods.clear();
@@ -429,7 +445,7 @@ public class DataProcessor {
                                 lock.unlock();
                             }
                         } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
+                            log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "GT_GET_SENSOR" -> {
@@ -446,7 +462,7 @@ public class DataProcessor {
                                 lock.unlock();
                             }
                         } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
+                            log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "GT_GET_ENERGY_WIRELESS" -> {
@@ -462,7 +478,7 @@ public class DataProcessor {
                                 var tmp2 = new BigDecimal(tmp1.replaceAll(",", "")).stripTrailingZeros();
                                 du.updateEnergyDatabase(tmp2);
                             } catch (Exception e) {
-                                log.error("Map fail in " + k + ":", e);
+                                log.error("Map fail in {} :", k, e);
                             }
                         } else {
                             log.error("Caught error in GT_GET_ENERGY_WIRELESS, energy station connection may not set properly.");
@@ -482,7 +498,7 @@ public class DataProcessor {
                                 lock.unlock();
                             }
                         } catch (Exception e) {
-                            log.error("Map fail in " + k + ":", e);
+                            log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "CUSTOM" -> {
@@ -499,8 +515,8 @@ public class DataProcessor {
                     case "ERROR" ->
                             log.error("Encountered ERROR key package, seems exception in lua scripts assembling.");
                     default -> {
-                        log.error("Encountered an unexpected key in command return: " + k);
-                        log.error("The content of result is: " + v);
+                        log.error("Encountered an unexpected key in command return: {}", k);
+                        log.error("The content of result is: {}", v);
                     }
                 }
             }
