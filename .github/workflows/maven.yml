@@ -19,7 +19,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '21'
-        distribution: 'orcale'
+        distribution: 'oracle'
         cache: maven
 
     - name: Build with Maven
