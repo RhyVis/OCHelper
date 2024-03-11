@@ -34,11 +34,11 @@ public class CsvAssemble {
 
                 UNI_NAME_MAP_ITEM.put(Format.assembleItemUniqueName(name, meta), local);
             }
-            CsvReader fluidCSV = new CsvReader(pa.getPath_csv_fluid(), ',', StandardCharsets.UTF_8);
-            fluidCSV.readHeaders();
-            while (fluidCSV.readRecord()) {
-                String name = fluidCSV.get(1);
-                String local = fluidCSV.get(2);
+            CsvReader csvFluid = new CsvReader(pa.getPath_csv_fluid(), ',', StandardCharsets.UTF_8);
+            csvFluid.readHeaders();
+            while (csvFluid.readRecord()) {
+                String name = csvFluid.get(1);
+                String local = csvFluid.get(2);
 
                 UNI_NAME_MAP_FLUID.put(Format.assembleFluidUniqueName(name), local);
             }

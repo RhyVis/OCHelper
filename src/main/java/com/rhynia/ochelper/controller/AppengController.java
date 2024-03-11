@@ -70,16 +70,16 @@ public class AppengController {
     }
 
     @GetMapping("ae-insight-item")
-    public String transportItemData(String it_un, String latest, Model model) {
+    public String transportItemData(String un, String latest, Model model) {
 
-        if (it_un == null) {
+        if (un == null) {
             return getInfoPageIndex(model);
         }
 
         int insightSize = cv.getInsightSize();
-        var name = "Insight - " + UNI_NAME_MAP_ITEM.get(it_un);
+        var name = "Insight - " + UNI_NAME_MAP_ITEM.get(un);
         var imgPath = pa.getPath().getIconPanelPath();
-        var original = da.getAeItemDataObjN(it_un, insightSize);
+        var original = da.getAeItemDataObjN(un, insightSize);
 
         // First element latest
         ArrayList<BigDecimal[]> tmpBdl = new ArrayList<>();
@@ -99,9 +99,9 @@ public class AppengController {
 
         var older = processed.getLast().getSize();
         var newer = processed.getFirst().getSize();
-        var rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
-        var rateDisplay = nf.format(rate_raw);
-        var increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
+        var rateRaw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
+        var rateDisplay = nf.format(rateRaw);
+        var increase = rateRaw.compareTo(BigDecimal.ZERO) > -1;
 
         model.addAttribute("bdl", tmpBdl.toArray(new BigDecimal[0][0]));
         model.addAttribute("name_to_display", name);
@@ -115,16 +115,16 @@ public class AppengController {
     }
 
     @GetMapping("ae-insight-fluid")
-    public String transportFluidData(String it_un, String latest, Model model) {
+    public String transportFluidData(String un, String latest, Model model) {
 
-        if (it_un == null) {
+        if (un == null) {
             return getInfoPageIndex(model);
         }
 
-        int insight_size = cv.getInsightSize();
-        var name = "Insight - " + UNI_NAME_MAP_FLUID.get(it_un);
+        int insightSize = cv.getInsightSize();
+        var name = "Insight - " + UNI_NAME_MAP_FLUID.get(un);
         var imgPath = pa.getPath().getIconPanelPath();
-        var original = da.getAeFluidDataObjN(it_un, insight_size);
+        var original = da.getAeFluidDataObjN(un, insightSize);
 
         // First element latest
         ArrayList<BigDecimal[]> tmpBdl = new ArrayList<>();
@@ -146,16 +146,16 @@ public class AppengController {
 
         var older = processed.getLast().getSize();
         var newer = processed.getFirst().getSize();
-        var rate_raw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
-        var rateDisplay = nf.format(rate_raw);
-        boolean increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
+        var rateRaw = newer.divide(older, 6, RoundingMode.FLOOR).subtract(BigDecimal.ONE);
+        var rateDisplay = nf.format(rateRaw);
+        boolean increase = rateRaw.compareTo(BigDecimal.ZERO) > -1;
 
         model.addAttribute("bdl", tmpBdl.toArray(new BigDecimal[0][0]));
         model.addAttribute("name_to_display", name);
         model.addAttribute("size_latest", latest);
         model.addAttribute("rate", rateDisplay);
         model.addAttribute("increase", increase);
-        model.addAttribute("insight_size", insight_size);
+        model.addAttribute("insight_size", insightSize);
         model.addAttribute("processed", processed);
 
         return "ae/ae-storage-insight";

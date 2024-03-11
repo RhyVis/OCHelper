@@ -52,7 +52,7 @@
                         <div class="info-box">
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
-                                <a th:href="@{ae-insight-item(it_un = ${item.getUn()}, latest = ${item.getSizeByte()})}">
+                                <a th:href="@{ae-insight-item(un = ${item.getUn()}, latest = ${item.getSizeByte()})}">
                                 <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
                                      th:src="${iconPath + item.getLocal() + '.png'}">
                                 </a>
@@ -83,7 +83,7 @@
                         <div class="info-box">
                             <span class="info-box-icon text-bg-primary shadow-sm"
                                   style="min-width: 80px;min-height: 80px;">
-                                <a th:href="@{ae-insight-fluid(it_un = ${fluid.getLeft().getUn()}, latest = ${fluid.getLeft().getSizeByte()})}">
+                                <a th:href="@{ae-insight-fluid(un = ${fluid.getLeft().getUn()}, latest = ${fluid.getLeft().getSizeByte()})}">
                                 <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
                                      th:src="${iconPath + fluid.getRight() + '单元.png'}">
                                 </a>
