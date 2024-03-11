@@ -1,13 +1,11 @@
-package com.rhynia.ochelper.var.element;
+package com.rhynia.ochelper.var.element.connection;
 
 import com.rhynia.ochelper.util.Format;
+import com.rhynia.ochelper.var.element.data.AeDataSetObj;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
 @Getter
 @ToString
@@ -19,10 +17,10 @@ public class AeDisplayItemObj extends AeDataSetObj {
     @Setter
     protected String imgPath;
 
-    protected AeDisplayItemObj(String un, String size, long id, String time) {
+    public AeDisplayItemObj(String un, String size, long id, String time) {
         super(un, size, id, time);
-        this.local = UNI_NAME_MAP_ITEM.getOrDefault(un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, un));
-        this.sizeFormatted = Format.formatSizeDisplay(sizeString);
+        this.local = Format.tryTranslateItemUn(un);
+        this.sizeFormatted = Format.formatSizeWithComma(sizeString);
         this.sizeByte = Format.formatStringByte(sizeString);
     }
 

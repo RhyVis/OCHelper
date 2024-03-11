@@ -1,11 +1,11 @@
-package com.rhynia.ochelper.var;
+package com.rhynia.ochelper.var.element.connection;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class OCComponentDoc {
+public class OcComponentDoc {
     private final String method;
     private final String doc;
 }

@@ -1,12 +1,12 @@
 package com.rhynia.ochelper.controller;
 
-import com.rhynia.ochelper.accessor.PathAccessor;
+import com.rhynia.ochelper.config.PathAssemble;
 import com.rhynia.ochelper.component.DataProcessor;
-import com.rhynia.ochelper.config.CommonValue;
+import com.rhynia.ochelper.config.ConfigValues;
 import com.rhynia.ochelper.database.DatabaseAccessor;
-import com.rhynia.ochelper.var.AECPU;
-import com.rhynia.ochelper.var.element.AeDataSetObj;
-import com.rhynia.ochelper.var.element.AeReportItemObj;
+import com.rhynia.ochelper.var.element.connection.AeCpu;
+import com.rhynia.ochelper.var.element.data.AeDataSetObj;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,8 +33,8 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 @RequiredArgsConstructor
 public class AppengController {
 
-    private final PathAccessor pa;
-    private final CommonValue cv;
+    private final PathAssemble pa;
+    private final ConfigValues cv;
     private final DatabaseAccessor da;
     private final DataProcessor dp;
 
@@ -52,7 +52,7 @@ public class AppengController {
         var tmp2 = pair.getRight();
 
         var items = tmp1.stream()
-                .filter(obj -> !obj.getUn().endsWith("drop$0"))
+                .filter(obj -> (!obj.getUn().endsWith("drop$0")))
                 .filter(obj -> !obj.getSizeRaw().equals("0"))
                 .toList();
 
@@ -161,7 +161,7 @@ public class AppengController {
     @GetMapping("ae-cpu-info")
     public String requestCpuInfo(Model model) {
         var list = dp.requestAeCpuInfo();
-        list = list.stream().sorted(Comparator.comparing(AECPU::getName)).collect(Collectors.toList());
+        list = list.stream().sorted(Comparator.comparing(AeCpu::getName)).collect(Collectors.toList());
         model.addAttribute("c_list", list);
         return "ae/ae-cpu-info";
     }

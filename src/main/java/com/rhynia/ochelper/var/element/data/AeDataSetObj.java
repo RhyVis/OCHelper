@@ -1,6 +1,8 @@
-package com.rhynia.ochelper.var.element;
+package com.rhynia.ochelper.var.element.data;
 
 import com.rhynia.ochelper.var.base.AbstractAeDataSet;
+import com.rhynia.ochelper.var.element.connection.AeDisplayFluidObj;
+import com.rhynia.ochelper.var.element.connection.AeDisplayItemObj;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

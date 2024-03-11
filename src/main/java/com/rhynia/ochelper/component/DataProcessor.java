@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhynia.ochelper.database.DatabaseUpdater;
 import com.rhynia.ochelper.util.CommandPackEnum;
 import com.rhynia.ochelper.util.LuaScriptFactory;
-import com.rhynia.ochelper.var.AECPU;
-import com.rhynia.ochelper.var.CommandPack;
-import com.rhynia.ochelper.var.MsSet;
-import com.rhynia.ochelper.var.OCComponent;
-import com.rhynia.ochelper.var.OCComponentDoc;
-import com.rhynia.ochelper.var.OCComponentMethod;
-import com.rhynia.ochelper.var.element.AeReportFluidObj;
-import com.rhynia.ochelper.var.element.AeReportItemObj;
+import com.rhynia.ochelper.var.element.connection.AeCpu;
+import com.rhynia.ochelper.var.element.connection.CommandPack;
+import com.rhynia.ochelper.var.element.connection.MsSet;
+import com.rhynia.ochelper.var.element.connection.OcComponent;
+import com.rhynia.ochelper.var.element.connection.OcComponentDoc;
+import com.rhynia.ochelper.var.element.connection.OcComponentMethod;
+import com.rhynia.ochelper.var.element.connection.AeReportFluidObj;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,10 +39,10 @@ public class DataProcessor {
 
     private final DatabaseUpdater du;
     private final LuaScriptFactory ls;
-    private final List<AECPU> cpus = new ArrayList<>();
-    private final List<OCComponent> components = new ArrayList<>();
-    private final List<OCComponentMethod> componentMethods = new ArrayList<>();
-    private final List<OCComponentDoc> componentDocs = new ArrayList<>();
+    private final List<AeCpu> cpus = new ArrayList<>();
+    private final List<OcComponent> components = new ArrayList<>();
+    private final List<OcComponentMethod> componentMethods = new ArrayList<>();
+    private final List<OcComponentDoc> componentDocs = new ArrayList<>();
     private final List<MsSet> msSets = new ArrayList<>();
     private final List<String> sensorInfo = new ArrayList<>();
     private final Lock lock = new ReentrantLock();
@@ -89,7 +89,7 @@ public class DataProcessor {
         });
     }
 
-    public List<OCComponent> requestComponentList() {
+    public List<OcComponent> requestComponentList() {
 
         log.info("Requesting component list.");
         boolean timeout = false;
@@ -111,11 +111,11 @@ public class DataProcessor {
             return components;
         } else {
             log.error("Fetch no available components.");
-            return List.of(new OCComponent("Fetched NOTHING!", "NULL"));
+            return List.of(new OcComponent("Fetched NOTHING!", "NULL"));
         }
     }
 
-    public List<OCComponentDoc> requestComponentDetail(String address) {
+    public List<OcComponentDoc> requestComponentDetail(String address) {
 
         log.info("Start requesting component detail.");
         String fetchMethodCommand = "return c.methods(\"" + address + "\")";
@@ -135,7 +135,7 @@ public class DataProcessor {
 
         if (componentMethods.isEmpty()) {
             log.error("Fetch no available methods.");
-            return List.of(new OCComponentDoc("NULL", "This component has no methods."));
+            return List.of(new OcComponentDoc("NULL", "This component has no methods."));
         }
 
         log.info("Method list fetched, start requesting docs.");
@@ -164,7 +164,7 @@ public class DataProcessor {
             return componentDocs;
         } else {
             log.error("Fetched no available docs.");
-            return List.of(new OCComponentDoc("NULL", "Fetched nothing at all."));
+            return List.of(new OcComponentDoc("NULL", "Fetched nothing at all."));
         }
     }
 
@@ -175,7 +175,7 @@ public class DataProcessor {
 
     public String executeCustomCommand(String command) {
 
-        log.info("Requested executing a custom command:" + command);
+        log.info("Requested executing a custom command: {}", command);
         var cc = new CommandPack(CommandPackEnum.CUSTOM.getKey(), command);
         boolean timeout = false;
         lock.lock();
@@ -193,7 +193,7 @@ public class DataProcessor {
         return customReturn;
     }
 
-    public List<AECPU> requestAeCpuInfo() {
+    public List<AeCpu> requestAeCpuInfo() {
 
         log.info("Requested CPU info.");
         boolean timeout = false;
@@ -215,7 +215,7 @@ public class DataProcessor {
             return cpus;
         } else {
             log.error("Fetched no cpus.");
-            return List.of(new AECPU(0, 0, "0", true, "NO_CPU"));
+            return List.of(new AeCpu(0, 0, "0", true, "NO_CPU"));
         }
     }
 
@@ -292,7 +292,7 @@ public class DataProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, String> readResult(String raw) {
+    private Map<String, String> readResult(String raw) {
         if (raw == null || raw.isEmpty() || raw.equals("[]")) return Map.of("NULL", "NULL");
         Map<String, String> result = Map.of("NULL", "NULL");
         try {
@@ -305,7 +305,7 @@ public class DataProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    public void processResult(Map<String, String> map) {
+    private void processResult(Map<String, String> map) {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         map.forEach((k, v) -> {
             boolean error = Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"");
@@ -314,7 +314,7 @@ public class DataProcessor {
             }
             if (k.startsWith("OC_GET_COMPONENT_DOC_")) {
                 String method = k.substring(21);
-                componentDocs.add(new OCComponentDoc(method, v));
+                componentDocs.add(new OcComponentDoc(method, v));
             } else {
                 switch (k) {
                     case "AE_GET_ITEM" -> {
@@ -338,7 +338,7 @@ public class DataProcessor {
                     case "AE_GET_CPU_INFO" -> {
                         try {
                             cpus.clear();
-                            List<AECPU> temp = mapper.readValue(v, new TypeReference<>() {
+                            List<AeCpu> temp = mapper.readValue(v, new TypeReference<>() {
                             });
                             cpus.addAll(temp);
                             lock.lock();
@@ -413,7 +413,7 @@ public class DataProcessor {
                         try {
                             var temp = mapper.readValue(v, Map.class);
                             components.clear();
-                            temp.forEach((address, name) -> components.add(OCComponent.builder()
+                            temp.forEach((address, name) -> components.add(OcComponent.builder()
                                     .address((String) address).name((String) name).build()));
                             lock.lock();
                             try {
@@ -431,7 +431,7 @@ public class DataProcessor {
                             if (!Objects.equals(v, "[]")) {
                                 var temp = mapper.readValue(v, Map.class);
                                 componentMethods.clear();
-                                temp.forEach((method, valid) -> componentMethods.add(OCComponentMethod.builder()
+                                temp.forEach((method, valid) -> componentMethods.add(OcComponentMethod.builder()
                                         .method((String) method).valid((Boolean) valid).build()));
                                 log.info("Received method info: {}", temp);
                             } else {
@@ -521,6 +521,10 @@ public class DataProcessor {
                 }
             }
         });
+        postProcessCheck();
+    }
+
+    private void postProcessCheck() {
         if (duringDocFetch && componentDocs.size() >= docIndex) {
             log.info("Doc fetch complete.");
             lock.lock();
@@ -543,5 +547,9 @@ public class DataProcessor {
                 docIndex = 0;
             }
         }
+    }
+
+    public void readAndProcessResult(String raw) {
+        processResult(readResult(raw));
     }
 }

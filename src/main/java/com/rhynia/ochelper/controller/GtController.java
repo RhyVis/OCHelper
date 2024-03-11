@@ -1,7 +1,7 @@
 package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.component.DataProcessor;
-import com.rhynia.ochelper.config.CommonValue;
+import com.rhynia.ochelper.config.ConfigValues;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Format;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +25,17 @@ public class GtController {
 
     private final DataProcessor dp;
     private final DatabaseAccessor da;
-    private final CommonValue cv;
+    private final ConfigValues cv;
 
     @GetMapping("gt-sensor-info")
     public String requestGtSensorInfo(Model model) {
-        var tmp = dp.requestGtMachineSensor(cv.getEnergyStationAddressForRecord());
-        model.addAttribute("result", tmp);
+        //var tmp = dp.requestGtMachineSensor(cv.getEnergyStationAddressForRecord());
+        //model.addAttribute("result", tmp);
         return "gt/gt-sensor-info";
     }
 
     @GetMapping("gt-energy-data")
-    public String requestEnergyData(Model model) throws ParseException {
+    public String requestEnergyData(Model model) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DecimalFormat nf = new DecimalFormat("0.000%");
         int insight_size = 200;
@@ -61,7 +61,7 @@ public class GtController {
         var rate_display = nf.format(rate_raw);
         var increase = rate_raw.compareTo(BigDecimal.ZERO) > -1;
 
-        String latest = Format.formatSizeDisplay(newer) + Format.formatSizeByteDisplay(newer);
+        String latest = Format.formatSizeWithComma(newer) + Format.formatSizeWithByte(newer);
 
         model.addAttribute("bdl", tmpBdl.toArray(new BigDecimal[0][0]));
         model.addAttribute("rate", rate_display);

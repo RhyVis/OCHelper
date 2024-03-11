@@ -1,4 +1,4 @@
-package com.rhynia.ochelper.var;
+package com.rhynia.ochelper.var.element.connection;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class AECPU {
+public class AeCpu {
     private String name;
     private int cpuid;
     private int coprocessors;
@@ -17,7 +17,7 @@ public class AECPU {
     private boolean busy;
 
     @JsonCreator
-    public AECPU(@JsonProperty("coprocessors") int coprocessors,
+    public AeCpu(@JsonProperty("coprocessors") int coprocessors,
                  @JsonProperty("cpuid") int cpuid,
                  @JsonProperty("storage") String storage,
                  @JsonProperty("busy") boolean busy,

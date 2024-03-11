@@ -1,8 +1,8 @@
 package com.rhynia.ochelper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rhynia.ochelper.accessor.PathAccessor;
-import com.rhynia.ochelper.var.CommandPack;
+import com.rhynia.ochelper.config.PathAssemble;
+import com.rhynia.ochelper.var.element.connection.CommandPack;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class LuaScriptFactory {
 
-    private final PathAccessor pa;
+    private final PathAssemble pa;
 
     private final String div = "\n";
     private final ObjectMapper mapper = new ObjectMapper();
@@ -35,8 +36,7 @@ public class LuaScriptFactory {
     private String luaScriptsBase = "";
 
     public void initLuaScript() {
-        queue.offer(CommandPackEnum.AE_GET_ITEM.getPack());
-        queue.offer(CommandPackEnum.AE_GET_FLUID.getPack());
+        injectMission(List.of(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack()));
         File filePath = new File(pa.getPath().getLuaScriptsPath());
         File[] fileList = filePath.listFiles();
         if (fileList != null) {
@@ -63,9 +63,9 @@ public class LuaScriptFactory {
         opt.ifPresent(cps -> cps.forEach(queue::offer));
     }
 
-    public void injectMission(CommandPack... packs) {
+    public void injectMission(Set<CommandPack> packs) {
         var opt = Optional.ofNullable(packs);
-        opt.ifPresent(cps -> Arrays.stream(cps).map(queue::offer).close());
+        opt.ifPresent(cps -> cps.forEach(queue::offer));
     }
 
     private String assembleLuaScript(Map<String, String> map) {

@@ -1,16 +1,16 @@
 package com.rhynia.ochelper.database;
 
 import cn.hutool.core.lang.Snowflake;
-import com.rhynia.ochelper.config.CommonValue;
-import com.rhynia.ochelper.var.element.AeReportFluidObj;
-import com.rhynia.ochelper.var.element.AeReportItemObj;
+import com.rhynia.ochelper.config.ConfigValues;
+import com.rhynia.ochelper.var.element.connection.AeReportFluidObj;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class SQLFactory {
-    private final CommonValue cv;
+    private final ConfigValues cv;
     private final Snowflake sid = new Snowflake(1);
 
     public String generateCheck(String un) {

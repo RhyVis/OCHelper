@@ -27,8 +27,7 @@ public class RemoteController {
 
     @RequestMapping(value = "/api/oc", method = RequestMethod.POST, consumes = "text/plain", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<String> resultHandler(@RequestBody String rb) {
-        var result = dp.readResult(rb);
-        dp.processResult(result);
+        dp.readAndProcessResult(rb);
         return new ResponseEntity<>("Received", HttpStatus.OK);
     }
 

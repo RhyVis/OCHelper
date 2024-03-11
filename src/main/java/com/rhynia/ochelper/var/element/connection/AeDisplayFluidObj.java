@@ -1,11 +1,11 @@
-package com.rhynia.ochelper.var.element;
+package com.rhynia.ochelper.var.element.connection;
 
+import com.rhynia.ochelper.util.Format;
+import com.rhynia.ochelper.var.element.data.AeDataSetObj;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
 
 @Getter
 @ToString
@@ -15,9 +15,9 @@ public class AeDisplayFluidObj extends AeDataSetObj {
     @Setter
     protected String imgPath;
 
-    protected AeDisplayFluidObj(String un, String size, long id, String time) {
+    public AeDisplayFluidObj(String un, String size, long id, String time) {
         super(un, size, id, time);
-        this.local = UNI_NAME_MAP_FLUID.getOrDefault(un, un);
+        this.local = Format.tryTranslateFluidUn(un);
     }
 
     public static AeDisplayFluidObj getDummy() {

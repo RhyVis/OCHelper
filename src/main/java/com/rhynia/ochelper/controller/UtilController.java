@@ -1,7 +1,7 @@
 package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.component.DataProcessor;
-import com.rhynia.ochelper.var.MsSet;
+import com.rhynia.ochelper.var.element.connection.MsSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +20,18 @@ public class UtilController {
     @GetMapping("tps-report")
     public String requestTPS(Model model) {
         var list = dp.requestTPSReport();
+        var sum = list.stream()
+                .map(MsSet::getMspt)
+                .reduce(Double::sum)
+                .orElse(0D);
+        var sumSet = MsSet.builder().dim(-32768).mspt(sum).build();
         list = list.stream()
                 .sorted(Comparator.comparingDouble(MsSet::getMspt).reversed())
                 .toList();
+
         model.addAttribute("m_list", list);
+        model.addAttribute("sumSet", sumSet);
+
         return "util/tps-report";
     }
 

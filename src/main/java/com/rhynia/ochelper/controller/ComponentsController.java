@@ -1,7 +1,7 @@
 package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.component.DataProcessor;
-import com.rhynia.ochelper.var.OCComponent;
+import com.rhynia.ochelper.var.element.connection.OcComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +17,7 @@ public class ComponentsController {
 
     @GetMapping("oc-components")
     public String fetchOCComponents(Model model) {
-        List<OCComponent> list = dp.requestComponentList();
+        List<OcComponent> list = dp.requestComponentList();
         model.addAttribute("c_list", list);
         return "oc/oc-components";
     }

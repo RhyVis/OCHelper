@@ -1,4 +1,4 @@
-package com.rhynia.ochelper.var;
+package com.rhynia.ochelper.var.element.data;
 
 import lombok.Builder;
 import lombok.Data;

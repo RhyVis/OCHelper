@@ -1,9 +1,9 @@
 package com.rhynia.ochelper.database;
 
-import com.rhynia.ochelper.var.EnergyData;
-import com.rhynia.ochelper.var.element.AeDataSetObj;
-import com.rhynia.ochelper.var.element.AeDisplayFluidObj;
-import com.rhynia.ochelper.var.element.AeDisplayItemObj;
+import com.rhynia.ochelper.var.element.data.EnergyData;
+import com.rhynia.ochelper.var.element.data.AeDataSetObj;
+import com.rhynia.ochelper.var.element.connection.AeDisplayFluidObj;
+import com.rhynia.ochelper.var.element.connection.AeDisplayItemObj;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Qualifier;
