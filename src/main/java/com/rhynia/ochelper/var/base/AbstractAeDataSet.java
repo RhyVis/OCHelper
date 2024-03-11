@@ -2,6 +2,9 @@ package com.rhynia.ochelper.var.base;
 
 import lombok.Getter;
 
+/**
+ * @author Rhynia
+ */
 @Getter
 public abstract class AbstractAeDataSet extends AbstractAeData {
     protected final long id;

@@ -1,18 +1,8 @@
 package com.rhynia.ochelper.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rhynia.ochelper.config.PathAssemble;
-import com.rhynia.ochelper.var.element.connection.CommandPack;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +11,20 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rhynia.ochelper.config.PathAssemble;
+import com.rhynia.ochelper.var.element.connection.CommandPack;
+
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author Rhynia
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -83,7 +87,9 @@ public class LuaScriptFactory {
         if (!queue.isEmpty()) {
             while (!queue.isEmpty()) {
                 var tmp = queue.poll();
-                if (!preloadCompleted) tmp = CommandPackEnum.NULL.getPack();
+                if (!preloadCompleted) {
+                    tmp = CommandPackEnum.NULL.getPack();
+                }
                 tmpMap.put(tmp.getType(), luaScriptsBase + div + tmp.getCommand());
             }
         } else {

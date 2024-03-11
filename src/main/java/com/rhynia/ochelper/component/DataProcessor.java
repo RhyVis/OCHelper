@@ -1,23 +1,6 @@
 package com.rhynia.ochelper.component;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rhynia.ochelper.database.DatabaseUpdater;
-import com.rhynia.ochelper.util.CommandPackEnum;
-import com.rhynia.ochelper.util.LuaScriptFactory;
-import com.rhynia.ochelper.var.element.connection.AeCpu;
-import com.rhynia.ochelper.var.element.connection.CommandPack;
-import com.rhynia.ochelper.var.element.connection.MsSet;
-import com.rhynia.ochelper.var.element.connection.OcComponent;
-import com.rhynia.ochelper.var.element.connection.OcComponentDoc;
-import com.rhynia.ochelper.var.element.connection.OcComponentMethod;
-import com.rhynia.ochelper.var.element.connection.AeReportFluidObj;
-import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.stereotype.Component;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,8 +13,30 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rhynia.ochelper.database.DatabaseUpdater;
+import com.rhynia.ochelper.util.CommandPackEnum;
+import com.rhynia.ochelper.util.LuaScriptFactory;
+import com.rhynia.ochelper.var.element.connection.AeCpu;
+import com.rhynia.ochelper.var.element.connection.AeReportFluidObj;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
+import com.rhynia.ochelper.var.element.connection.CommandPack;
+import com.rhynia.ochelper.var.element.connection.MsSet;
+import com.rhynia.ochelper.var.element.connection.OcComponent;
+import com.rhynia.ochelper.var.element.connection.OcComponentDoc;
+import com.rhynia.ochelper.var.element.connection.OcComponentMethod;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author Rhynia
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -62,16 +67,15 @@ public class DataProcessor {
     private boolean duringDocFetch = false, duringCpuDetailFetch = false;
     private int docIndex = 0, cpuDetailIndex = 0;
 
-    private void updateAEItemData(List<AeReportItemObj> list) {
+    private void updateAeItemData(List<AeReportItemObj> list) {
         var opt = Optional.ofNullable(list);
         opt.ifPresent(l -> {
-            var d = l.stream()
-                    .peek(obj -> {
-                        if (UNI_NAME_MAP_ITEM.containsKey(obj.getUn())) {
-                            UNI_NAME_MAP_ITEM.put(obj.getUn(), obj.getLabel());
-                            obj.setLocal(obj.getLabel());
-                        }
-                    }).toList();
+            var d = l.stream().peek(obj -> {
+                if (UNI_NAME_MAP_ITEM.containsKey(obj.getUn())) {
+                    UNI_NAME_MAP_ITEM.put(obj.getUn(), obj.getLabel());
+                    obj.setLocal(obj.getLabel());
+                }
+            }).toList();
             long begin = System.currentTimeMillis();
             du.updateItemDatabase(d);
             long end = System.currentTimeMillis();
@@ -79,7 +83,7 @@ public class DataProcessor {
         });
     }
 
-    private void updateAEFluidData(List<AeReportFluidObj> list) {
+    private void updateAeFluidData(List<AeReportFluidObj> list) {
         var opt = Optional.ofNullable(list);
         opt.ifPresent(l -> {
             long begin = System.currentTimeMillis();
@@ -141,8 +145,11 @@ public class DataProcessor {
         log.info("Method list fetched, start requesting docs.");
         List<CommandPack> fetchDocCommands = new ArrayList<>();
         for (docIndex = 0; docIndex < componentMethods.size(); docIndex++) {
-            String fetchDocCommand = "return c.doc(\"" + address + "\", \"" + componentMethods.get(docIndex).getMethod() + "\")";
-            fetchDocCommands.add(new CommandPack(CommandPackEnum.OC_GET_COMPONENT_DOC.getKey() + "_" + componentMethods.get(docIndex).getMethod(), fetchDocCommand));
+            String fetchDocCommand =
+                "return c.doc(\"" + address + "\", \"" + componentMethods.get(docIndex).getMethod() + "\")";
+            fetchDocCommands.add(new CommandPack(
+                CommandPackEnum.OC_GET_COMPONENT_DOC.getKey() + "_" + componentMethods.get(docIndex).getMethod(),
+                fetchDocCommand));
         }
 
         lock.lock();
@@ -224,11 +231,10 @@ public class DataProcessor {
         log.info("Requesting CPU detail.");
         cpuDetailFinal = dummy;
         cpuDetailIndex = 0;
-        var cpl = List.of(
-                CommandPackEnum.AE_GET_CPU_DETAIL_ACTIVE.ofCommand("return aeCpuDetail1(" + cpuid + ")"),
-                CommandPackEnum.AE_GET_CPU_DETAIL_STORE.ofCommand("return aeCpuDetail2(" + cpuid + ")"),
-                CommandPackEnum.AE_GET_CPU_DETAIL_PENDING.ofCommand("return aeCpuDetail3(" + cpuid + ")"),
-                CommandPackEnum.AE_GET_CPU_DETAIL_FINAL.ofCommand("return aeCpuDetail4(" + cpuid + ")"));
+        var cpl = List.of(CommandPackEnum.AE_GET_CPU_DETAIL_ACTIVE.ofCommand("return aeCpuDetail1(" + cpuid + ")"),
+            CommandPackEnum.AE_GET_CPU_DETAIL_STORE.ofCommand("return aeCpuDetail2(" + cpuid + ")"),
+            CommandPackEnum.AE_GET_CPU_DETAIL_PENDING.ofCommand("return aeCpuDetail3(" + cpuid + ")"),
+            CommandPackEnum.AE_GET_CPU_DETAIL_FINAL.ofCommand("return aeCpuDetail4(" + cpuid + ")"));
         boolean timeout = false;
         duringCpuDetailFetch = true;
         lock.lock();
@@ -250,7 +256,8 @@ public class DataProcessor {
 
         log.info("Requesting GT Sensor of {}.", proxyAddress);
         boolean timeout = false;
-        var cc = CommandPackEnum.GT_GET_SENSOR.ofCommand("return c.proxy(\"" + proxyAddress + "\").getSensorInformation()");
+        var cc =
+            CommandPackEnum.GT_GET_SENSOR.ofCommand("return c.proxy(\"" + proxyAddress + "\").getSensorInformation()");
         lock.lock();
         try {
             ls.injectMission(cc);
@@ -266,7 +273,7 @@ public class DataProcessor {
         return sensorInfo;
     }
 
-    public List<MsSet> requestTPSReport() {
+    public List<MsSet> requestTpsReport() {
 
         log.info("Requested TPS.");
         boolean timeout = false;
@@ -293,10 +300,13 @@ public class DataProcessor {
 
     @SuppressWarnings("unchecked")
     private Map<String, String> readResult(String raw) {
-        if (raw == null || raw.isEmpty() || raw.equals("[]")) return Map.of("NULL", "NULL");
+        if (raw == null || raw.isEmpty() || "[]".equals(raw)) {
+            return Map.of("NULL", "NULL");
+        }
         Map<String, String> result = Map.of("NULL", "NULL");
         try {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper mapper =
+                new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             result = mapper.readValue(raw, Map.class);
         } catch (Exception e) {
             log.error("Exception in decoding: ", e);
@@ -319,18 +329,16 @@ public class DataProcessor {
                 switch (k) {
                     case "AE_GET_ITEM" -> {
                         try {
-                            List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
-                            });
-                            updateAEItemData(temp);
+                            List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {});
+                            updateAeItemData(temp);
                         } catch (Exception e) {
                             log.error("Map fail in {} :", k, e);
                         }
                     }
                     case "AE_GET_FLUID" -> {
                         try {
-                            List<AeReportFluidObj> temp = mapper.readValue(v, new TypeReference<>() {
-                            });
-                            updateAEFluidData(temp);
+                            List<AeReportFluidObj> temp = mapper.readValue(v, new TypeReference<>() {});
+                            updateAeFluidData(temp);
                         } catch (Exception e) {
                             log.error("Map fail in {} :", k, e);
                         }
@@ -338,8 +346,7 @@ public class DataProcessor {
                     case "AE_GET_CPU_INFO" -> {
                         try {
                             cpus.clear();
-                            List<AeCpu> temp = mapper.readValue(v, new TypeReference<>() {
-                            });
+                            List<AeCpu> temp = mapper.readValue(v, new TypeReference<>() {});
                             cpus.addAll(temp);
                             lock.lock();
                             try {
@@ -357,8 +364,7 @@ public class DataProcessor {
                             cpuDetailList[0].add(dummy);
                         } else {
                             try {
-                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
-                                });
+                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {});
                                 cpuDetailList[0] = temp;
                             } catch (Exception e) {
                                 log.error("Map fail in {} :", k, e);
@@ -372,8 +378,7 @@ public class DataProcessor {
                             cpuDetailList[1].add(dummy);
                         } else {
                             try {
-                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
-                                });
+                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {});
                                 cpuDetailList[1] = temp;
                             } catch (Exception e) {
                                 log.error("Map fail in {} :", k, e);
@@ -387,8 +392,7 @@ public class DataProcessor {
                             cpuDetailList[2].add(dummy);
                         } else {
                             try {
-                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {
-                                });
+                                List<AeReportItemObj> temp = mapper.readValue(v, new TypeReference<>() {});
                                 cpuDetailList[2] = temp;
                             } catch (Exception e) {
                                 log.error("Map fail in {} :", k, e);
@@ -401,8 +405,7 @@ public class DataProcessor {
                             cpuDetailFinal = dummy;
                         } else {
                             try {
-                                cpuDetailFinal = mapper.readValue(v, new TypeReference<>() {
-                                });
+                                cpuDetailFinal = mapper.readValue(v, new TypeReference<>() {});
                             } catch (Exception e) {
                                 log.error("Map fail in {} :", k, e);
                             }
@@ -413,8 +416,8 @@ public class DataProcessor {
                         try {
                             var temp = mapper.readValue(v, Map.class);
                             components.clear();
-                            temp.forEach((address, name) -> components.add(OcComponent.builder()
-                                    .address((String) address).name((String) name).build()));
+                            temp.forEach((address, name) -> components
+                                .add(OcComponent.builder().address((String)address).name((String)name).build()));
                             lock.lock();
                             try {
                                 cComponentFetch.signal();
@@ -431,8 +434,8 @@ public class DataProcessor {
                             if (!Objects.equals(v, "[]")) {
                                 var temp = mapper.readValue(v, Map.class);
                                 componentMethods.clear();
-                                temp.forEach((method, valid) -> componentMethods.add(OcComponentMethod.builder()
-                                        .method((String) method).valid((Boolean) valid).build()));
+                                temp.forEach((method, valid) -> componentMethods.add(
+                                    OcComponentMethod.builder().method((String)method).valid((Boolean)valid).build()));
                                 log.info("Received method info: {}", temp);
                             } else {
                                 log.info("Requested a component that has no methods.");
@@ -452,8 +455,7 @@ public class DataProcessor {
                         log.info("Fetched sensor information of " + v);
                         try {
                             sensorInfo.clear();
-                            List<String> tmp = mapper.readValue(v, new TypeReference<>() {
-                            });
+                            List<String> tmp = mapper.readValue(v, new TypeReference<>() {});
                             sensorInfo.addAll(tmp);
                             lock.lock();
                             try {
@@ -468,12 +470,9 @@ public class DataProcessor {
                     case "GT_GET_ENERGY_WIRELESS" -> {
                         if (!error) {
                             try {
-                                List<String> tmp = mapper.readValue(v, new TypeReference<>() {
-                                });
-                                var tmp1 = tmp.stream()
-                                        .filter(s -> s.startsWith("Total wireless EU"))
-                                        .map(s -> s.substring(21))
-                                        .findFirst().orElse("0");
+                                List<String> tmp = mapper.readValue(v, new TypeReference<>() {});
+                                var tmp1 = tmp.stream().filter(s -> s.startsWith("Total wireless EU"))
+                                    .map(s -> s.substring(21)).findFirst().orElse("0");
                                 log.info("Fetched energy information of " + tmp1);
                                 var tmp2 = new BigDecimal(tmp1.replaceAll(",", "")).stripTrailingZeros();
                                 du.updateEnergyDatabase(tmp2);
@@ -481,15 +480,15 @@ public class DataProcessor {
                                 log.error("Map fail in {} :", k, e);
                             }
                         } else {
-                            log.error("Caught error in GT_GET_ENERGY_WIRELESS, energy station connection may not set properly.");
+                            log.error(
+                                "Caught error in GT_GET_ENERGY_WIRELESS, energy station connection may not set properly.");
                         }
                     }
                     case "TPS_ALL_TICK_TIMES" -> {
                         try {
                             var temp = mapper.readValue(v, Map.class);
                             msSets.clear();
-                            temp.forEach((dim, mspt) -> MsSet.builder()
-                                    .dim((Integer) dim).mspt((Double) mspt).build());
+                            temp.forEach((dim, mspt) -> MsSet.builder().dim((Integer)dim).mspt((Double)mspt).build());
                             lock.lock();
                             try {
                                 log.info("Received TPS report.");
@@ -513,7 +512,7 @@ public class DataProcessor {
                     }
                     case "NULL" -> log.debug("Received request from OC.");
                     case "ERROR" ->
-                            log.error("Encountered ERROR key package, seems exception in lua scripts assembling.");
+                        log.error("Encountered ERROR key package, seems exception in lua scripts assembling.");
                     default -> {
                         log.error("Encountered an unexpected key in command return: {}", k);
                         log.error("The content of result is: {}", v);

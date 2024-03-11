@@ -1,8 +1,12 @@
 package com.rhynia.ochelper.config;
 
-import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+
+/**
+ * @author Rhynia
+ */
 @Component
 @Getter
 public class PathAssemble {

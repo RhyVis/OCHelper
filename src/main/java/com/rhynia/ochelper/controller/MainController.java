@@ -3,6 +3,9 @@ package com.rhynia.ochelper.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+/**
+ * @author Rhynia
+ */
 @Controller
 public class MainController {
     @GetMapping("/")
@@ -11,12 +14,12 @@ public class MainController {
     }
 
     @GetMapping("dashboard")
-    private String getDIndex() {
+    private String getDashboardIndex() {
         return "dashboard";
     }
 
     @GetMapping("examples")
-    private String getIndex() {
+    private String getExampleIndex() {
         return "redirect:dist/pages/index.html";
     }
 }

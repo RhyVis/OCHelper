@@ -1,12 +1,17 @@
 package com.rhynia.ochelper.database;
 
-import cn.hutool.core.lang.Snowflake;
+import org.springframework.stereotype.Component;
+
 import com.rhynia.ochelper.config.ConfigValues;
 import com.rhynia.ochelper.var.element.connection.AeReportFluidObj;
 import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
+import cn.hutool.core.lang.Snowflake;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * @author Rhynia
+ */
 @Component
 @RequiredArgsConstructor
 public class SQLFactory {
@@ -14,13 +19,13 @@ public class SQLFactory {
     private final Snowflake sid = new Snowflake(1);
 
     public String generateCheck(String un) {
-        return "CREATE TABLE IF NOT EXISTS " +
-                un +
-                " (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
+        return "CREATE TABLE IF NOT EXISTS " + un
+            + " (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
     }
 
     public String generateClean(String un, int keepSize) {
-        return "DELETE FROM " + un + " WHERE id NOT IN (SELECT id FROM " + un + " ORDER BY id DESC LIMIT " + keepSize + ");";
+        return "DELETE FROM " + un + " WHERE id NOT IN (SELECT id FROM " + un + " ORDER BY id DESC LIMIT " + keepSize
+            + ");";
     }
 
     public String generateInsert(String un, String size) {
@@ -60,7 +65,8 @@ public class SQLFactory {
     }
 
     private String generateEnergyWirelessDataClean(int keepSize) {
-        return "DELETE FROM energy$wireless WHERE id NOT IN (SELECT id FROM energy$wireless ORDER BY id DESC LIMIT " + keepSize + ");";
+        return "DELETE FROM energy$wireless WHERE id NOT IN (SELECT id FROM energy$wireless ORDER BY id DESC LIMIT "
+            + keepSize + ");";
     }
 
     public String generateEnergyWirelessDataClean() {

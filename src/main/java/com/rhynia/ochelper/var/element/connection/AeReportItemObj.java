@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.var.base.AbstractAeData;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * @author Rhynia
+ */
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -22,14 +26,10 @@ public class AeReportItemObj extends AbstractAeData {
     protected String local;
 
     @JsonCreator
-    public AeReportItemObj(
-            @JsonProperty("label") String label,
-            @JsonProperty("name") String name,
-            @JsonProperty("damage") int damage,
-            @JsonProperty("hasTag") boolean hasTag,
-            @JsonProperty("isCraftable") boolean isCraftable,
-            @JsonProperty("size") String size) {
-        super(Format.assembleItemUN(name, damage), size);
+    public AeReportItemObj(@JsonProperty("label") String label, @JsonProperty("name") String name,
+        @JsonProperty("damage") int damage, @JsonProperty("hasTag") boolean hasTag,
+        @JsonProperty("isCraftable") boolean isCraftable, @JsonProperty("size") String size) {
+        super(Format.assembleItemUniqueName(name, damage), size);
         this.name = name;
         this.label = label;
         this.local = Format.tryTranslateItemUn(un);

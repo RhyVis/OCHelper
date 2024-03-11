@@ -2,11 +2,15 @@ package com.rhynia.ochelper.var.element.connection;
 
 import com.rhynia.ochelper.util.Format;
 import com.rhynia.ochelper.var.element.data.AeDataSetObj;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * @author Rhynia
+ */
 @Getter
 @ToString
 @EqualsAndHashCode

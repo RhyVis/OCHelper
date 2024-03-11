@@ -1,10 +1,13 @@
 package com.rhynia.ochelper.var.element.data;
 
+import java.math.BigDecimal;
+
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
+/**
+ * @author Rhynia
+ */
 @Data
 public class EnergyData {
     private final long id;

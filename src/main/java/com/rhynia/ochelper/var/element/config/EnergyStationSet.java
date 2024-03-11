@@ -3,6 +3,9 @@ package com.rhynia.ochelper.var.element.config;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * @author Rhynia
+ */
 @Data
 @AllArgsConstructor
 public class EnergyStationSet {

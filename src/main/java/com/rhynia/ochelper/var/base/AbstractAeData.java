@@ -1,10 +1,13 @@
 package com.rhynia.ochelper.var.base;
 
+import java.math.BigDecimal;
+
 import lombok.Getter;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-
+/**
+ * @author Rhynia
+ */
 @Getter
 @ToString
 public abstract class AbstractAeData extends AbstractAeObject {

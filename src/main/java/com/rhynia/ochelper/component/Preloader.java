@@ -1,16 +1,21 @@
 package com.rhynia.ochelper.component;
 
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
+
 import com.rhynia.ochelper.config.CsvAssemble;
 import com.rhynia.ochelper.config.EnergyStationConfig;
 import com.rhynia.ochelper.config.SwitchLocalAssemble;
 import com.rhynia.ochelper.database.DatabaseUpdater;
 import com.rhynia.ochelper.util.LuaScriptFactory;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 
+/**
+ * @author Rhynia
+ */
 @Slf4j
 @Component
 @AllArgsConstructor

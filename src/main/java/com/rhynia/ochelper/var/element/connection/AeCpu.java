@@ -1,12 +1,16 @@
 package com.rhynia.ochelper.var.element.connection;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rhynia.ochelper.util.Format;
+
 import lombok.Data;
 
-import java.math.BigDecimal;
-
+/**
+ * @author Rhynia
+ */
 @Data
 public class AeCpu {
     private String name;
@@ -17,11 +21,9 @@ public class AeCpu {
     private boolean busy;
 
     @JsonCreator
-    public AeCpu(@JsonProperty("coprocessors") int coprocessors,
-                 @JsonProperty("cpuid") int cpuid,
-                 @JsonProperty("storage") String storage,
-                 @JsonProperty("busy") boolean busy,
-                 @JsonProperty("name") String name) {
+    public AeCpu(@JsonProperty("coprocessors") int coprocessors, @JsonProperty("cpuid") int cpuid,
+        @JsonProperty("storage") String storage, @JsonProperty("busy") boolean busy,
+        @JsonProperty("name") String name) {
         BigDecimal tmp = new BigDecimal(storage);
         this.name = name.isEmpty() ? "UNNAMED" : name;
         this.cpuid = cpuid;
