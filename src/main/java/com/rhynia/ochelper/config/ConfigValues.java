@@ -16,5 +16,4 @@ public class ConfigValues {
     private int energyDataKeepSize;
     private int cleanSchedule;
     private int insightSize;
-    private String energyStationAddressForRecord;
 }

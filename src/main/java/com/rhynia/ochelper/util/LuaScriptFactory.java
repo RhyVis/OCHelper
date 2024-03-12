@@ -90,7 +90,7 @@ public class LuaScriptFactory {
                 if (!preloadCompleted) {
                     tmp = CommandPackEnum.NULL.getPack();
                 }
-                tmpMap.put(tmp.getType(), luaScriptsBase + div + tmp.getCommand());
+                tmpMap.put(tmp.getKey(), luaScriptsBase + div + tmp.getCommand());
             }
         } else {
             tmpMap.put(CommandPackEnum.NULL.getKey(), CommandPackEnum.NULL.getCommand());

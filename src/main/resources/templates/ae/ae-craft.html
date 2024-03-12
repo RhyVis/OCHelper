@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"> <!--begin::Head-->
+
+<head>
+    <title>AE Craft Util</title>
+    <th:block th:insert="~{shared/head-shared::head}"></th:block>
+</head> <!--begin::Body-->
+
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary"> <!--begin::App Wrapper-->
+<div class="app-wrapper">
+
+    <!--begin::Header-->
+    <th:block th:insert="~{shared/navbar-shared::navbar}"></th:block>
+    <!--end::Header-->
+
+    <!--begin::Sidebar-->
+    <th:block th:insert="~{shared/sidebar-shared::sidebar}"></th:block>
+    <!--end::Sidebar-->
+
+    <!--begin::App Main-->
+    <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header"> <!--begin::Container-->
+            <div class="container-fluid"> <!--begin::Row-->
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3 class="mb-0">AE Craft Util</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-end">
+                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
+                            <li aria-current="page" class="breadcrumb-item active">
+                                AE Craft Util
+                            </li>
+                        </ol>
+                    </div>
+                </div> <!--end::Row-->
+            </div> <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+
+        <!--begin::App Content-->
+        <div class="app-content">
+            <!--begin::Container-->
+            <div class="container-fluid">
+
+                <h5 class="mb-2">Craftable Object List</h5>
+
+                <form th:action="ae-craft" name="req" method="post">
+                    <div class="input-group mb-1">
+                        <div class="form-floating">
+                            <input id="amount" type="number" name="amount" class="form-control" value=0>
+                            <label for="amount">Amount</label>
+                            <input type="hidden" id="name" name="name">
+                            <input type="hidden" id="meta" name="meta">
+                        </div>
+                        <div class="input-group-text">
+                            <span class="bi bi-envelope"></span>
+                        </div>
+                    </div>
+
+                    <!--begin::Row-->
+                    <div class="row">
+                        <div class="col-12 col-sm-6 col-md-3" th:each="item:${list}">
+                            <div class="info-box">
+                            <span class="info-box-icon text-bg-primary shadow-sm"
+                                  style="min-width: 80px;min-height: 80px;">
+                                <img alt="ICON" style="min-width: 60px;min-height: 60px;width: 80px;height: 80px;"
+                                     th:src="${item.getImgPath()}">
+                            </span>
+                                <div class="info-box-content">
+                                <span class="info-box-text" style="font-weight: bold"
+                                      th:text="${item.getLocal()}">
+                                </span>
+                                    <span>
+                                    <button class="btn btn-primary" th:data-o_name="${item.getName()}"
+                                            th:data-o_meta="${item.getMeta()}"
+                                            onclick='send(this.getAttribute("data-o_name"),this.getAttribute("data-o_meta"))'>
+                                        Order
+                                    </button>
+                                </span>
+                                </div> <!-- /.info-box-content -->
+                            </div> <!-- /.info-box -->
+                        </div> <!-- /.col -->
+                    </div> <!--end::Row-->
+                    <!--end::Row-->
+
+                </form>
+
+                <!--start::Toast-->
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div id="toastSuccess" class="toast toast-success" role="alert" aria-live="assertive"
+                         aria-atomic="true">
+                        <div class="toast-header"><i class="bi bi-circle me-2"></i>
+                            <strong class="me-auto">Recipe Task Result</strong>
+                            <small>Present</small>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="$('#toastSuccess').hide();"></button>
+                        </div>
+                        <div class="toast-body">
+                            <th:block th:text="${local}">Missing</th:block>
+                            recipe task succeed!
+                        </div>
+                    </div>
+                    <div id="toastFailed" class="toast toast-danger" role="alert" aria-live="assertive"
+                         aria-atomic="true">
+                        <div class="toast-header"><i class="bi bi-circle me-2"></i>
+                            <strong class="me-auto">Recipe Task Result</strong>
+                            <small>Present</small>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="$('#toastFailed').hide();"></button>
+                        </div>
+                        <div class="toast-body">
+                            <th:block th:text="${local}">Missing</th:block>
+                            recipe task failed!
+                        </div>
+                    </div>
+                </div>
+                <!--end::Toast-->
+
+                <br/>
+
+            </div> <!--end::Container-->
+        </div> <!--end::App Content-->
+    </main> <!--end::App Main-->
+
+    <!--begin::Footer-->
+    <th:block th:insert="~{shared/footer-shared::footer}"></th:block>
+    <!--end::Footer-->
+
+    <!--end::Footer-->
+</div> <!--end::App Wrapper-->
+<!--begin::Script-->
+<th:block th:insert="~{shared/script-shared::script}"></th:block>
+<script>
+    function send(name, meta) {
+        const amount = $('#amount').val();
+        if (amount <= 0) {
+            alert("Recipe request amount must be larger than 0!")
+            return false;
+        }
+        const metaInt = parseInt(meta);
+        $('#name').val(name);
+        $('#meta').val(metaInt);
+        document.req.submit();
+        return true;
+    }
+</script>
+<script th:inline="javascript">
+    const success = [[${success}]];
+    const result = [[${result}]];
+    if (result) {
+        if (success) {
+            $('#toastSuccess').show();
+            setTimeout(function () {
+                $('#toastSuccess').hide();
+            }, 10000);
+        } else {
+            $('#toastFailed').show();
+            setTimeout(function () {
+                $('#toastFailed').hide();
+            }, 10000);
+        }
+    }
+</script>
+<!--end::Script-->
+</body><!--end::Body-->
+
+</html>

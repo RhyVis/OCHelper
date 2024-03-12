@@ -1,5 +1,8 @@
 package com.rhynia.ochelper.component;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -30,8 +33,17 @@ public class Preloader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
+        log.info("Started application with following options: {}", Arrays.toString(args.getSourceArgs()));
+        var optCsv = Optional.ofNullable(args.getOptionValues("csv"));
+
         // CSV Loader
-        ca.initCsvLocalMap();
+        optCsv.ifPresentOrElse((obj) -> {
+            log.info("CSV Args found with {}.", obj);
+            var tmp = Boolean.parseBoolean(obj.getFirst());
+            if (tmp) {
+                ca.initCsvLocalMap();
+            }
+        }, ca::initCsvLocalMap);
 
         // JSON Loader
         sl.initMap();
