@@ -26,8 +26,10 @@ public class DatabaseUpdater {
     private final JdbcTemplate edt;
     private final String requestAllSql = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;";
 
-    DatabaseUpdater(SQLFactory sf, @Qualifier("itemJdbcTemplate") JdbcTemplate idt,
-        @Qualifier("fluidJdbcTemplate") JdbcTemplate fdt, @Qualifier("energyJdbcTemplate") JdbcTemplate edt) {
+    DatabaseUpdater(SQLFactory sf,
+                    @Qualifier("itemJdbcTemplate") JdbcTemplate idt,
+                    @Qualifier("fluidJdbcTemplate") JdbcTemplate fdt,
+                    @Qualifier("energyJdbcTemplate") JdbcTemplate edt) {
         this.sf = sf;
         this.idt = idt;
         this.fdt = fdt;
