@@ -8,8 +8,7 @@ import lombok.Data;
  * @author Rhynia
  */
 @Data
-@Builder
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 public class OcComponentMethod {
     private final String method;
     private final boolean valid;

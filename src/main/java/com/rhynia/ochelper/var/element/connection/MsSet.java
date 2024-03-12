@@ -2,7 +2,6 @@ package com.rhynia.ochelper.var.element.connection;
 
 import java.text.DecimalFormat;
 
-import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -16,8 +15,7 @@ public class MsSet {
     private final double tps;
     private final boolean healthy;
 
-    @Builder
-    public MsSet(int dim, double mspt) {
+    MsSet(int dim, double mspt) {
         DecimalFormat df = new DecimalFormat("0.000000");
         this.dim = dim;
         this.mspt = mspt;
@@ -25,5 +23,9 @@ public class MsSet {
         double temp = 1000D / mspt > 20 ? 20 : 1000D / mspt;
         this.tps = temp;
         this.healthy = temp >= 19.99999D;
+    }
+
+    public static MsSet of(int dim, double mspt) {
+        return new MsSet(dim, mspt);
     }
 }

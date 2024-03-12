@@ -21,9 +21,11 @@ public class AeCpu {
     private boolean busy;
 
     @JsonCreator
-    public AeCpu(@JsonProperty("coprocessors") int coprocessors, @JsonProperty("cpuid") int cpuid,
-        @JsonProperty("storage") String storage, @JsonProperty("busy") boolean busy,
-        @JsonProperty("name") String name) {
+    public AeCpu(@JsonProperty("coprocessors") int coprocessors,
+                 @JsonProperty("cpuid") int cpuid,
+                 @JsonProperty("storage") String storage,
+                 @JsonProperty("busy") boolean busy,
+                 @JsonProperty("name") String name) {
         BigDecimal tmp = new BigDecimal(storage);
         this.name = name.isEmpty() ? "UNNAMED" : name;
         this.cpuid = cpuid;
@@ -31,5 +33,9 @@ public class AeCpu {
         this.realStorage = tmp;
         this.storage = Format.formatStringByte(tmp.toPlainString());
         this.busy = busy;
+    }
+
+    public static AeCpu of(int cpuid,  String name, int coprocessors, String storage, boolean busy) {
+        return new AeCpu(coprocessors, cpuid, storage, busy, name);
     }
 }

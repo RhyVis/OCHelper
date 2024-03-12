@@ -26,7 +26,7 @@ public class UtilController {
     public String requestTps(Model model) {
         var list = dp.requestTpsReport();
         var sum = list.stream().map(MsSet::getMspt).reduce(Double::sum).orElse(0D);
-        var sumSet = MsSet.builder().dim(-32768).mspt(sum).build();
+        var sumSet = MsSet.of(-32768, sum);
         list = list.stream().sorted(Comparator.comparingDouble(MsSet::getMspt).reversed()).toList();
 
         model.addAttribute("m_list", list);

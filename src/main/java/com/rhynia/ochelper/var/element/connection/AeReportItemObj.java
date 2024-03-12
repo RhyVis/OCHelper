@@ -26,9 +26,13 @@ public class AeReportItemObj extends AbstractAeData {
     protected String local;
 
     @JsonCreator
-    public AeReportItemObj(@JsonProperty("label") String label, @JsonProperty("name") String name,
-        @JsonProperty("damage") int damage, @JsonProperty("hasTag") boolean hasTag,
-        @JsonProperty("isCraftable") boolean isCraftable, @JsonProperty("size") String size) {
+    public AeReportItemObj(
+            @JsonProperty("label") String label,
+            @JsonProperty("name") String name,
+            @JsonProperty("damage") int damage,
+            @JsonProperty("hasTag") boolean hasTag,
+            @JsonProperty("isCraftable") boolean isCraftable,
+            @JsonProperty("size") String size) {
         super(Format.assembleItemUniqueName(name, damage), size);
         this.name = name;
         this.label = label;
@@ -42,12 +46,12 @@ public class AeReportItemObj extends AbstractAeData {
     public AeDisplayItemObj getDisplay() {
         if (!this.getUn().endsWith("drop$0")) {
             // Try to translate label
-            return new AeDisplayItemObj(this.un, this.local, 0, "2024-01-01 00:00:00");
+            return new AeDisplayItemObj(this.un, this.sizeString, this.local, 0, "2024-01-01 00:00:00");
         } else {
             // For drop to cell processing
             String tmp1 = this.label.substring(8);
             String tmp2 = Format.trySwitchFluidLocal(tmp1);
-            return new AeDisplayItemObj(this.un, tmp2 + "单元", 0, "2024-01-01 00:00:00");
+            return new AeDisplayItemObj(this.un, this.sizeString, tmp2 + "单元", 0, "2024-01-01 00:00:00");
         }
     }
 }

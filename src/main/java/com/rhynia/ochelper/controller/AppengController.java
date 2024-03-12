@@ -12,8 +12,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import com.rhynia.ochelper.util.Format;
+import com.rhynia.ochelper.var.element.connection.AeCraftObj;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +32,9 @@ import com.rhynia.ochelper.var.element.data.AeDataSetObj;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author Rhynia
@@ -190,6 +196,44 @@ public class AppengController {
         model.addAttribute("final", finalOutput);
 
         return "ae/ae-cpu-detail";
+    }
+
+    // For element transport in ae-craftables & ae-craft
+    private List<AeCraftObj> tempCraftableList = new ArrayList<>();
+
+    @GetMapping("ae-craft")
+    public String requestCraftables(Model model) {
+        var imgPath = pa.getPath().getIconPanelPath();
+
+        var list = dp.requestAeCraftList().stream()
+                .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
+                .toList();
+        tempCraftableList = list;
+
+        model.addAttribute("amount", 0);
+        model.addAttribute("list", list);
+        model.addAttribute("result", false);
+
+        return "ae/ae-craft";
+    }
+
+    @RequestMapping(value = "ae-craft", method = RequestMethod.POST)
+    public String requestCraft(@RequestParam("amount") int amount,
+                               @RequestParam("name") String name,
+                               @RequestParam("meta") int meta,
+                               Model model) {
+
+        var local = Format.tryTranslateItemUn(Format.assembleItemUniqueName(name, meta));
+        log.info("Received crafting request of '{}:{}' with amount of {}, its local may be {}.",
+                name, meta, amount, local);
+        var success = dp.requestAeCraft(name, meta, amount);
+
+        model.addAttribute("list", tempCraftableList);
+        model.addAttribute("local", local);
+        model.addAttribute("success", success);
+        model.addAttribute("result", true);
+
+        return "ae/ae-craft";
     }
 
 }

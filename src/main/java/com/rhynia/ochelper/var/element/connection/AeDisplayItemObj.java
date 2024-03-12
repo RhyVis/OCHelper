@@ -28,6 +28,13 @@ public class AeDisplayItemObj extends AeDataSetObj {
         this.sizeByte = Format.formatStringByte(sizeString);
     }
 
+    public AeDisplayItemObj(String un, String size, String local, long id, String time) {
+        super(un, size, id, time);
+        this.local = local;
+        this.sizeFormatted = Format.formatSizeWithComma(sizeString);
+        this.sizeByte = Format.formatStringByte(sizeString);
+    }
+
     public static AeDisplayItemObj getDummy() {
         return new AeDisplayItemObj("null$null", "0", 0, "2024-01-01 00:00:00");
     }

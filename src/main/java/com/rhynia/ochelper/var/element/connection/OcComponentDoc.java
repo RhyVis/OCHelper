@@ -7,7 +7,7 @@ import lombok.Data;
  * @author Rhynia
  */
 @Data
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 public class OcComponentDoc {
     private final String method;
     private final String doc;

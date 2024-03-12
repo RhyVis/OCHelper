@@ -29,7 +29,6 @@ public class ComponentsController {
 
     @GetMapping("oc-components-detail")
     public String fetchOcComponentsDetail(String name, String address, Model model) {
-        dp.postProcessDocFetch();
         var list = dp.requestComponentDetail(address);
         model.addAttribute("component_name", name);
         model.addAttribute("d_list", list);

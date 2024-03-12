@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CommandPack {
-    private final String type;
+    private final String key;
     private final String command;
 }
