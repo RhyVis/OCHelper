@@ -59,6 +59,8 @@
                         </div>
                     </div>
 
+                    <br/>
+
                     <!--begin::Row-->
                     <div class="row">
                         <div class="col-12 col-sm-6 col-md-3" th:each="item:${list}">
@@ -94,7 +96,8 @@
                         <div class="toast-header"><i class="bi bi-circle me-2"></i>
                             <strong class="me-auto">Recipe Task Result</strong>
                             <small>Present</small>
-                            <button type="button" class="btn-close" aria-label="Close" onclick="$('#toastSuccess').hide();"></button>
+                            <button type="button" class="btn-close" aria-label="Close"
+                                    onclick="$('#toastSuccess').hide();"></button>
                         </div>
                         <div class="toast-body">
                             <th:block th:text="${local}">Missing</th:block>
@@ -106,7 +109,8 @@
                         <div class="toast-header"><i class="bi bi-circle me-2"></i>
                             <strong class="me-auto">Recipe Task Result</strong>
                             <small>Present</small>
-                            <button type="button" class="btn-close" aria-label="Close" onclick="$('#toastFailed').hide();"></button>
+                            <button type="button" class="btn-close" aria-label="Close"
+                                    onclick="$('#toastFailed').hide();"></button>
                         </div>
                         <div class="toast-body">
                             <th:block th:text="${local}">Missing</th:block>

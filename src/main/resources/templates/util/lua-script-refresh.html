@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
+
+<head>
+    <title>Lua Script Assemble</title>
+    <th:block th:replace="~{shared/head-shared::head}"></th:block>
+</head>
+
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary"> <!--begin::App Wrapper-->
+<div class="app-wrapper">
+
+    <!--begin::Header-->
+    <th:block th:insert="~{shared/navbar-shared::navbar}"></th:block>
+    <!--end::Header-->
+
+    <!--begin::Sidebar-->
+    <th:block th:insert="~{shared/sidebar-shared::sidebar}"></th:block>
+    <!--end::Sidebar-->
+
+    <!--begin::App Main-->
+    <main class="app-main"> <!--begin::App Content Header-->
+        <div class="app-content-header"> <!--begin::Container-->
+            <div class="container-fluid"> <!--begin::Row-->
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3 class="mb-0">Lua Script Assemble</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-end">
+                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
+                            <li aria-current="page" class="breadcrumb-item active">
+                                Lua Script Assemble
+                            </li>
+                        </ol>
+                    </div>
+                </div> <!--end::Row-->
+            </div> <!--end::Container-->
+        </div>
+        <div class="app-content"> <!--begin::Container-->
+            <div class="container-fluid"> <!--begin::Row-->
+                <div class="row">
+                    <div class="col-12"> <!-- Default box -->
+
+                        <button>Refresh</button>
+
+                        <div class="card" id="resultHandler">
+                            <div class="card-header">
+                                <h3 class="card-title">Script Block Result</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
+                                            type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
+                                            class="bi bi-dash-lg" data-lte-icon="collapse"></i></button>
+                                    <button class="btn btn-tool" data-lte-toggle="card-remove" title="Remove"
+                                            type="button"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <button th:href="@{lua-script-refresh(opt=true)}">Commit Refresh</button>
+                                </div>
+                                <hr/>
+                                <div>
+                                    <th:block th:text="${result}">Null</th:block>
+                                </div>
+                            </div> <!-- /.card-body -->
+                            <div class="card-footer">OC Helper</div> <!-- /.card-footer-->
+                        </div> <!-- /.card -->
+
+                    </div>
+                </div> <!--end::Row-->
+
+                <!--start::Toast-->
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div id="toastSuccess" class="toast toast-success" role="alert" aria-live="assertive"
+                         aria-atomic="true">
+                        <div class="toast-header"><i class="bi bi-circle me-2"></i>
+                            <strong class="me-auto">Script assemble</strong>
+                            <small>Present</small>
+                            <button type="button" class="btn-close" aria-label="Close"
+                                    onclick="$('#toastSuccess').hide();"></button>
+                        </div>
+                        <div class="toast-body">
+                            Committed script re-assemble!
+                        </div>
+                    </div>
+                </div>
+                <!--end::Toast-->
+
+            </div> <!--end::Container-->
+        </div> <!--end::App Content-->
+    </main> <!--end::App Main-->
+    <!--begin::Footer-->
+    <th:block th:insert="~{shared/footer-shared::footer}"></th:block>
+    <!--end::Footer-->
+</div> <!--end::App Wrapper-->
+<!--begin::Script-->
+<th:block th:insert="~{shared/script-shared::script}"></th:block>
+<script th:inline="javascript">
+    const opt = [[${opt}]];
+    if (opt) {
+        $('#toastSuccess').show();
+        setTimeout(function () {
+            $('#toastSuccess').hide();
+        }, 10000);
+    }
+</script>
+<!--end::Script-->
+</body><!--end::Body-->
+
+</html>

@@ -40,7 +40,30 @@ public class LuaScriptFactory {
     private String luaScriptsBase = "";
 
     public void initLuaScript() {
-        injectMission(List.of(CommandPackEnum.AE_GET_ITEM.getPack(), CommandPackEnum.AE_GET_FLUID.getPack()));
+        injectMission(CommandPackEnum.NULL.getPack());
+        assembleLuaScriptBase();
+    }
+
+    public String refreshLuaScript() {
+        assembleLuaScriptBase();
+        return luaScriptsBase;
+    }
+
+    public void injectMission(CommandPack pack) {
+        queue.offer(pack);
+    }
+
+    public void injectMission(List<CommandPack> packs) {
+        var opt = Optional.ofNullable(packs);
+        opt.ifPresent(cps -> cps.forEach(queue::offer));
+    }
+
+    public void injectMission(Set<CommandPack> packs) {
+        var opt = Optional.ofNullable(packs);
+        opt.ifPresent(cps -> cps.forEach(queue::offer));
+    }
+
+    private void assembleLuaScriptBase() {
         File filePath = new File(pa.getPath().getLuaScriptsPath());
         File[] fileList = filePath.listFiles();
         if (fileList != null) {
@@ -56,20 +79,6 @@ public class LuaScriptFactory {
             luaScriptsBase = builder.toString();
             log.info("Committed a lua script base update.");
         }
-    }
-
-    public void injectMission(CommandPack pack) {
-        queue.offer(pack);
-    }
-
-    public void injectMission(List<CommandPack> packs) {
-        var opt = Optional.ofNullable(packs);
-        opt.ifPresent(cps -> cps.forEach(queue::offer));
-    }
-
-    public void injectMission(Set<CommandPack> packs) {
-        var opt = Optional.ofNullable(packs);
-        opt.ifPresent(cps -> cps.forEach(queue::offer));
     }
 
     private String assembleLuaScript(Map<String, String> map) {

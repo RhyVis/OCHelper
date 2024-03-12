@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.rhynia.ochelper.component.DataProcessor;
+import com.rhynia.ochelper.util.LuaScriptFactory;
 import com.rhynia.ochelper.var.element.connection.MsSet;
 
 import lombok.RequiredArgsConstructor;
@@ -21,18 +22,34 @@ import lombok.RequiredArgsConstructor;
 public class UtilController {
 
     private final DataProcessor dp;
+    private final LuaScriptFactory ls;
 
     @GetMapping("tps-report")
     public String requestTps(Model model) {
         var list = dp.requestTpsReport();
         var sum = list.stream().map(MsSet::getMspt).reduce(Double::sum).orElse(0D);
-        var sumSet = MsSet.of(-32768, sum);
+        var sumSet = MsSet.of(-32769, sum);
         list = list.stream().sorted(Comparator.comparingDouble(MsSet::getMspt).reversed()).toList();
 
         model.addAttribute("m_list", list);
         model.addAttribute("sumSet", sumSet);
 
         return "util/tps-report";
+    }
+
+    @GetMapping("lua-script-refresh")
+    public String refreshLuaScriptBase() {
+        return "util/lua-script-refresh";
+    }
+
+    @GetMapping("lua-script-refresh")
+    public String refreshLuaScriptBase(boolean opt, Model model) {
+        var result = ls.refreshLuaScript();
+
+        model.addAttribute("result", result);
+        model.addAttribute("opt", opt);
+
+        return "util/lua-script-refresh";
     }
 
     @GetMapping("sss")
