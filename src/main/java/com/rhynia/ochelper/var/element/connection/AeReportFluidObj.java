@@ -21,9 +21,8 @@ public class AeReportFluidObj extends AbstractAeData {
     private final String local;
 
     @JsonCreator
-    public AeReportFluidObj(@JsonProperty("name") String name,
-                            @JsonProperty("label") String label,
-                            @JsonProperty("amount") String amount) {
+    public AeReportFluidObj(@JsonProperty("name") String name, @JsonProperty("label") String label,
+        @JsonProperty("amount") String amount) {
         super(Format.assembleFluidUniqueName(name), amount);
         this.name = name;
         this.label = label;

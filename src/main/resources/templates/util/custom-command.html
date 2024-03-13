@@ -40,14 +40,32 @@
         </div>
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
+
+                <h5 class="mb-2">Command Line</h5>
+
+                <form th:action="custom-command" name="req" method="post">
+                    <div class="input-group mb-1">
+                        <div class="form-floating">
+                            <input id="command" type="text" name="command" class="form-control" value="return 'NULL'">
+                            <label for="command">Command</label>
+                        </div>
+                        <div class="input-group-text">
+                            <span class="bi bi-envelope"></span>
+                        </div>
+                    </div>
+                </form>
+
+                <br/>
+
+                <button class="btn btn-primary" onclick="send()">Execute</button>
+
+                <br/>
+
                 <div class="row">
                     <div class="col-12"> <!-- Default box -->
-
-                        <button class="btn btn-primary">Refresh</button>
-
                         <div class="card" id="resultHandler">
                             <div class="card-header">
-                                <h3 class="card-title">Script Block Result</h3>
+                                <h3 class="card-title">Script Execution Result</h3>
                                 <div class="card-tools">
                                     <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
                                             type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
@@ -63,7 +81,6 @@
                             </div> <!-- /.card-body -->
                             <div class="card-footer">OC Helper</div> <!-- /.card-footer-->
                         </div> <!-- /.card -->
-
                     </div>
                 </div> <!--end::Row-->
 
@@ -78,7 +95,7 @@
                                     onclick="$('#toastSuccess').hide();"></button>
                         </div>
                         <div class="toast-body">
-                            Committed script re-assemble!
+                            Command executed!
                         </div>
                     </div>
                 </div>
@@ -96,11 +113,35 @@
 <script th:inline="javascript">
     const opt = [[${opt}]];
     if (opt) {
+        $('#resultHandler').show();
         $('#toastSuccess').show();
         setTimeout(function () {
             $('#toastSuccess').hide();
         }, 10000);
+    } else {
+        $('#resultHandler').hide();
     }
+
+    function send() {
+        const command = $('#command').val();
+        if (isNull(command)) {
+            alert("DON'T INPUT NULL COMMAND!")
+            return false;
+        } else {
+            document.req.submit();
+            return true;
+        }
+    }
+
+    function isNull(str) {
+        if ( str === "" ) {
+            return true;
+        }
+        const regX = "^[ ]+$";
+        const re = new RegExp(regX);
+        return re.test(str);
+    }
+
 </script>
 <!--end::Script-->
 </body><!--end::Body-->

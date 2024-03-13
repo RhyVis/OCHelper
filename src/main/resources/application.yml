@@ -3,6 +3,10 @@ server:
   port: 21314
 #Profile switch
 spring:
+  messages:
+    encoding: UTF-8
+    basename: messages_zh_CN
+    use-code-as-default-message: true
   thymeleaf:
     cache: true
     mode: HTML
