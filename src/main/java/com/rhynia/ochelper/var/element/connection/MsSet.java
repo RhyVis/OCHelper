@@ -1,8 +1,8 @@
 package com.rhynia.ochelper.var.element.connection;
 
-import java.text.DecimalFormat;
-
 import lombok.Data;
+
+import java.text.DecimalFormat;
 
 /**
  * @author Rhynia

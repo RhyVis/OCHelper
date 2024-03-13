@@ -157,105 +157,110 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rhynia.ochelper.database;
+package com.rhynia.ochelper.util;
 
-import cn.hutool.core.lang.Snowflake;
+import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
+import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
-import com.rhynia.ochelper.config.ConfigValues;
-import com.rhynia.ochelper.var.element.connection.AeReportFluidObj;
-import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
+import com.rhynia.ochelper.var.base.AbstractAeData;
 
-import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
-import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Rhynia
  */
-@Component
-@RequiredArgsConstructor
-public class SQLFactory {
+public class Utilities {
+    private static final String[] BYTE_LIST = {
+        "", "K", "M", "G", "T", "P", "E", "Z", "Y", "KY", "MY", "GY", "TY", "PY", "EY", "ZY", "YY",
+        "KYY", "MYY", "GYY", "TYY", "PYY", "EYY", "ZYY", "YYY"
+    };
 
-    private final ConfigValues cv;
-    private final Snowflake sid = new Snowflake(1);
+    public static String formatStringByte(String val) {
+        if (val == null) {
+            return null;
+        }
 
-    public String generateCheck(String un) {
-        return "CREATE TABLE IF NOT EXISTS "
-                + un
-                + " (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
+        int len = val.length();
+        int byteSeral = len / 3;
+        if (byteSeral == 0) {
+            return val;
+        }
+
+        String bytePrefix = val.substring(0, len - 3 * byteSeral);
+        // Rollback to last byte
+        if (bytePrefix.isEmpty()) {
+            return val.substring(0, len - 3 * (byteSeral - 1)) + BYTE_LIST[byteSeral - 1];
+        }
+
+        return bytePrefix + BYTE_LIST[byteSeral];
     }
 
-    public String generateClean(String un, int keepSize) {
-        return "DELETE FROM "
-                + un
-                + " WHERE id NOT IN (SELECT id FROM "
-                + un
-                + " ORDER BY id DESC LIMIT "
-                + keepSize
-                + ");";
+    public static String removeUnavailableChar(String s) {
+        String regEx = "\\W";
+        String str = "_";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(s);
+        return m.replaceAll(str).trim();
     }
 
-    public String generateInsert(String un, String size) {
-        return "INSERT INTO "
-                + un
-                + " (id, size) VALUES ('"
-                + sid.nextIdStr()
-                + "', '"
-                + size
-                + "');";
+    public static String assembleItemUniqueName(String name, int meta) {
+        return "item$" + Utilities.removeUnavailableChar(name) + "$" + meta;
     }
 
-    public String generateSelect(String un, int size) {
-        return "SELECT * FROM " + un + " ORDER BY id DESC LIMIT " + size + ";";
+    public static String assembleFluidUniqueName(String name) {
+        return "fluid$" + Utilities.removeUnavailableChar(name);
     }
 
-    public String generateSelectLatest(String un) {
-        return "SELECT * FROM " + un + " ORDER BY id DESC LIMIT 1";
+    public static String formatSizeWithComma(String val) {
+        return formatSizeWithComma(new BigDecimal(val));
     }
 
-    public String generateCheck(AeReportItemObj item) {
-        return generateCheck(item.getUn());
+    public static String formatSizeWithComma(BigDecimal val) {
+        DecimalFormat df = new DecimalFormat("#,###");
+        return df.format(val);
     }
 
-    public String generateCheck(AeReportFluidObj fluid) {
-        return generateCheck(fluid.getUn());
+    public static String formatSizeWithByte(BigDecimal val) {
+        return formatSizeWithByte(val.toPlainString());
     }
 
-    public String generateInsert(AeReportItemObj item) {
-        return generateInsert(item.getUn(), item.getSizeString());
+    public static String formatSizeWithByte(String val) {
+        String tmp = formatStringByte(val);
+        if (Objects.equals(val, tmp)) {
+            return "-";
+        }
+        return "(" + tmp + ")";
     }
 
-    public String generateInsert(AeReportFluidObj fluid) {
-        return generateInsert(fluid.getUn(), fluid.getSizeString());
+    public static String tryTranslateItemUn(String un) {
+        return UNI_NAME_MAP_ITEM.getOrDefault(un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, un));
     }
 
-    public String generateClean(String un) {
-        return generateClean(un, cv.getAeDataKeepSize());
+    public static String tryTranslateFluidUn(String un) {
+        return UNI_NAME_MAP_FLUID.getOrDefault(un, un);
     }
 
-    public String generateEnergyWirelessDataCheck() {
-        return "CREATE TABLE IF NOT EXISTS energy$wireless (id INTEGER PRIMARY KEY NOT NULL, size TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
+    public static String trySwitchFluidLocal(String original) {
+        return NAME_MAP_FLUID_SWITCH.getOrDefault(original, original);
     }
 
-    private String generateEnergyWirelessDataClean(int keepSize) {
-        return "DELETE FROM energy$wireless WHERE id NOT IN (SELECT id FROM energy$wireless ORDER BY id DESC LIMIT "
-                + keepSize
-                + ");";
+    private static boolean stringSizeNonZero(@NotNull String s) {
+        return !"0".equals(s);
     }
 
-    public String generateEnergyWirelessDataClean() {
-        return generateEnergyWirelessDataClean(cv.getEnergyDataKeepSize());
-    }
-
-    public String generateEnergyWirelessDataInsert(String size) {
-        return "INSERT INTO energy$wireless (id, size) VALUES ('"
-                + sid.nextIdStr()
-                + "', '"
-                + size
-                + "'); ";
-    }
-
-    public String generateEnergyWirelessDataSelect(int size) {
-        return "SELECT * FROM energy$wireless ORDER BY id DESC LIMIT " + size + ";";
+    public static <T extends AbstractAeData> boolean dataSizeNonZero(T data) {
+        if (data != null) {
+            return stringSizeNonZero(data.getSizeString());
+        } else {
+            return false;
+        }
     }
 }

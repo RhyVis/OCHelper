@@ -1,6 +1,6 @@
 package com.rhynia.ochelper.var.element.connection;
 
-import com.rhynia.ochelper.util.Format;
+import com.rhynia.ochelper.util.Utilities;
 import com.rhynia.ochelper.var.element.data.AeDataSetObj;
 
 import lombok.EqualsAndHashCode;
@@ -18,21 +18,20 @@ public class AeDisplayItemObj extends AeDataSetObj {
     protected final String local;
     protected final String sizeFormatted;
     protected final String sizeByte;
-    @Setter
-    protected String imgPath;
+    @Setter protected String imgPath;
 
     public AeDisplayItemObj(String un, String size, long id, String time) {
         super(un, size, id, time);
-        this.local = Format.tryTranslateItemUn(un);
-        this.sizeFormatted = Format.formatSizeWithComma(sizeString);
-        this.sizeByte = Format.formatStringByte(sizeString);
+        this.local = Utilities.tryTranslateItemUn(un);
+        this.sizeFormatted = Utilities.formatSizeWithComma(sizeString);
+        this.sizeByte = Utilities.formatStringByte(sizeString);
     }
 
     public AeDisplayItemObj(String un, String size, String local, long id, String time) {
         super(un, size, id, time);
         this.local = local;
-        this.sizeFormatted = Format.formatSizeWithComma(sizeString);
-        this.sizeByte = Format.formatStringByte(sizeString);
+        this.sizeFormatted = Utilities.formatSizeWithComma(sizeString);
+        this.sizeByte = Utilities.formatStringByte(sizeString);
     }
 
     public static AeDisplayItemObj getDummy() {
