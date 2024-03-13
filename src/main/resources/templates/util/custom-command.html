@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>Lua Script Assemble</title>
+    <title th:text="#{title.util.custom_command}">Script</title>
     <th:block th:replace="~{shared/head-shared::head}"></th:block>
 </head>
 
@@ -23,15 +23,16 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Lua Script Assemble</h3>
+                        <h3 class="mb-0" th:text="#{title.util.custom_command}"> Script </h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item">
                                 <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
                             </li>
-                            <li aria-current="page" class="breadcrumb-item active">
-                                Lua Script Assemble
+                            <li aria-current="page" class="breadcrumb-item active"
+                                th:text="#{title.util.custom_command}">
+                                Script
                             </li>
                         </ol>
                     </div>
@@ -41,31 +42,32 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
 
-                <h5 class="mb-2">Command Line</h5>
+                <h5 class="mb-2" th:text="#{page.custom_command.input}">Command Line</h5>
 
-                <form th:action="custom-command" name="req" method="post">
+                <form method="post" name="req" th:action="custom-command">
                     <div class="input-group mb-1">
                         <div class="form-floating">
-                            <input id="command" type="text" name="command" class="form-control" value="return 'NULL'">
-                            <label for="command">Command</label>
+                            <input class="form-control" id="command" name="command" type="text" value="return 'NULL'">
+                            <label for="command" th:text="#{page.custom_command.input.command}">Command</label>
                         </div>
                         <div class="input-group-text">
                             <span class="bi bi-envelope"></span>
                         </div>
+                        <div>
+                            <button class="btn btn-primary" onclick="send()"
+                                    th:text="#{page.custom_command.execute}">Execute</button>
+                        </div>
                     </div>
                 </form>
 
-                <br/>
-
-                <button class="btn btn-primary" onclick="send()">Execute</button>
-
-                <br/>
+                <hr/>
 
                 <div class="row">
                     <div class="col-12"> <!-- Default box -->
                         <div class="card" id="resultHandler">
                             <div class="card-header">
-                                <h3 class="card-title">Script Execution Result</h3>
+                                <h3 class="card-title" th:text="#{page.custom_command.result}">Script Execution
+                                    Result</h3>
                                 <div class="card-tools">
                                     <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
                                             type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
@@ -79,22 +81,22 @@
                                     <th:block th:text="${result}">Null</th:block>
                                 </div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer">OC Helper</div> <!-- /.card-footer-->
+                            <div class="card-footer" th:text="#{app.name}">OC Helper</div> <!-- /.card-footer-->
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->
 
                 <!--start::Toast-->
                 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                    <div id="toastSuccess" class="toast toast-success" role="alert" aria-live="assertive"
-                         aria-atomic="true">
+                    <div aria-atomic="true" aria-live="assertive" class="toast toast-success" id="toastSuccess"
+                         role="alert">
                         <div class="toast-header"><i class="bi bi-circle me-2"></i>
-                            <strong class="me-auto">Script assemble</strong>
-                            <small>Present</small>
-                            <button type="button" class="btn-close" aria-label="Close"
-                                    onclick="$('#toastSuccess').hide();"></button>
+                            <strong class="me-auto" th:text="#{page.custom_command.toast.title}">Script</strong>
+                            <small th:text="#{ui.toast.present}">Present</small>
+                            <button aria-label="Close" class="btn-close" onclick="$('#toastSuccess').hide();"
+                                    type="button"></button>
                         </div>
-                        <div class="toast-body">
+                        <div class="toast-body" th:text="#{page.custom_command.toast.body}">
                             Command executed!
                         </div>
                     </div>
@@ -134,7 +136,7 @@
     }
 
     function isNull(str) {
-        if ( str === "" ) {
+        if (str === "") {
             return true;
         }
         const regX = "^[ ]+$";

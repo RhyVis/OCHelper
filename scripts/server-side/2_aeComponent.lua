@@ -35,6 +35,12 @@ function aeCpuDetail4(cpuid)
     return cpu.finalOutput()
 end
 
+function aeCancel(cpuid)
+    local cpu = c.me_interface.getCpus()[cpuid]['cpu']
+    cpu.cancel()
+    return "DONE"
+end
+
 function aeCraftable()
     return c.me_interface.getItemsInNetwork({isCraftable=true})
 end
