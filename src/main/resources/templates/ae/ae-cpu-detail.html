@@ -46,8 +46,13 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2" th:text="#{page.ae.cpu_detail.active}">Active Item</h5>
+                <h5 class="mb-2" th:text="#{page.ae.cpu_detail.cancel_craft}">Cancel</h5>
+                <button class="btn btn-primary" onclick="doCancel()"
+                        th:text="#{page.ae.cpu_detail.cancel}">Refresh
+                </button>
+                <hr/>
 
+                <h5 class="mb-2" th:text="#{page.ae.cpu_detail.active}">Active Item</h5>
                 <!--begin::Row-->
                 <div class="row">
                     <div class="col-12 col-sm-6 col-md-3" th:each="item:${active}">
@@ -172,6 +177,12 @@
 </div> <!--end::App Wrapper-->
 <!--begin::Script-->
 <th:block th:insert="~{shared/script-shared::script}"></th:block>
+<script th:inline="javascript">
+    function doCancel() {
+        const cpuid = [[${cpuid}]]
+        location.href = "ae-cancel?cpuid=" + cpuid;
+    }
+</script>
 <!--end::Script-->
 </body><!--end::Body-->
 

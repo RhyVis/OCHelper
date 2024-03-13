@@ -205,6 +205,7 @@ public class DataProcessor {
     private final Condition cCpuDetailFetch = lock.newCondition();
     private final Condition cCraftableFetch = lock.newCondition();
     private final Condition cCraftStateFetch = lock.newCondition();
+    private final Condition cCancelCraft = lock.newCondition();
     private final Condition cComponentFetch = lock.newCondition();
     private final Condition cMethodFetch = lock.newCondition();
     private final Condition cDocFetch = lock.newCondition();
@@ -217,6 +218,7 @@ public class DataProcessor {
     private final List<AeReportItemObj>[] cpuDetailList = new ArrayList[3];
 
     private final AtomicBoolean requestCraftingState = new AtomicBoolean(false);
+    private final AtomicBoolean requestCancelState = new AtomicBoolean(false);
     private List<AeCraftObj> craftableItems = new ArrayList<>();
     private AeReportItemObj cpuDetailFinal = dummy;
     private String customReturn = "";
@@ -373,6 +375,26 @@ public class DataProcessor {
         }
 
         return requestCraftingState.get();
+    }
+
+    public boolean cancelCrafting(int id) {
+
+        log.info("Attempt to cancel crafting task on {}.", id);
+        boolean timeout = false;
+        lock.lock();
+        try {
+            ls.injectMission(CommandPackEnum.AE_DO_CPU_CANCEL.ofParams(id));
+            timeout = !cCancelCraft.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.error("Method interrupted.");
+        } finally {
+            lock.unlock();
+            if (timeout) {
+                log.error("Timeout in requesting.");
+            }
+        }
+
+        return requestCancelState.get();
     }
 
     // endregion
@@ -687,12 +709,32 @@ public class DataProcessor {
                                     requestCraftingState.set(true);
                                     log.info("Crafting task succeeded.");
                                 } else {
+                                    log.info("Crafting task failed.");
                                     requestCraftingState.set(false);
                                 }
                                 try {
                                     lock.lock();
                                     try {
                                         cCraftStateFetch.signal();
+                                    } finally {
+                                        lock.unlock();
+                                    }
+                                } catch (Exception e) {
+                                    log.error("Map fail in {} :", k, e);
+                                }
+                            }
+                            case "AE_DO_CPU_CANCEL" -> {
+                                if ("\"DONE\"".equals(v)) {
+                                    requestCancelState.set(true);
+                                    log.info("Crafting cancelling succeeded.");
+                                } else {
+                                    log.error("Crafting cancelling failed.");
+                                    requestCancelState.set(false);
+                                }
+                                try {
+                                    lock.lock();
+                                    try {
+                                        cCancelCraft.signal();
                                     } finally {
                                         lock.unlock();
                                     }

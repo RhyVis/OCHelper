@@ -27,7 +27,7 @@ public class AeDisplayFluidObj extends AeDataSetObj {
         this.local = tmpLocal;
         this.switchedLocal = Utilities.trySwitchFluidLocal(tmpLocal);
         this.sizeFormatted = Utilities.formatSizeWithComma(sizeString);
-        this.sizeByte = Utilities.formatStringByte(sizeString);
+        this.sizeByte = Utilities.formatSizeWithByte(sizeString);
     }
 
     public static AeDisplayFluidObj getDummy() {

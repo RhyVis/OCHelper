@@ -24,14 +24,14 @@ public class AeDisplayItemObj extends AeDataSetObj {
         super(un, size, id, time);
         this.local = Utilities.tryTranslateItemUn(un);
         this.sizeFormatted = Utilities.formatSizeWithComma(sizeString);
-        this.sizeByte = Utilities.formatStringByte(sizeString);
+        this.sizeByte = Utilities.formatSizeWithByte(sizeString);
     }
 
     public AeDisplayItemObj(String un, String size, String local, long id, String time) {
         super(un, size, id, time);
         this.local = local;
         this.sizeFormatted = Utilities.formatSizeWithComma(sizeString);
-        this.sizeByte = Utilities.formatStringByte(sizeString);
+        this.sizeByte = Utilities.formatSizeWithByte(sizeString);
     }
 
     public static AeDisplayItemObj getDummy() {

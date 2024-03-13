@@ -1,6 +1,5 @@
 package com.rhynia.ochelper.var.element.data;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -17,7 +16,6 @@ public class EnergyData {
     private final String sizeString;
     private final String time;
 
-    @Builder
     public EnergyData(long id, String sizeRaw, String time) {
         BigDecimal temp = new BigDecimal(sizeRaw).stripTrailingZeros();
         this.id = id;

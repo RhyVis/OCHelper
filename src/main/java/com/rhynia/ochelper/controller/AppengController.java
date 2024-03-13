@@ -190,7 +190,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Rhynia
@@ -347,11 +346,24 @@ public class AppengController {
     public String requestCpuInfo(Model model) {
 
         var list = dp.requestAeCpuInfo();
-        list =
-                list.stream()
-                        .sorted(Comparator.comparing(AeCpu::getName))
-                        .collect(Collectors.toList());
+        list = list.stream().sorted(Comparator.comparing(AeCpu::getName)).toList();
 
+        model.addAttribute("opt", false);
+        model.addAttribute("c_list", list);
+
+        return "ae/ae-cpu-info";
+    }
+
+    @GetMapping("ae-cancel")
+    public String requestCancel(int cpuid, Model model) {
+
+        boolean cancelled = dp.cancelCrafting(cpuid);
+
+        var list = dp.requestAeCpuInfo();
+        list = list.stream().sorted(Comparator.comparing(AeCpu::getName)).toList();
+
+        model.addAttribute("opt", true);
+        model.addAttribute("cancelled", cancelled);
         model.addAttribute("c_list", list);
 
         return "ae/ae-cpu-info";
@@ -381,6 +393,7 @@ public class AppengController {
                         .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
                         .toList();
 
+        model.addAttribute("cpuid", cpuid);
         model.addAttribute("active", active);
         model.addAttribute("store", store);
         model.addAttribute("pending", pending);

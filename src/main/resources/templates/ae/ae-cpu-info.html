@@ -111,13 +111,43 @@
                                     </table>
                                 </div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer" th:text="#{page.ae.cpu_info.sheet.footer}">Crafting CPUs</div> <!-- /.card-footer-->
+                            <div class="card-footer" th:text="#{page.ae.cpu_info.sheet.footer}">Crafting CPUs</div>
+                            <!-- /.card-footer-->
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->
                 <!--end::Row-->
 
                 <br/>
+
+                <!--start::Toast-->
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div aria-atomic="true" aria-live="assertive" class="toast toast-success" id="toastSuccess"
+                         role="alert">
+                        <div class="toast-header"><i class="bi bi-circle me-2"></i>
+                            <strong class="me-auto" th:text="#{page.ae.cpu_info.toast.title}">TITLE</strong>
+                            <small th:text="#{ui.toast.present}">Present</small>
+                            <button aria-label="Close" class="btn-close" onclick="$('#toastSuccess').hide();"
+                                    type="button"></button>
+                        </div>
+                        <div class="toast-body">
+                            <th:block th:text="#{page.ae.cpu_info.toast.success}"></th:block>
+                        </div>
+                    </div>
+                    <div aria-atomic="true" aria-live="assertive" class="toast toast-danger" id="toastFailed"
+                         role="alert">
+                        <div class="toast-header"><i class="bi bi-circle me-2"></i>
+                            <strong class="me-auto" th:text="#{page.ae.cpu_info.toast.title}">TITLE</strong>
+                            <small th:text="#{ui.toast.present}">Present</small>
+                            <button aria-label="Close" class="btn-close" onclick="$('#toastFailed').hide();"
+                                    type="button"></button>
+                        </div>
+                        <div class="toast-body">
+                            <th:block th:text="#{page.ae.cpu_info.toast.fail}"></th:block>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Toast-->
 
             </div> <!--end::Container-->
         </div> <!--end::App Content-->
@@ -131,6 +161,20 @@
 </div> <!--end::App Wrapper-->
 <!--begin::Script-->
 <th:block th:insert="~{shared/script-shared::script}"></th:block>
+<script th:inline="javascript">
+    const opt = [[${opt}]];
+    if (opt) {
+        const cancelled = [[${cancelled}]];
+        if (cancelled) {
+            $('#toastSuccess').show();
+        } else {
+            $('#toastFailed').show();
+        }
+    } else {
+        $('#toastSuccess').hide();
+        $('#toastFailed').hide();
+    }
+</script>
 <!--end::Script-->
 </body><!--end::Body-->
 

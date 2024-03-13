@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"> <!--begin::Head-->
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
     <title th:text="#{title.ae.craft}">TITLE</title>
@@ -48,13 +48,13 @@
 
                 <h5 class="mb-2" th:text="#{page.ae.craft.list}">Craftable Object List</h5>
 
-                <form th:action="ae-craft" name="req" method="post">
+                <form method="post" name="req" th:action="ae-craft">
                     <div class="input-group mb-1">
                         <div class="form-floating">
-                            <input id="amount" type="number" name="amount" class="form-control" value="0">
+                            <input class="form-control" id="amount" name="amount" type="number" value="0">
                             <label for="amount" th:text="#{page.ae.craft.form.amount}">Amount</label>
-                            <input type="hidden" id="name" name="name">
-                            <input type="hidden" id="meta" name="meta">
+                            <input id="name" name="name" type="hidden">
+                            <input id="meta" name="meta" type="hidden">
                         </div>
                         <div class="input-group-text">
                             <span class="bi bi-envelope"></span>
@@ -77,9 +77,9 @@
                                       th:text="${item.getLocal()}">
                                 </span>
                                     <span>
-                                    <button class="btn btn-primary" th:data-o_name="${item.getName()}"
+                                    <button class="btn btn-primary" onclick='send(this.getAttribute("data-o_name"),this.getAttribute("data-o_meta"))'
                                             th:data-o_meta="${item.getMeta()}"
-                                            onclick='send(this.getAttribute("data-o_name"),this.getAttribute("data-o_meta"))'>
+                                            th:data-o_name="${item.getName()}">
                                         <th:block th:text="#{page.ae.craft.form.order}"></th:block>
                                     </button>
                                 </span>
@@ -93,26 +93,26 @@
 
                 <!--start::Toast-->
                 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                    <div id="toastSuccess" class="toast toast-success" role="alert" aria-live="assertive"
-                         aria-atomic="true">
+                    <div aria-atomic="true" aria-live="assertive" class="toast toast-success" id="toastSuccess"
+                         role="alert">
                         <div class="toast-header"><i class="bi bi-circle me-2"></i>
                             <strong class="me-auto" th:text="#{page.ae.craft.toast.result}">Recipe Task Result</strong>
                             <small th:text="#{ui.toast.present}">Present</small>
-                            <button type="button" class="btn-close" aria-label="Close"
-                                    onclick="$('#toastSuccess').hide();"></button>
+                            <button aria-label="Close" class="btn-close" onclick="$('#toastSuccess').hide();"
+                                    type="button"></button>
                         </div>
                         <div class="toast-body">
                             <th:block th:text="${local}">Missing</th:block>
                             <th:block th:text="#{page.ae.craft.toast.success}"></th:block>
                         </div>
                     </div>
-                    <div id="toastFailed" class="toast toast-danger" role="alert" aria-live="assertive"
-                         aria-atomic="true">
+                    <div aria-atomic="true" aria-live="assertive" class="toast toast-danger" id="toastFailed"
+                         role="alert">
                         <div class="toast-header"><i class="bi bi-circle me-2"></i>
                             <strong class="me-auto" th:text="#{page.ae.craft.toast.result}">Recipe Task Result</strong>
                             <small th:text="#{ui.toast.present}">Present</small>
-                            <button type="button" class="btn-close" aria-label="Close"
-                                    onclick="$('#toastFailed').hide();"></button>
+                            <button aria-label="Close" class="btn-close" onclick="$('#toastFailed').hide();"
+                                    type="button"></button>
                         </div>
                         <div class="toast-body">
                             <th:block th:text="${local}">Missing</th:block>

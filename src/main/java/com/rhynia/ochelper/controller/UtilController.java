@@ -203,7 +203,7 @@ public class UtilController {
     public String refreshLuaScriptBaseResult(boolean opt, Model model) {
 
         if (opt) {
-            var result = ls.refreshLuaScript();
+            var result = ls.refreshLuaScript().replaceAll("\\n", "<br/>");
             model.addAttribute("result", result);
         }
 

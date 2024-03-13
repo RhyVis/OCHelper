@@ -176,18 +176,29 @@ public enum CommandPackEnum {
     AE_GET_ITEM("return aeItem()"),
     AE_GET_FLUID("return aeFluid()"),
     AE_GET_CPU_INFO("return aeCpuInfo()"),
+    /** Params: Sting:address */
     AE_GET_CPU_DETAIL_ACTIVE("return aeCpuDetail1(%d)"),
+    /** Params: Sting:address */
     AE_GET_CPU_DETAIL_STORE("return aeCpuDetail1(%d)"),
+    /** Params: Sting:address */
     AE_GET_CPU_DETAIL_PENDING("return aeCpuDetail1(%d)"),
+    /** Params: Sting:address */
     AE_GET_CPU_DETAIL_FINAL("return aeCpuDetail1(%d)"),
     AE_GET_CRAFTABLE("return aeCraftable()"),
+    /** Params: Sting:name, int:meta, int:amount */
     AE_DO_CRAFT("return aeCraft('%s', %d, %d)"),
-    AE_DO_CPU_CANCEL(),
+    /** Params: int:id */
+    AE_DO_CPU_CANCEL("return aeCancel(%d)"),
     OC_GET_COMPONENT("return c.list()"),
-    OC_GET_COMPONENT_METHOD("return c.methods('%s', '%s')"),
+    /** Params: Sting:address */
+    OC_GET_COMPONENT_METHOD("return c.methods('%s')"),
+    /** Params: Sting:address, String:method */
     OC_GET_COMPONENT_DOC("return c.doc('%s', '%s')"),
+    /** Params: Sting:address */
     GT_GET_SENSOR("return c.proxy('%s').getSensorInformation()"),
+    /** Params: Sting:address */
     GT_GET_ENERGY_INFO("return c.proxy('%s').getSensorInformation()"),
+    /** Params: Sting:address */
     GT_GET_ENERGY_WIRELESS("return c.proxy('%s').getSensorInformation()"),
     TPS_ALL_TICK_TIMES("return tpsAll()"),
     ;
