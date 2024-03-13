@@ -60,7 +60,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{gt-energy-data}"> <i class="nav-icon bi bi-table"></i>
-                        <p th:text="#{title.c.es}">Energy Status</p>
+                        <p th:text="#{title.gt.es}">Energy Status</p>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -86,6 +86,12 @@
                             <a class="nav-link" th:href="@{lua-script-refresh(opt=false)}"> <i
                                     class="nav-icon bi bi-circle"></i>
                                 <p th:text="#{title.util.script_assemble}">Lua Script Assemble</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{custom-command}"> <i
+                                    class="nav-icon bi bi-circle"></i>
+                                <p th:text="#{title.util.custom_command}">custom_command</p>
                             </a>
                         </li>
                     </ul>

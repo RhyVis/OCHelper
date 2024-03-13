@@ -54,7 +54,7 @@
                             <div class="d-flex justify-content-between">
                                 <h3 class="card-title" th:text="#{page.ae.insight.sheet_title}">Storage Amount Sheet</h3>
                                 <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                                   href="javascript:void(0);" th:text="#{page.ae.insight.view_report}">View
+                                   href="javascript:void(0);" th:text="#{ui.graph.view_report}">View
                                     Report</a>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                             <div class="d-flex">
                                 <p class="d-flex flex-column">
                                     <span class="fw-bold fs-5" th:text="${size_latest}">0</span>
-                                    <span th:text="#{page.ae.insight.present_size}">Present Size</span>
+                                    <span th:text="#{ui.graph.present_size}">Present Size</span>
                                 </p>
                                 <p class="ms-auto d-flex flex-column text-end">
                                     <span class="text-success" th:if="${increase}">
@@ -73,7 +73,7 @@
                                         <i class="bi bi-arrow-down"></i>
                                         <th:block th:text="${rate}">0</th:block>
                                     </span>
-                                    <span class="text-secondary"><th:block th:text="#{page.ae.insight.since}">Since</th:block> <th:block th:text="${insight_size}">0</th:block> <th:block th:text="#{page.ae.insight.scans}">scans</th:block></span>
+                                    <span class="text-secondary"><th:block th:text="#{ui.graph.since}">Since</th:block> <th:block th:text="${insight_size}">0</th:block> <th:block th:text="#{ui.graph.scans}">scans</th:block></span>
                                 </p>
                             </div> <!-- /.d-flex -->
                             <div class="position-relative mb-4">
@@ -82,7 +82,7 @@
                             <div class="d-flex flex-row justify-content-end">
                                 <span class="me-2">
                                     <i class="bi bi-square-fill text-primary"></i>
-                                    <th:block th:text="#{page.ae.insight.stack_trend}">Stack Trend</th:block>
+                                    <th:block th:text="#{ui.graph.amount_trend}">Stack Trend</th:block>
                                         </span>
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                 <div class="col-lg-6">
                     <div class="card mb-4">
                         <div class="card-header border-0">
-                            <h3 class="card-title" th:text="#{page.ae.insight.detail}">Detail</h3>
+                            <h3 class="card-title" th:text="#{ui.graph.detail}">Detail</h3>
                             <div class="card-tools"><a class="btn btn-tool btn-sm" href="#"> <i
                                     class="bi bi-download"></i> </a> <a class="btn btn-tool btn-sm" href="#"> <i
                                     class="bi bi-list"></i> </a></div>
@@ -100,8 +100,8 @@
                             <table class="table table-striped align-middle">
                                 <thead>
                                 <tr>
-                                    <th th:text="#{page.ae.insight.amount}">Amount</th>
-                                    <th th:text="#{page.ae.insight.time}">Time</th>
+                                    <th th:text="#{ui.graph.amount}">Amount</th>
+                                    <th th:text="#{ui.graph.time}">Time</th>
                                 </tr>
                                 </thead>
                                 <tbody>

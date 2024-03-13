@@ -193,7 +193,8 @@ public class UtilController {
     }
 
     @GetMapping("custom-command")
-    public String customCommand() {
+    public String customCommand(Model model) {
+        model.addAttribute("opt", false);
         return "util/custom-command";
     }
 
@@ -202,6 +203,7 @@ public class UtilController {
 
         var result = dp.executeCustomCommand(command);
 
+        model.addAttribute("opt", true);
         model.addAttribute("result", "");
 
         return "util/custom-command";

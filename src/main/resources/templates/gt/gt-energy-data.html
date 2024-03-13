@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>GT Energy Data</title>
+    <title th:text="#{title.gt.es}">GT Energy Data</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,14 +24,14 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Energy</h3>
+                        <h3 class="mb-0" th:text="#{title.gt.es}">Energy</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item">
                                 <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
                             </li>
-                            <li aria-current="page" class="breadcrumb-item active">
+                            <li aria-current="page" class="breadcrumb-item active" th:text="#{title.gt.es}">
                                 GT Energy Data
                             </li>
                         </ol>
@@ -46,23 +46,25 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Energy Graph</h5>
+                <h5 class="mb-2" th:text="#{page.gt.es.graph.title}">Energy Graph</h5>
 
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Storage Amount Sheet</h3>
+                                <h3 class="card-title" th:text="#{page.gt.es.graph.sheet_title}">Storage Amount
+                                    Sheet</h3>
                                 <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                                   href="javascript:void(0);">View
-                                    Report</a>
+                                   href="javascript:void(0);">
+                                    <th:block th:text="#{ui.graph.view_report}"></th:block>
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="d-flex">
                                 <p class="d-flex flex-column">
                                     <span class="fw-bold fs-5" th:text="${latest}">0</span>
-                                    <span>Present Size</span>
+                                    <span th:text="#{ui.graph.present_size}">Present Size</span>
                                 </p>
                                 <p class="ms-auto d-flex flex-column text-end">
                                     <span class="text-success" th:if="${increase}">
@@ -73,7 +75,11 @@
                                         <i class="bi bi-arrow-down"></i>
                                         <th:block th:text="${rate}">0</th:block>
                                     </span>
-                                    <span class="text-secondary">Since <th:block th:text="${insight_size}">0</th:block> scans</span>
+                                    <span class="text-secondary">
+                                        <th:block th:text="#{ui.graph.since} + ' '"></th:block>
+                                        <th:block th:text="${insight_size}">0</th:block>
+                                        <th:block th:text="' ' + #{ui.graph.scans}"></th:block>
+                                    </span>
                                 </p>
                             </div> <!-- /.d-flex -->
                             <div class="position-relative mb-4">
@@ -82,7 +88,7 @@
                             <div class="d-flex flex-row justify-content-end">
                                 <span class="me-2">
                                     <i class="bi bi-square-fill text-primary"></i>
-                                    Stack Trend
+                                    <th:block th:text="#{ui.graph.amount_trend}">Trend</th:block>
                                         </span>
                             </div>
                         </div>
@@ -96,7 +102,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header border-0">
-                            <h3 class="card-title">Detail</h3>
+                            <h3 class="card-title" th:text="#{ui.graph.detail}">Detail</h3>
                             <div class="card-tools"><a class="btn btn-tool btn-sm" href="#"> <i
                                     class="bi bi-download"></i> </a> <a class="btn btn-tool btn-sm" href="#"> <i
                                     class="bi bi-list"></i> </a></div>
@@ -105,8 +111,8 @@
                             <table class="table table-striped align-middle">
                                 <thead>
                                 <tr>
-                                    <th>Amount</th>
-                                    <th>Time</th>
+                                    <th th:text="#{ui.graph.amount}">Amount</th>
+                                    <th th:text="#{ui.graph.time}">Time</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -168,20 +174,6 @@
     });
 </script> <!--end::OverlayScrollbars Configure-->
 <script th:src="@{dist/js/apexcharts/apexcharts.min.js}"></script>
-<script>
-    function formatBytes(bytes) {
-        if (bytes === 0) return 0;
-        const k = 1000, sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
-            i = Math.floor(Math.log(bytes) / Math.log(k));
-        let temp;
-        if (sizes[i]) {
-            temp = bytes / Math.pow(k, i);
-            temp = temp.toFixed(temp < 10 ? 2 : (temp < 100 ? 1 : 0));
-            return temp + sizes[i];
-        }
-        return bytes
-    }
-</script>
 <script th:inline="javascript">
     const bdl = [[${bdl}]];
     const name_to_display = [[${name_to_display}]]
@@ -223,7 +215,7 @@
                         temp = temp.toFixed(temp < 10 ? 2 : (temp < 100 ? 1 : 0));
                         return temp + sizes[i];
                     }
-                    return bytes
+                    return bytes;
                 }
             }
         },
@@ -236,6 +228,7 @@
         document.querySelector("#stat_chart"),
         stat_options
     );
+
     stat_chart.render();
 </script>
 <!--end::Script-->
