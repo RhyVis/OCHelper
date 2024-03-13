@@ -16,12 +16,16 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class AeDisplayFluidObj extends AeDataSetObj {
     protected final String local;
+    protected final String sizeFormatted;
+    protected final String sizeByte;
     @Setter
     protected String imgPath;
 
     public AeDisplayFluidObj(String un, String size, long id, String time) {
         super(un, size, id, time);
         this.local = Format.tryTranslateFluidUn(un);
+        this.sizeFormatted = Format.formatSizeWithComma(sizeString);
+        this.sizeByte = Format.formatStringByte(sizeString);
     }
 
     public static AeDisplayFluidObj getDummy() {

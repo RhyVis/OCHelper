@@ -7,7 +7,7 @@ import lombok.Data;
  * @author Rhynia
  */
 @Data
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 public class CommandPack {
     private final String key;
     private final String command;

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>AE CPU Info</title>
+    <title th:text="#{title.ae.cpu_info}">TITLE</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,13 +24,15 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">AE CPU Info</h3>
+                        <h3 class="mb-0" th:text="#{title.ae.cpu_info}">TITLE</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
-                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
-                            <li aria-current="page" class="breadcrumb-item active">
-                                CPU Raw Insight
+                            <li class="breadcrumb-item">
+                                <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
+                            </li>
+                            <li aria-current="page" class="breadcrumb-item active" th:text="#{title.ae.cpu_info}">
+                                TITLE
                             </li>
                         </ol>
                     </div>
@@ -44,7 +46,7 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">CPU Basic Info List</h5>
+                <h5 class="mb-2" th:text="#{page.ae.cpu_info.basic_title}">CPU Basic Info List</h5>
 
                 <!--begin::Row-->
                 <div class="row">
@@ -63,11 +65,11 @@
                                     <table class="table table-striped align-middle">
                                         <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>ID</th>
-                                            <th>Coprocessors</th>
-                                            <th>Storage</th>
-                                            <th>Busy</th>
+                                            <th th:text="#{page.ae.cpu_info.sheet.name}">Name</th>
+                                            <th th:text="#{page.ae.cpu_info.sheet.id}">ID</th>
+                                            <th th:text="#{page.ae.cpu_info.sheet.coprocessors}">Coprocessors</th>
+                                            <th th:text="#{page.ae.cpu_info.sheet.storage}">Storage</th>
+                                            <th th:text="#{page.ae.cpu_info.sheet.state}">Busy</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -92,10 +94,10 @@
                                             </td>
                                             <td>
                                                 <small class="text-bg-danger me-1" th:if="${c.isBusy()}">
-                                                    Busy
+                                                    <th:block th:text="#{page.ae.cpu_info.sheet.busy}">Busy</th:block>
                                                 </small>
                                                 <small class="text-success me-1" th:if="!${c.isBusy()}">
-                                                    Free
+                                                    <th:block th:text="#{page.ae.cpu_info.sheet.free}">Free</th:block>
                                                 </small>
                                             </td>
                                             <td>
@@ -109,7 +111,7 @@
                                     </table>
                                 </div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer">Crafting CPUs</div> <!-- /.card-footer-->
+                            <div class="card-footer" th:text="#{page.ae.cpu_info.sheet.footer}">Crafting CPUs</div> <!-- /.card-footer-->
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->

@@ -26,13 +26,9 @@ public class AeReportItemObj extends AbstractAeData {
     protected String local;
 
     @JsonCreator
-    public AeReportItemObj(
-            @JsonProperty("label") String label,
-            @JsonProperty("name") String name,
-            @JsonProperty("damage") int damage,
-            @JsonProperty("hasTag") boolean hasTag,
-            @JsonProperty("isCraftable") boolean isCraftable,
-            @JsonProperty("size") String size) {
+    public AeReportItemObj(@JsonProperty("label") String label, @JsonProperty("name") String name,
+        @JsonProperty("damage") int damage, @JsonProperty("hasTag") boolean hasTag,
+        @JsonProperty("isCraftable") boolean isCraftable, @JsonProperty("size") String size) {
         super(Format.assembleItemUniqueName(name, damage), size);
         this.name = name;
         this.label = label;
@@ -53,5 +49,9 @@ public class AeReportItemObj extends AbstractAeData {
             String tmp2 = Format.trySwitchFluidLocal(tmp1);
             return new AeDisplayItemObj(this.un, this.sizeString, tmp2 + "单元", 0, "2024-01-01 00:00:00");
         }
+    }
+
+    public static AeReportItemObj getDummy() {
+        return new AeReportItemObj("无", "NULL", 0, false, false, "0");
     }
 }

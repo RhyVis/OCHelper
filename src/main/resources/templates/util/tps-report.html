@@ -28,7 +28,9 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
-                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
+                            <li class="breadcrumb-item">
+                                <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
+                            </li>
                             <li aria-current="page" class="breadcrumb-item active">
                                 TPS Report
                             </li>
@@ -69,6 +71,30 @@
                                         </tr>
                                         </thead>
                                         <tbody>
+                                        <tr>
+                                            <td>
+                                                <th:block th:text="ALL DIM"></th:block>
+                                            </td>
+                                            <td>
+                                                <small class="text-primary me-1">
+                                                    <th:block th:text="${sumSet.getMspt()}"></th:block>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <small class="text-success me-1" th:if="${sumSet.isHealthy()}">
+                                                    <th:block th:text="${sumSet.getTps()}"></th:block>
+                                                </small>
+                                                <small class="text-danger me-1" th:if="!${sumSet.isHealthy()}">
+                                                    <th:block th:text="${sumSet.getTps()}"></th:block>
+                                                    <th:block>😡</th:block>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <a class="text-secondary">
+                                                    <i class="bi bi-search"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
                                         <tr th:each="ms:${m_list}">
                                             <td>
                                                 <th:block th:text="${ms.getDim()}"></th:block>

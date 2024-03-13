@@ -2,8 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>OC Center</title>
-    <meta content="OC Center" name="title">
+    <title th:text="#{app.name}">TITLE</title>
     <th:block th:replace="~{shared/head-shared::head}"></th:block>
 </head>
 
@@ -24,13 +23,15 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">OC Center</h3>
+                        <h3 class="mb-0" th:text="#{app.name}">TITLE</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
-                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
-                            <li aria-current="page" class="breadcrumb-item active">
-                                OC Center
+                            <li class="breadcrumb-item">
+                                <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
+                            </li>
+                            <li aria-current="page" class="breadcrumb-item active" th:text="#{app.name}">
+                                TITLE
                             </li>
                         </ol>
                     </div>
@@ -43,7 +44,7 @@
                     <div class="col-12"> <!-- Default box -->
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Main Page</h3>
+                                <h3 class="card-title" th:text="#{page.dashboard.card1.title}">Main Page</h3>
                                 <div class="card-tools">
                                     <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
                                             type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
@@ -53,11 +54,14 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                Welcome to OC Center, for any functions please use sidebar.
-                                <img alt="DM" height="300" style="align-content: center" th:src="@{res/dm.jpg}"
-                                     width="300">
+                                <th:block th:text="#{page.dashboard.card1.content}"></th:block>
+                                <hr/>
+                                <div>
+                                    <img alt="DM" height="300" style="align-content: center" th:src="@{res/dm.jpg}"
+                                         width="300">
+                                </div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer">OC Helper</div> <!-- /.card-footer-->
+                            <div class="card-footer" th:text="#{app.name}">OC Helper</div> <!-- /.card-footer-->
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->

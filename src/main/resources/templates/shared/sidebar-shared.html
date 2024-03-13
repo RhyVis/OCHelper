@@ -25,13 +25,15 @@
             <ul class="nav sidebar-menu flex-column" data-accordion="false" data-lte-toggle="treeview" role="menu">
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{dashboard}"> <i class="nav-icon bi bi-browser-edge"></i>
-                        <p>Dashboard</p>
+                        <p>
+                            <th:block th:text="#{title.main.dashboard}">Dashboard</th:block>
+                        </p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#"> <i class="nav-icon bi bi-box-seam-fill"></i>
                         <p>
-                            AE Components
+                            <th:block th:text="#{title.ae.header}">AE Components</th:block>
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
                     </a>
@@ -39,36 +41,36 @@
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{ae-storage-info}"> <i
                                     class="nav-icon bi bi-circle"></i>
-                                <p>Storage Center</p>
+                                <p th:text="#{title.ae.storage}">Storage Center</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{ae-cpu-info}"> <i
                                     class="nav-icon bi bi-circle"></i>
-                                <p>CPU Info</p>
+                                <p th:text="#{title.ae.cpu_info}">CPU Info</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{ae-craft}"> <i
                                     class="nav-icon bi bi-circle"></i>
-                                <p>Craft Instance</p>
+                                <p th:text="#{title.ae.craft}">Crafting Instance</p>
                             </a>
                         </li>
                     </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{gt-energy-data}"> <i class="nav-icon bi bi-table"></i>
-                        <p>Energy Status</p>
+                        <p th:text="#{title.c.es}">Energy Status</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{oc-components}"> <i class="nav-icon bi bi-ui-checks-grid"></i>
-                        <p>Components</p>
+                        <p th:text="#{title.c.components}">Components</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#"> <i class="nav-icon bi bi-grip-horizontal"></i>
-                        <p>
+                        <p th:text="#{title.util.header}">
                             Util
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
@@ -77,7 +79,13 @@
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{tps-report}"> <i
                                     class="nav-icon bi bi-circle"></i>
-                                <p>MSPT & TPS</p>
+                                <p th:text="#{title.util.mspt}">MSPT & TPS</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{lua-script-refresh(opt=false)}"> <i
+                                    class="nav-icon bi bi-circle"></i>
+                                <p th:text="#{title.util.script_assemble}">Lua Script Assemble</p>
                             </a>
                         </li>
                     </ul>

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"> <!--begin::Head-->
 
 <head>
-    <title>AE Craft Util</title>
+    <title th:text="#{title.ae.craft}">TITLE</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,13 +24,15 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">AE Craft Util</h3>
+                        <h3 class="mb-0" th:text="#{title.ae.craft}">TITLE</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
-                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
-                            <li aria-current="page" class="breadcrumb-item active">
-                                AE Craft Util
+                            <li class="breadcrumb-item">
+                                <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
+                            </li>
+                            <li aria-current="page" class="breadcrumb-item active" th:text="#{title.ae.craft}">
+                                TITLE
                             </li>
                         </ol>
                     </div>
@@ -44,13 +46,13 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Craftable Object List</h5>
+                <h5 class="mb-2" th:text="#{page.ae.craft.list}">Craftable Object List</h5>
 
                 <form th:action="ae-craft" name="req" method="post">
                     <div class="input-group mb-1">
                         <div class="form-floating">
-                            <input id="amount" type="number" name="amount" class="form-control" value=0>
-                            <label for="amount">Amount</label>
+                            <input id="amount" type="number" name="amount" class="form-control" value="0">
+                            <label for="amount" th:text="#{page.ae.craft.form.amount}">Amount</label>
                             <input type="hidden" id="name" name="name">
                             <input type="hidden" id="meta" name="meta">
                         </div>
@@ -58,6 +60,8 @@
                             <span class="bi bi-envelope"></span>
                         </div>
                     </div>
+
+                    <br/>
 
                     <!--begin::Row-->
                     <div class="row">
@@ -76,7 +80,7 @@
                                     <button class="btn btn-primary" th:data-o_name="${item.getName()}"
                                             th:data-o_meta="${item.getMeta()}"
                                             onclick='send(this.getAttribute("data-o_name"),this.getAttribute("data-o_meta"))'>
-                                        Order
+                                        <th:block th:text="#{page.ae.craft.form.order}"></th:block>
                                     </button>
                                 </span>
                                 </div> <!-- /.info-box-content -->
@@ -92,25 +96,27 @@
                     <div id="toastSuccess" class="toast toast-success" role="alert" aria-live="assertive"
                          aria-atomic="true">
                         <div class="toast-header"><i class="bi bi-circle me-2"></i>
-                            <strong class="me-auto">Recipe Task Result</strong>
-                            <small>Present</small>
-                            <button type="button" class="btn-close" aria-label="Close" onclick="$('#toastSuccess').hide();"></button>
+                            <strong class="me-auto" th:text="#{page.ae.craft.toast.result}">Recipe Task Result</strong>
+                            <small th:text="#{ui.toast.present}">Present</small>
+                            <button type="button" class="btn-close" aria-label="Close"
+                                    onclick="$('#toastSuccess').hide();"></button>
                         </div>
                         <div class="toast-body">
                             <th:block th:text="${local}">Missing</th:block>
-                            recipe task succeed!
+                            <th:block th:text="#{page.ae.craft.toast.success}"></th:block>
                         </div>
                     </div>
                     <div id="toastFailed" class="toast toast-danger" role="alert" aria-live="assertive"
                          aria-atomic="true">
                         <div class="toast-header"><i class="bi bi-circle me-2"></i>
-                            <strong class="me-auto">Recipe Task Result</strong>
-                            <small>Present</small>
-                            <button type="button" class="btn-close" aria-label="Close" onclick="$('#toastFailed').hide();"></button>
+                            <strong class="me-auto" th:text="#{page.ae.craft.toast.result}">Recipe Task Result</strong>
+                            <small th:text="#{ui.toast.present}">Present</small>
+                            <button type="button" class="btn-close" aria-label="Close"
+                                    onclick="$('#toastFailed').hide();"></button>
                         </div>
                         <div class="toast-body">
                             <th:block th:text="${local}">Missing</th:block>
-                            recipe task failed!
+                            <th:block th:text="#{page.ae.craft.toast.fail}"></th:block>
                         </div>
                     </div>
                 </div>
@@ -130,20 +136,6 @@
 </div> <!--end::App Wrapper-->
 <!--begin::Script-->
 <th:block th:insert="~{shared/script-shared::script}"></th:block>
-<script>
-    function send(name, meta) {
-        const amount = $('#amount').val();
-        if (amount <= 0) {
-            alert("Recipe request amount must be larger than 0!")
-            return false;
-        }
-        const metaInt = parseInt(meta);
-        $('#name').val(name);
-        $('#meta').val(metaInt);
-        document.req.submit();
-        return true;
-    }
-</script>
 <script th:inline="javascript">
     const success = [[${success}]];
     const result = [[${result}]];
@@ -159,6 +151,20 @@
                 $('#toastFailed').hide();
             }, 10000);
         }
+    }
+
+    function send(name, meta) {
+        const amount = $('#amount').val();
+        const message = [[#{page.ae.craft.alert_amount}]];
+        if (amount <= 0) {
+            alert(message);
+            return false;
+        }
+        const metaInt = parseInt(meta);
+        $('#name').val(name);
+        $('#meta').val(metaInt);
+        document.req.submit();
+        return true;
     }
 </script>
 <!--end::Script-->

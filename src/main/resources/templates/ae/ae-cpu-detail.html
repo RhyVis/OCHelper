@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>AE CPU Detail</title>
+    <title th:text="#{title.ae.cpu_detail}">TITLE</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,13 +24,15 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">AE CPU Crafting Status</h3>
+                        <h3 class="mb-0" th:text="#{title.ae.cpu_detail}">TITLE</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
-                            <li class="breadcrumb-item"><a href="dashboard">Home</a></li>
-                            <li aria-current="page" class="breadcrumb-item active">
-                                AE CPU Detail
+                            <li class="breadcrumb-item">
+                                <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
+                            </li>
+                            <li aria-current="page" class="breadcrumb-item active" th:text="#{title.ae.cpu_detail}">
+                                TITLE
                             </li>
                         </ol>
                     </div>
@@ -44,7 +46,7 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Active Item</h5>
+                <h5 class="mb-2" th:text="#{page.ae.cpu_detail.active}">Active Item</h5>
 
                 <!--begin::Row-->
                 <div class="row">
@@ -73,7 +75,7 @@
 
                 <br/>
 
-                <h5 class="mb-2">Store Item</h5>
+                <h5 class="mb-2" th:text="#{page.ae.cpu_detail.store}">Store Item</h5>
 
                 <!--begin::Row-->
                 <div class="row">
@@ -102,7 +104,7 @@
 
                 <br/>
 
-                <h5 class="mb-2">Pending Item</h5>
+                <h5 class="mb-2" th:text="#{page.ae.cpu_detail.pending}">Pending Item</h5>
 
                 <!--begin::Row-->
                 <div class="row">
@@ -131,7 +133,7 @@
 
                 <br/>
 
-                <h5 class="mb-2">Final Output</h5>
+                <h5 class="mb-2" th:text="#{page.ae.cpu_detail.final}">Final Output</h5>
 
                 <!--begin::Row-->
                 <div class="row">

@@ -26,11 +26,8 @@ public class AeCraftObj extends AbstractAeObject {
     protected String imgPath;
 
     @JsonCreator
-    public AeCraftObj(
-            @JsonProperty("name") String name,
-            @JsonProperty("label") String label,
-            @JsonProperty("damage") int meta,
-            @JsonProperty("isCraftable") boolean isCraftable) {
+    public AeCraftObj(@JsonProperty("name") String name, @JsonProperty("label") String label,
+        @JsonProperty("damage") int meta, @JsonProperty("isCraftable") boolean isCraftable) {
         super(Format.assembleItemUniqueName(name, meta));
         this.name = name;
         this.label = label;
@@ -44,5 +41,9 @@ public class AeCraftObj extends AbstractAeObject {
             String tmp2 = Format.trySwitchFluidLocal(tmp1);
             this.local = tmp2 + "单元";
         }
+    }
+
+    public static AeCraftObj getDummy() {
+        return new AeCraftObj("NULL", "NULL", 0,false);
     }
 }
