@@ -162,6 +162,7 @@ package com.rhynia.ochelper.controller;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -172,12 +173,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
 
     @GetMapping("/")
-    public String getMainRedirect() {
+    public String getMainRedirect(Model model) {
+        model.addAttribute("failInEnergy", false);
         return "dashboard";
     }
 
     @GetMapping("dashboard")
-    public String getDashboard() {
+    public String getDashboard(Model model) {
+        model.addAttribute("failInEnergy", false);
         return "dashboard";
     }
 

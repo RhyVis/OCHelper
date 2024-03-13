@@ -65,6 +65,22 @@
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->
+                <!--start::Toast-->
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div aria-atomic="true" aria-live="assertive" class="toast toast-danger" id="toastFailInEnergy"
+                         role="alert">
+                        <div class="toast-header"><i class="bi bi-circle me-2"></i>
+                            <strong class="me-auto" th:text="#{page.dashboard.toast.fail.title}">TITLE</strong>
+                            <small th:text="#{ui.toast.present}">Present</small>
+                            <button aria-label="Close" class="btn-close" onclick="$('#toastFailInEnergy').hide();"
+                                    type="button"></button>
+                        </div>
+                        <div class="toast-body">
+                            <th:block th:text="#{page.gt.es.fail_to_dashboard}"></th:block>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Toast-->
             </div> <!--end::Container-->
         </div> <!--end::App Content-->
     </main> <!--end::App Main-->
@@ -74,6 +90,14 @@
 </div> <!--end::App Wrapper-->
 <!--begin::Script-->
 <th:block th:insert="~{shared/script-shared::script}"></th:block>
+<script th:inline="javascript">
+    const failInEnergy = [[${failInEnergy}]];
+    if (failInEnergy) {
+        $('toastFailInEnergy').show();
+    } else {
+        $('toastFailInEnergy').hide();
+    }
+</script>
 <!--end::Script-->
 </body><!--end::Body-->
 

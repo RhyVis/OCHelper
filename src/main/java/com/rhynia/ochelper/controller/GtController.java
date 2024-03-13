@@ -159,6 +159,7 @@
  */
 package com.rhynia.ochelper.controller;
 
+import com.rhynia.ochelper.config.EnergyStationConfig;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Utilities;
 
@@ -186,6 +187,7 @@ import java.util.ArrayList;
 public class GtController {
 
     private final DatabaseAccessor da;
+    private final EnergyStationConfig es;
 
     @GetMapping("gt-sensor-info")
     public String requestGtSensorInfo(Model model) {
@@ -200,6 +202,11 @@ public class GtController {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DecimalFormat nf = new DecimalFormat("0.000%");
         int insightSize = 200;
+        if (es.getEsData().get(0) == null) {
+            log.error("Requested for wireless data, but wireless data not set yet!");
+            model.addAttribute("failInEnergy", true);
+            return "dashboard";
+        }
         var list = da.getEnergyWirelessDataN(insightSize);
         ArrayList<BigDecimal[]> tmpBdl = new ArrayList<>();
 
