@@ -166,6 +166,7 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
 import com.rhynia.ochelper.var.base.AbstractAeData;
 
+import com.rhynia.ochelper.var.base.AbstractAeObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -182,6 +183,28 @@ public class Utilities {
         "", "K", "M", "G", "T", "P", "E", "Z", "Y", "KY", "MY", "GY", "TY", "PY", "EY", "ZY", "YY",
         "KYY", "MYY", "GYY", "TYY", "PYY", "EYY", "ZYY", "YYY"
     };
+
+    private static final String[] UNIT_LIST = {"Y", "K", "M", "G", "T", "P", "E", "Z"};
+
+    private static String getByte(final int byteSeral) {
+        if (byteSeral <= 0) {
+            return "";
+        }
+
+        int xOrd = byteSeral % 8;
+        int yOrd = byteSeral / 8;
+
+        if (yOrd == 0) {
+            return UNIT_LIST[xOrd];
+        } else {
+            String y = "Y";
+            if (yOrd <= 32) {
+                return UNIT_LIST[xOrd] + y.repeat(yOrd);
+            } else {
+                return UNIT_LIST[xOrd] + "(" + y + "*" + yOrd + ")";
+            }
+        }
+    }
 
     public static String formatStringByte(String val) {
         if (val == null) {
@@ -201,6 +224,26 @@ public class Utilities {
         }
 
         return bytePrefix + BYTE_LIST[byteSeral];
+    }
+
+    public static String formatStringByteUnlimited(String val) {
+        if (val == null) {
+            return null;
+        }
+
+        int len = val.length();
+        int byteSeral = len / 3;
+        if (byteSeral == 0) {
+            return val;
+        }
+
+        String bytePrefix = val.substring(0, len - 3 * byteSeral);
+        // Rollback to last byte
+        if (bytePrefix.isEmpty()) {
+            return val.substring(0, len - 3 * (byteSeral - 1)) + getByte(byteSeral - 1);
+        }
+
+        return bytePrefix + getByte(byteSeral);
     }
 
     public static String removeUnavailableChar(String s) {
@@ -256,9 +299,21 @@ public class Utilities {
         return !"0".equals(s);
     }
 
+    private static boolean stringNonDrop(@NotNull String s) {
+        return !s.endsWith("drop$0");
+    }
+
     public static <T extends AbstractAeData> boolean dataSizeNonZero(T data) {
         if (data != null) {
             return stringSizeNonZero(data.getSizeString());
+        } else {
+            return false;
+        }
+    }
+
+    public static <T extends AbstractAeObject> boolean dataNonDrop(T data) {
+        if (data != null) {
+            return stringNonDrop(data.getUn());
         } else {
             return false;
         }

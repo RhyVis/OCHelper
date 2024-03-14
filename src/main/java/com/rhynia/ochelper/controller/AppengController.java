@@ -166,14 +166,14 @@ import com.rhynia.ochelper.config.ConfigValues;
 import com.rhynia.ochelper.config.PathAssemble;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Utilities;
-import com.rhynia.ochelper.var.element.connection.AeCpu;
-import com.rhynia.ochelper.var.element.connection.AeCraftObj;
-import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
+import com.rhynia.ochelper.var.element.connection.*;
 import com.rhynia.ochelper.var.element.data.AeDataSetObj;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -204,15 +204,28 @@ public class AppengController {
     private final DatabaseAccessor da;
     private final DataProcessor dp;
 
+    @Value("${user.dir}/public/res/item_table/")
+    private String icon;
+
     private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final DecimalFormat nf = new DecimalFormat("0.000%");
     // For element transport in ae-craftables & ae-craft
     private List<AeCraftObj> tempCraftableList = new ArrayList<>();
 
+    private void setIconPath(@NotNull AeDisplayItemObj obj) {
+        obj.setImgPath(icon + obj.getLocal() + ".png");
+    }
+
+    private void setIconPath(@NotNull AeDisplayFluidObj obj) {
+        obj.setImgPath(icon + obj.getSwitchedLocal() + "单元.png");
+    }
+
+    private void setIconPath(@NotNull AeCraftObj obj) {
+        obj.setImgPath(icon + obj.getLocal() + ".png");
+    }
+
     @GetMapping("ae-storage-info")
     public String getInfoPageIndex(Model model) {
-
-        String iconPath = pa.getPath().getIconPanelPath();
 
         var pair = da.getLatestData();
 
@@ -221,16 +234,13 @@ public class AppengController {
 
         var items =
                 tmp1.stream()
-                        .filter(obj -> (!obj.getUn().endsWith("drop$0")))
+                        .filter(Utilities::dataNonDrop)
                         .filter(Utilities::dataSizeNonZero)
-                        .peek(obj -> obj.setImgPath(iconPath + obj.getLocal() + ".png"))
+                        .peek(this::setIconPath)
                         .toList();
 
         var fluids =
-                tmp2.stream()
-                        .filter(Utilities::dataSizeNonZero)
-                        .peek(obj -> obj.setImgPath(iconPath + obj.getSwitchedLocal() + "单元.png"))
-                        .toList();
+                tmp2.stream().filter(Utilities::dataSizeNonZero).peek(this::setIconPath).toList();
 
         model.addAttribute("itemList", items);
         model.addAttribute("fluidList", fluids);
@@ -247,7 +257,6 @@ public class AppengController {
 
         int insightSize = cv.getInsightSize();
         var name = UNI_NAME_MAP_ITEM.get(un);
-        var imgPath = pa.getPath().getIconPanelPath();
         var original = da.getAeItemDataObjN(un, insightSize);
 
         // First element latest
@@ -256,7 +265,7 @@ public class AppengController {
                 original.stream()
                         .sorted(Comparator.comparingLong(AeDataSetObj::getId).reversed())
                         .map(AeDataSetObj::getAeItemDisplayObj)
-                        .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
+                        .peek(this::setIconPath)
                         .peek(
                                 obj -> {
                                     BigDecimal[] tmpArray = new BigDecimal[2];
@@ -299,7 +308,6 @@ public class AppengController {
 
         int insightSize = cv.getInsightSize();
         var name = "Insight - " + UNI_NAME_MAP_FLUID.get(un);
-        var imgPath = pa.getPath().getIconPanelPath();
         var original = da.getAeFluidDataObjN(un, insightSize);
 
         // First element latest
@@ -308,7 +316,7 @@ public class AppengController {
                 original.stream()
                         .sorted(Comparator.comparingLong(AeDataSetObj::getId).reversed())
                         .map(AeDataSetObj::getAeFluidDisplayObj)
-                        .peek(obj -> obj.setImgPath(imgPath + obj.getSwitchedLocal() + "单元.png"))
+                        .peek(this::setIconPath)
                         .peek(
                                 obj -> {
                                     BigDecimal[] tmpArray = new BigDecimal[2];
@@ -371,27 +379,17 @@ public class AppengController {
 
     @GetMapping("ae-cpu-detail")
     public String requestCpuDetail(int cpuid, Model model) {
-        String imgPath = pa.getPath().getIconPanelPath();
 
         var pair = dp.requestAeCpuDetail(cpuid);
         var listP = pair.getLeft();
         var finalOutput = pair.getRight().getDisplay();
 
         var active =
-                listP[0].stream()
-                        .map(AeReportItemObj::getDisplay)
-                        .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
-                        .toList();
+                listP[0].stream().map(AeReportItemObj::getDisplay).peek(this::setIconPath).toList();
         var store =
-                listP[1].stream()
-                        .map(AeReportItemObj::getDisplay)
-                        .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
-                        .toList();
+                listP[1].stream().map(AeReportItemObj::getDisplay).peek(this::setIconPath).toList();
         var pending =
-                listP[2].stream()
-                        .map(AeReportItemObj::getDisplay)
-                        .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
-                        .toList();
+                listP[2].stream().map(AeReportItemObj::getDisplay).peek(this::setIconPath).toList();
 
         model.addAttribute("cpuid", cpuid);
         model.addAttribute("active", active);
@@ -405,12 +403,7 @@ public class AppengController {
     @GetMapping("ae-craft")
     public String requestCraftables(Model model) {
 
-        var imgPath = pa.getPath().getIconPanelPath();
-
-        var list =
-                dp.requestAeCraftList().stream()
-                        .peek(obj -> obj.setImgPath(imgPath + obj.getLocal() + ".png"))
-                        .toList();
+        var list = dp.requestAeCraftList().stream().peek(this::setIconPath).toList();
         tempCraftableList = list;
 
         model.addAttribute("amount", 0);
