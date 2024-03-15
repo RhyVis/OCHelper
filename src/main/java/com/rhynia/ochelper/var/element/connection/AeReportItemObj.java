@@ -35,7 +35,7 @@ public class AeReportItemObj extends AbstractAeData {
         super(Utilities.assembleItemUniqueName(name, damage), size);
         this.name = name;
         this.label = label;
-        this.local = Utilities.tryTranslateItemUn(un);
+        this.local = Utilities.tryTranslateItemUn(un, label);
         this.meta = damage;
         this.hasTag = hasTag;
         this.isCraftable = isCraftable;
@@ -45,7 +45,7 @@ public class AeReportItemObj extends AbstractAeData {
         return new AeReportItemObj("无", "NULL", 0, false, false, "0");
     }
 
-    // Used in CPU detail fetching
+    // Used only in CPU detail fetching
     public AeDisplayItemObj getDisplay() {
         if (!this.getUn().endsWith("drop$0")) {
             // Try to translate label

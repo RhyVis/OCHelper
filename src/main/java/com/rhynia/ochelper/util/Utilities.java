@@ -165,12 +165,20 @@ import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
 import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
 
 import com.rhynia.ochelper.var.base.AbstractAeData;
-
+import com.rhynia.ochelper.var.base.AbstractAeDataSet;
 import com.rhynia.ochelper.var.base.AbstractAeObject;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
+import com.rhynia.ochelper.var.element.data.EnergyData;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,6 +186,7 @@ import java.util.regex.Pattern;
 /**
  * @author Rhynia
  */
+@Slf4j
 public class Utilities {
     private static final String[] BYTE_LIST = {
         "", "K", "M", "G", "T", "P", "E", "Z", "Y", "KY", "MY", "GY", "TY", "PY", "EY", "ZY", "YY",
@@ -185,6 +194,8 @@ public class Utilities {
     };
 
     private static final String[] UNIT_LIST = {"Y", "K", "M", "G", "T", "P", "E", "Z"};
+
+    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static String getByte(final int byteSeral) {
         if (byteSeral <= 0) {
@@ -287,6 +298,11 @@ public class Utilities {
         return UNI_NAME_MAP_ITEM.getOrDefault(un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, un));
     }
 
+    public static String tryTranslateItemUn(String un, String rollBack) {
+        return UNI_NAME_MAP_ITEM.getOrDefault(
+                un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, rollBack));
+    }
+
     public static String tryTranslateFluidUn(String un) {
         return UNI_NAME_MAP_FLUID.getOrDefault(un, un);
     }
@@ -316,6 +332,30 @@ public class Utilities {
             return stringNonDrop(data.getUn());
         } else {
             return false;
+        }
+    }
+
+    public static void updateLocalMap(AeReportItemObj obj) {
+        if (obj != null && !UNI_NAME_MAP_ITEM.containsKey(obj.getUn())) {
+            UNI_NAME_MAP_ITEM.put(obj.getUn(), obj.getLabel());
+        }
+    }
+
+    public static <T extends AbstractAeDataSet> BigDecimal getBigDecimalTimeStamp(T data) {
+        try {
+            return BigDecimal.valueOf(df.parse(data.getTime()).getTime());
+        } catch (ParseException e) {
+            log.error("Error caught in reading date: ", e);
+            return BigDecimal.ONE;
+        }
+    }
+
+    public static BigDecimal getBigDecimalTimeStamp(EnergyData data) {
+        try {
+            return BigDecimal.valueOf(df.parse(data.getTime()).getTime());
+        } catch (ParseException e) {
+            log.error("Error caught in reading date: ", e);
+            return BigDecimal.ONE;
         }
     }
 }

@@ -159,14 +159,13 @@
  */
 package com.rhynia.ochelper.component;
 
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhynia.ochelper.database.DatabaseUpdater;
 import com.rhynia.ochelper.util.CommandPackEnum;
 import com.rhynia.ochelper.util.LuaScriptFactory;
+import com.rhynia.ochelper.util.Utilities;
 import com.rhynia.ochelper.var.element.connection.*;
 
 import lombok.RequiredArgsConstructor;
@@ -234,17 +233,7 @@ public class DataProcessor {
 
         opt.ifPresent(
                 l -> {
-                    var d =
-                            l.stream()
-                                    .peek(
-                                            obj -> {
-                                                if (UNI_NAME_MAP_ITEM.containsKey(obj.getUn())) {
-                                                    UNI_NAME_MAP_ITEM.put(
-                                                            obj.getUn(), obj.getLabel());
-                                                    obj.setLocal(obj.getLabel());
-                                                }
-                                            })
-                                    .toList();
+                    var d = l.stream().peek(Utilities::updateLocalMap).toList();
                     long begin = System.currentTimeMillis();
                     du.updateItemDatabase(d);
                     long end = System.currentTimeMillis();
@@ -591,7 +580,7 @@ public class DataProcessor {
                     log.debug("Received respond body -> {}", v);
                     boolean error = Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"");
                     if (error) {
-                        log.error("Received ERROR report in action " + k);
+                        log.error("Received ERROR report in action {}.", k);
                     }
                     if (k.startsWith("OC_GET_COMPONENT_DOC_")) {
                         String method = k.substring(21);

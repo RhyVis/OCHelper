@@ -174,7 +174,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -215,14 +214,7 @@ public class GtController {
                         .peek(
                                 data -> {
                                     BigDecimal[] tmpArray = new BigDecimal[2];
-                                    try {
-                                        tmpArray[0] =
-                                                BigDecimal.valueOf(
-                                                        df.parse(data.getTime()).getTime());
-                                    } catch (ParseException e) {
-                                        log.error("Error caught in reading date: ", e);
-                                        tmpArray[0] = BigDecimal.ONE;
-                                    }
+                                    tmpArray[0] = Utilities.getBigDecimalTimeStamp(data);
                                     tmpArray[1] = data.getSize();
                                     tmpBdl.add(tmpArray);
                                 })

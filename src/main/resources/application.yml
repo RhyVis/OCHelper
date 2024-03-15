@@ -18,13 +18,11 @@ spring:
 path:
   csv-item-name: itempanel.csv
   csv-fluid-name: fluid.csv
-  json-item-name: indexItem.json
-  json-fluid-name: indexFluid.json
   icon-panel-path: res/item_table/
   csv-path: D:/Workbench/Java_Project/OCHelper/table/dumpCSV/
-  json-path: D:/Workbench/Java_Project/OCHelper/table/
   lua-scripts-path: D:/Workbench/Java_Project/OCHelper/scripts/server-side/
   database-path: D:/Workbench/Java_Project/OCHelper/database/
+  extra-config-path: D:/Workbench/Java_Project/OCHelper/table/extraConfig/
 #Scheduled scan time (in ms)
 scheduled:
   init: 20000

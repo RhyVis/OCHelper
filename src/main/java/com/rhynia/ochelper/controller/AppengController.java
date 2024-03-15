@@ -163,7 +163,6 @@ import static com.rhynia.ochelper.util.LocalizationMap.*;
 
 import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.config.ConfigValues;
-import com.rhynia.ochelper.config.PathAssemble;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Utilities;
 import com.rhynia.ochelper.var.element.connection.*;
@@ -183,10 +182,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -199,7 +195,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AppengController {
 
-    private final PathAssemble pa;
     private final ConfigValues cv;
     private final DatabaseAccessor da;
     private final DataProcessor dp;
@@ -207,21 +202,23 @@ public class AppengController {
     @Value("${user.dir}/public/res/item_table/")
     private String icon;
 
-    private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final DecimalFormat nf = new DecimalFormat("0.000%");
     // For element transport in ae-craftables & ae-craft
     private List<AeCraftObj> tempCraftableList = new ArrayList<>();
 
-    private void setIconPath(@NotNull AeDisplayItemObj obj) {
+    private AeDisplayItemObj setIconPath(@NotNull AeDisplayItemObj obj) {
         obj.setImgPath(icon + obj.getLocal() + ".png");
+        return obj;
     }
 
-    private void setIconPath(@NotNull AeDisplayFluidObj obj) {
+    private AeDisplayFluidObj setIconPath(@NotNull AeDisplayFluidObj obj) {
         obj.setImgPath(icon + obj.getSwitchedLocal() + "单元.png");
+        return obj;
     }
 
-    private void setIconPath(@NotNull AeCraftObj obj) {
+    private AeCraftObj setIconPath(@NotNull AeCraftObj obj) {
         obj.setImgPath(icon + obj.getLocal() + ".png");
+        return obj;
     }
 
     @GetMapping("ae-storage-info")
@@ -236,11 +233,11 @@ public class AppengController {
                 tmp1.stream()
                         .filter(Utilities::dataNonDrop)
                         .filter(Utilities::dataSizeNonZero)
-                        .peek(this::setIconPath)
+                        .map(this::setIconPath)
                         .toList();
 
         var fluids =
-                tmp2.stream().filter(Utilities::dataSizeNonZero).peek(this::setIconPath).toList();
+                tmp2.stream().filter(Utilities::dataSizeNonZero).map(this::setIconPath).toList();
 
         model.addAttribute("itemList", items);
         model.addAttribute("fluidList", fluids);
@@ -265,18 +262,11 @@ public class AppengController {
                 original.stream()
                         .sorted(Comparator.comparingLong(AeDataSetObj::getId).reversed())
                         .map(AeDataSetObj::getAeItemDisplayObj)
-                        .peek(this::setIconPath)
+                        .map(this::setIconPath)
                         .peek(
                                 obj -> {
                                     BigDecimal[] tmpArray = new BigDecimal[2];
-                                    try {
-                                        tmpArray[0] =
-                                                BigDecimal.valueOf(
-                                                        df.parse(obj.getTime()).getTime());
-                                    } catch (ParseException e) {
-                                        log.error("Error caught in reading data: ", e);
-                                        tmpArray[0] = BigDecimal.ZERO;
-                                    }
+                                    tmpArray[0] = Utilities.getBigDecimalTimeStamp(obj);
                                     tmpArray[1] = obj.getSize();
                                     tmpBdl.add(tmpArray);
                                 })
@@ -307,7 +297,7 @@ public class AppengController {
         }
 
         int insightSize = cv.getInsightSize();
-        var name = "Insight - " + UNI_NAME_MAP_FLUID.get(un);
+        var name = UNI_NAME_MAP_FLUID.get(un);
         var original = da.getAeFluidDataObjN(un, insightSize);
 
         // First element latest
@@ -316,18 +306,11 @@ public class AppengController {
                 original.stream()
                         .sorted(Comparator.comparingLong(AeDataSetObj::getId).reversed())
                         .map(AeDataSetObj::getAeFluidDisplayObj)
-                        .peek(this::setIconPath)
+                        .map(this::setIconPath)
                         .peek(
                                 obj -> {
                                     BigDecimal[] tmpArray = new BigDecimal[2];
-                                    try {
-                                        tmpArray[0] =
-                                                BigDecimal.valueOf(
-                                                        df.parse(obj.getTime()).getTime());
-                                    } catch (ParseException e) {
-                                        log.error("Error caught in reading date: ", e);
-                                        tmpArray[0] = BigDecimal.ZERO;
-                                    }
+                                    tmpArray[0] = Utilities.getBigDecimalTimeStamp(obj);
                                     tmpArray[1] = obj.getSize();
                                     tmpBdl.add(tmpArray);
                                 })
@@ -385,11 +368,11 @@ public class AppengController {
         var finalOutput = pair.getRight().getDisplay();
 
         var active =
-                listP[0].stream().map(AeReportItemObj::getDisplay).peek(this::setIconPath).toList();
+                listP[0].stream().map(AeReportItemObj::getDisplay).map(this::setIconPath).toList();
         var store =
-                listP[1].stream().map(AeReportItemObj::getDisplay).peek(this::setIconPath).toList();
+                listP[1].stream().map(AeReportItemObj::getDisplay).map(this::setIconPath).toList();
         var pending =
-                listP[2].stream().map(AeReportItemObj::getDisplay).peek(this::setIconPath).toList();
+                listP[2].stream().map(AeReportItemObj::getDisplay).map(this::setIconPath).toList();
 
         model.addAttribute("cpuid", cpuid);
         model.addAttribute("active", active);
@@ -403,7 +386,7 @@ public class AppengController {
     @GetMapping("ae-craft")
     public String requestCraftables(Model model) {
 
-        var list = dp.requestAeCraftList().stream().peek(this::setIconPath).toList();
+        var list = dp.requestAeCraftList().stream().map(this::setIconPath).toList();
         tempCraftableList = list;
 
         model.addAttribute("amount", 0);

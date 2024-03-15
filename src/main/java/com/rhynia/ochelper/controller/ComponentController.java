@@ -161,6 +161,7 @@ package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.var.element.connection.OcComponent;
+import com.rhynia.ochelper.var.element.connection.OcComponentDoc;
 
 import lombok.RequiredArgsConstructor;
 
@@ -168,6 +169,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -175,7 +177,7 @@ import java.util.List;
  */
 @Controller
 @RequiredArgsConstructor
-public class ComponentsController {
+public class ComponentController {
 
     private final DataProcessor dp;
 
@@ -188,7 +190,10 @@ public class ComponentsController {
 
     @GetMapping("oc-components-detail")
     public String fetchOcComponentsDetail(String name, String address, Model model) {
-        var list = dp.requestComponentDetail(address);
+
+        var raw = dp.requestComponentDetail(address);
+        var list = raw.stream().sorted(Comparator.comparing(OcComponentDoc::getMethod)).toList();
+
         model.addAttribute("component_name", name);
         model.addAttribute("d_list", list);
         return "oc/oc-components-detail";
