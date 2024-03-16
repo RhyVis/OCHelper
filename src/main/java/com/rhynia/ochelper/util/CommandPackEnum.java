@@ -231,8 +231,16 @@ public enum CommandPackEnum {
      * @param params args, should refer to the empty slot in pre-set command
      */
     public CommandPack ofParams(Object... params) {
-        String tmp = this.command;
-        tmp = String.format(tmp, params);
-        return CommandPack.of(this.key, tmp);
+        return CommandPack.of(this.key, String.format(this.command, params));
+    }
+
+    /**
+     * Inject both suffix and params with a new pack in return
+     *
+     * @param suffix suffix add to the end of key, for example "1" for "KEY_1"
+     * @param params see {@link CommandPackEnum#ofParams(Object...)}
+     */
+    public CommandPack ofSuffixAndParams(String suffix, Object... params) {
+        return CommandPack.of(this.key + "_" + suffix, String.format(this.command, params));
     }
 }

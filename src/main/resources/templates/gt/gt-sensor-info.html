@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--begin::Head-->
 
 <head>
-    <title>GT Sensor Info</title>
+    <title th:text="#{title.gt.sensor}">GT Sensor Info</title>
     <th:block th:insert="~{shared/head-shared::head}"></th:block>
 </head> <!--begin::Body-->
 
@@ -24,14 +24,14 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Sensor Information</h3>
+                        <h3 class="mb-0" th:text="#{title.gt.sensor}">Sensor Information</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item">
                                 <a href="dashboard" th:text="#{page.navbar.home}">Home</a>
                             </li>
-                            <li aria-current="page" class="breadcrumb-item active">
+                            <li aria-current="page" class="breadcrumb-item active" th:text="#{title.gt.sensor}">
                                 GT Sensor Info
                             </li>
                         </ol>
@@ -46,14 +46,12 @@
             <!--begin::Container-->
             <div class="container-fluid">
 
-                <h5 class="mb-2">Info</h5>
-
                 <!--begin::Row-->
                 <div class="row">
                     <div class="col-12"> <!-- Default box -->
-                        <div class="card">
+                        <div class="card" th:each="pair:${list}">
                             <div class="card-header">
-                                <h3 class="card-title">Sensor Data</h3>
+                                <h3 class="card-title" th:text="#{page.sensor.sheet.title}">Sensor Data</h3>
                                 <div class="card-tools">
                                     <button class="btn btn-tool" data-lte-toggle="card-collapse" title="Collapse"
                                             type="button"><i class="bi bi-plus-lg" data-lte-icon="expand"></i> <i
@@ -63,11 +61,11 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div th:each="line:${result}">
-                                    <div th:text="${line}"></div>
-                                </div>
+                                <div th:text="${pair.getLeft()} + ' - ' + ${pair.getMiddle()}"></div>
+                                <hr/>
+                                <div th:utext="${pair.getRight()}"></div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer">Info</div> <!-- /.card-footer-->
+                            <div class="card-footer" th:text="#{page.sensor.sheet.footer}">Info</div> <!-- /.card-footer-->
                         </div> <!-- /.card -->
                     </div>
                 </div>

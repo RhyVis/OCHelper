@@ -159,11 +159,6 @@
  */
 package com.rhynia.ochelper.util;
 
-import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
-
 import com.rhynia.ochelper.var.base.AbstractAeData;
 import com.rhynia.ochelper.var.base.AbstractAeDataSet;
 import com.rhynia.ochelper.var.base.AbstractAeObject;
@@ -183,6 +178,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.rhynia.ochelper.util.Mappings.*;
+
 /**
  * @author Rhynia
  */
@@ -195,7 +192,7 @@ public class Utilities {
 
     private static final String[] UNIT_LIST = {"Y", "K", "M", "G", "T", "P", "E", "Z"};
 
-    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static String getByte(final int byteSeral) {
         if (byteSeral <= 0) {
@@ -311,6 +308,10 @@ public class Utilities {
         return NAME_MAP_FLUID_SWITCH.getOrDefault(original, original);
     }
 
+    public static String getAddressAlias(String address) {
+        return ADDRESS_ALIAS_MAP.getOrDefault(address, "?");
+    }
+
     private static boolean stringSizeNonZero(@NotNull String s) {
         return !"0".equals(s);
     }
@@ -343,7 +344,7 @@ public class Utilities {
 
     public static <T extends AbstractAeDataSet> BigDecimal getBigDecimalTimeStamp(T data) {
         try {
-            return BigDecimal.valueOf(df.parse(data.getTime()).getTime());
+            return BigDecimal.valueOf(DF.parse(data.getTime()).getTime());
         } catch (ParseException e) {
             log.error("Error caught in reading date: ", e);
             return BigDecimal.ONE;
@@ -352,10 +353,44 @@ public class Utilities {
 
     public static BigDecimal getBigDecimalTimeStamp(EnergyData data) {
         try {
-            return BigDecimal.valueOf(df.parse(data.getTime()).getTime());
+            return BigDecimal.valueOf(DF.parse(data.getTime()).getTime());
         } catch (ParseException e) {
             log.error("Error caught in reading date: ", e);
             return BigDecimal.ONE;
         }
+    }
+
+    public static String stripQuotes(String s) {
+        if (!(s == null)) {
+            return s.substring(1, s.length() - 1);
+        } else {
+            return "";
+        }
+    }
+
+    public static String colorMinecraftToHtml(String s) {
+        return s.replace("§0", "<span style=\"color: #000000;\">")
+                // UIV
+                .replace("§1§l", "<span style=\"color: #0000AA; font-weight: bold;\">")
+                // UMV
+                .replace(
+                        "§c§l§n",
+                        "<span style=\"color: #FF5555; font-weight: bold; text-decoration：underline;\">")
+                .replace("§1", "<span style=\"color: #0000AA;\">")
+                .replace("§2", "<span style=\"color: #00AA00;\">")
+                .replace("§3", "<span style=\"color: #00AAAA;\">")
+                .replace("§4", "<span style=\"color: #AA0000;\">")
+                .replace("§5", "<span style=\"color: #AA00AA;\">")
+                .replace("§6", "<span style=\"color: #FFAA00;\">")
+                .replace("§7", "<span style=\"color: #AAAAAA;\">")
+                .replace("§8", "<span style=\"color: #555555;\">")
+                .replace("§9", "<span style=\"color: #5555FF;\">")
+                .replace("§a", "<span style=\"color: #55FF55;\">")
+                .replace("§b", "<span style=\"color: #55FFFF;\">")
+                .replace("§c", "<span style=\"color: #FF5555;\">")
+                .replace("§d", "<span style=\"color: #FF55FF;\">")
+                .replace("§e", "<span style=\"color: #FFFF55;\">")
+                .replace("§f", "<span style=\"color: #FFFFFF;\">")
+                .replace("§r", "</span>");
     }
 }

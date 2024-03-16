@@ -171,16 +171,21 @@ import com.rhynia.ochelper.var.element.connection.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author Rhynia
@@ -196,9 +201,10 @@ public class DataProcessor {
     private final List<AeCpu> cpus = new ArrayList<>();
     private final List<OcComponent> components = new ArrayList<>();
     private final List<OcComponentMethod> componentMethods = new ArrayList<>();
-    private final List<OcComponentDoc> componentDocs = new ArrayList<>();
     private final List<MsSet> msSets = new ArrayList<>();
-    private final List<String> sensorInfo = new ArrayList<>();
+    private final Map<Integer, String> methodMap = new HashMap<>();
+    private final Map<Integer, OcComponentDoc> docMap = new HashMap<>();
+    private final Map<Integer, String> sensorMap = new HashMap<>();
     private final Lock lock = new ReentrantLock();
     private final Condition cCpuFetch = lock.newCondition();
     private final Condition cCpuDetailFetch = lock.newCondition();
@@ -216,13 +222,17 @@ public class DataProcessor {
     @SuppressWarnings("unchecked")
     private final List<AeReportItemObj>[] cpuDetailList = new ArrayList[3];
 
-    private final AtomicBoolean requestCraftingState = new AtomicBoolean(false);
-    private final AtomicBoolean requestCancelState = new AtomicBoolean(false);
+    private final AtomicBoolean requestCraftingState = new AtomicBoolean();
+    private final AtomicBoolean requestCancelState = new AtomicBoolean();
+    private final AtomicBoolean requestDocState = new AtomicBoolean();
+    private final AtomicBoolean requestCpuDetailState = new AtomicBoolean();
+    private final AtomicBoolean requestSensorState = new AtomicBoolean();
+    private final AtomicInteger docIndex = new AtomicInteger();
+    private final AtomicInteger cpuDetailIndex = new AtomicInteger();
+    private final AtomicInteger sensorIndex = new AtomicInteger();
     private List<AeCraftObj> craftableItems = new ArrayList<>();
     private AeReportItemObj cpuDetailFinal = dummy;
     private String customReturn = "";
-    private boolean duringDocFetch = false, duringCpuDetailFetch = false;
-    private int docIndex = 0, cpuDetailIndex = 0;
 
     // endregion
 
@@ -237,10 +247,9 @@ public class DataProcessor {
                     long begin = System.currentTimeMillis();
                     du.updateItemDatabase(d);
                     long end = System.currentTimeMillis();
-                    log.info(
-                            "Received item report form OC, size: {}, using {} ms.",
-                            l.size(),
-                            end - begin);
+                    System.out.printf(
+                            "Received item report form OC, size: %d, using %d ms.%n",
+                            l.size(), end - begin);
                 });
     }
 
@@ -253,10 +262,9 @@ public class DataProcessor {
                     long begin = System.currentTimeMillis();
                     du.updateFluidDatabase(l);
                     long end = System.currentTimeMillis();
-                    log.info(
-                            "Received fluid report form OC, size: {}, using {} ms.",
-                            l.size(),
-                            end - begin);
+                    System.out.printf(
+                            "Received fluid report form OC, size: %d, using %d ms.%n",
+                            l.size(), end - begin);
                 });
     }
 
@@ -293,7 +301,7 @@ public class DataProcessor {
 
         log.info("Requesting CPU detail.");
         cpuDetailFinal = dummy;
-        cpuDetailIndex = 0;
+        cpuDetailIndex.set(0);
         var cpl =
                 List.of(
                         CommandPackEnum.AE_GET_CPU_DETAIL_ACTIVE.ofParams(cpuid),
@@ -301,7 +309,7 @@ public class DataProcessor {
                         CommandPackEnum.AE_GET_CPU_DETAIL_PENDING.ofParams(cpuid),
                         CommandPackEnum.AE_GET_CPU_DETAIL_FINAL.ofParams(cpuid));
         boolean timeout = false;
-        duringCpuDetailFetch = true;
+        requestCpuDetailState.set(true);
         lock.lock();
         try {
             ls.injectMission(cpl);
@@ -415,10 +423,10 @@ public class DataProcessor {
         }
     }
 
-    public List<OcComponentDoc> requestComponentDetail(String address) {
+    public Map<Integer, OcComponentDoc> requestComponentDetail(String address) {
 
         // Cleanup doc fetch cache
-        postProcessDocFetch();
+        resetDocFetch();
 
         // First find if methods exist
         log.info("Start requesting component detail.");
@@ -438,23 +446,30 @@ public class DataProcessor {
 
         // Components like keyboard have no methods, return NULL
         if (componentMethods.isEmpty()) {
-            log.error("Fetch no available methods.");
-            return List.of(OcComponentDoc.of("NULL", "This component has no methods."));
+            log.error("Fetch no available methods, stop requesting for docs.");
+            return Map.of(0, OcComponentDoc.of("NULL", "This component has no methods."));
         }
 
         // Then find methods with documents
         log.info("Method list fetched, start requesting docs.");
-        List<CommandPack> fetchDocCommands = new ArrayList<>();
-        for (docIndex = 0; docIndex < componentMethods.size(); docIndex++) {
-            String method = componentMethods.get(docIndex).getMethod();
-            String key = CommandPackEnum.OC_GET_COMPONENT_DOC.getKey() + "_" + method;
-            String fetchDocCommand = String.format("return c.doc('%s', '%s')", address, method);
-            fetchDocCommands.add(CommandPack.of(key, fetchDocCommand));
-        }
+        var documentCommands = new ArrayList<CommandPack>();
+        var pack = CommandPackEnum.OC_GET_COMPONENT_DOC;
+        componentMethods.stream()
+                .sorted(Comparator.comparing(OcComponentMethod::getMethod))
+                .forEach(
+                        (method) -> {
+                            methodMap.put(docIndex.get(), method.getMethod());
+                            documentCommands.add(
+                                    pack.ofSuffixAndParams(
+                                            String.valueOf(docIndex.getAndIncrement()),
+                                            address,
+                                            method.getMethod()));
+                        });
+
         lock.lock();
         try {
-            ls.injectMission(fetchDocCommands);
-            duringDocFetch = true;
+            ls.injectMission(documentCommands);
+            requestDocState.set(true);
             timeout = !cDocFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
@@ -465,31 +480,55 @@ public class DataProcessor {
             }
         }
 
-        if (!componentDocs.isEmpty()) {
+        if (!docMap.isEmpty()) {
             log.info("Methods & Docs successfully fetched.");
-            return componentDocs;
+            return docMap;
         } else {
             log.error("Fetched no available docs.");
-            return List.of(OcComponentDoc.of("NULL", "Fetched nothing at all."));
+            return Map.of(0, OcComponentDoc.of("NULL", "Fetched nothing at all."));
         }
     }
 
-    private void postProcessDocFetch() {
-        componentMethods.clear();
-        componentDocs.clear();
+    private void resetDocFetch() {
+        docIndex.set(0);
+        docMap.clear();
+        methodMap.clear();
     }
 
     // endregion
 
     // region Gregtech methods
-    public List<String> requestGtMachineSensor(String proxyAddress) {
 
-        log.info("Requesting GT Sensor of {}.", proxyAddress);
+    public List<Triple<String, String, String>> requestGtMachineSensor() {
+
+        // Reset cache
+        resetSensorFetch();
+
+        // Get GT Component list
+        log.info("Requesting All GT Sensor information, fetching component list first.");
+        var requests = new ArrayList<CommandPack>();
+        var gtComponentAddressMap =
+                requestComponentList().stream()
+                        .filter(component -> "gt_machine".equals(component.getName()))
+                        .map(OcComponent::getAddress)
+                        .collect(
+                                Collectors.toMap(
+                                        i -> sensorIndex.getAndIncrement(), Function.identity()));
+
+        if (gtComponentAddressMap.isEmpty()) {
+            log.error("There isn't any GT component.");
+            return List.of(Triple.of("NULL", "?", "NULL"));
+        }
+
+        var cp = CommandPackEnum.GT_GET_SENSOR;
+        gtComponentAddressMap.forEach(
+                (k, v) -> requests.add(cp.ofSuffixAndParams(String.valueOf(k), v)));
+
         boolean timeout = false;
-        var cc = CommandPackEnum.GT_GET_SENSOR.ofParams(proxyAddress);
         lock.lock();
         try {
-            ls.injectMission(cc);
+            ls.injectMission(requests);
+            requestSensorState.set(true);
             timeout = !cGtSensorFetch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Method interrupted.", e);
@@ -499,7 +538,20 @@ public class DataProcessor {
                 log.error("Timeout in requesting.");
             }
         }
-        return sensorInfo;
+
+        var tmpList = new ArrayList<Triple<String, String, String>>();
+        sensorMap.forEach(
+                (k, v) -> {
+                    String address = gtComponentAddressMap.get(k);
+                    tmpList.add(Triple.of(address, Utilities.getAddressAlias(address), v));
+                });
+
+        return tmpList;
+    }
+
+    private void resetSensorFetch() {
+        sensorIndex.set(0);
+        sensorMap.clear();
     }
 
     // endregion
@@ -578,14 +630,32 @@ public class DataProcessor {
                 (k, v) -> {
                     log.debug("Received respond key -> {}", k);
                     log.debug("Received respond body -> {}", v);
-                    boolean error = Objects.equals(v, "ERROR") || Objects.equals(v, "\"ERROR\"");
+                    boolean error = "ERROR".equals(v) || "\"ERROR\"".equals(v);
                     if (error) {
                         log.error("Received ERROR report in action {}.", k);
                     }
                     if (k.startsWith("OC_GET_COMPONENT_DOC_")) {
-                        String method = k.substring(21);
-                        componentDocs.add(
-                                OcComponentDoc.of(method, v.substring(1, v.length() - 1)));
+                        int index = Integer.parseInt(k.substring(21));
+                        docMap.put(
+                                index,
+                                OcComponentDoc.of(methodMap.get(index), Utilities.stripQuotes(v)));
+                        log.debug("Received component doc of index {}.", index);
+                    } else if (k.startsWith("GT_GET_SENSOR_")) {
+                        int index = Integer.parseInt(k.substring(14));
+                        try {
+                            List<String> tmp = mapper.readValue(v, new TypeReference<>() {});
+                            String formatted =
+                                    tmp.stream()
+                                            .filter(StringUtils::isNotEmpty)
+                                            .map(Utilities::colorMinecraftToHtml)
+                                            .map(s -> s + "<br/>")
+                                            .reduce(String::concat)
+                                            .orElse("Null");
+                            sensorMap.put(index, formatted);
+                        } catch (Exception e) {
+                            log.error("Error in mapping sensor info, original was {}.", v);
+                            sensorMap.put(index, "Error");
+                        }
                     } else {
                         switch (k) {
                             case "AE_GET_ITEM" -> {
@@ -635,7 +705,7 @@ public class DataProcessor {
                                         log.error("Map fail in {} :", k, e);
                                     }
                                 }
-                                cpuDetailIndex++;
+                                cpuDetailIndex.incrementAndGet();
                             }
                             case "AE_GET_CPU_DETAIL_STORE" -> {
                                 if (Objects.equals(v, "[]")) {
@@ -650,7 +720,7 @@ public class DataProcessor {
                                         log.error("Map fail in {} :", k, e);
                                     }
                                 }
-                                cpuDetailIndex++;
+                                cpuDetailIndex.incrementAndGet();
                             }
                             case "AE_GET_CPU_DETAIL_PENDING" -> {
                                 if (Objects.equals(v, "[]")) {
@@ -665,7 +735,7 @@ public class DataProcessor {
                                         log.error("Map fail in {} :", k, e);
                                     }
                                 }
-                                cpuDetailIndex++;
+                                cpuDetailIndex.incrementAndGet();
                             }
                             case "AE_GET_CPU_DETAIL_FINAL" -> {
                                 if (Objects.equals(v, "null") || Objects.equals(v, "[]")) {
@@ -678,7 +748,7 @@ public class DataProcessor {
                                         log.error("Map fail in {} :", k, e);
                                     }
                                 }
-                                cpuDetailIndex++;
+                                cpuDetailIndex.incrementAndGet();
                             }
                             case "AE_GET_CRAFTABLE" -> {
                                 try {
@@ -774,26 +844,7 @@ public class DataProcessor {
                                     log.error("Map fail in {} :", k, e);
                                 }
                             }
-                            case "GT_GET_SENSOR" -> {
-                                log.info("Fetched sensor information of " + v);
-                                try {
-                                    sensorInfo.clear();
-                                    List<String> tmp =
-                                            mapper.readValue(v, new TypeReference<>() {});
-                                    sensorInfo.addAll(tmp);
-                                    lock.lock();
-                                    try {
-                                        cGtSensorFetch.signal();
-                                    } finally {
-                                        lock.unlock();
-                                    }
-                                } catch (Exception e) {
-                                    log.error("Map fail in {} :", k, e);
-                                }
-                            }
-                            case "GT_GET_ENERGY" -> {
-                                log.info(v);
-                            }
+                            case "GT_GET_ENERGY" -> log.info(v);
                             case "GT_GET_ENERGY_WIRELESS" -> {
                                 if (!error) {
                                     try {
@@ -808,7 +859,9 @@ public class DataProcessor {
                                                         .map(s -> s.substring(21))
                                                         .findFirst()
                                                         .orElse("0");
-                                        log.debug("Fetched energy information of {}", tmp1);
+                                        System.out.printf(
+                                                "Fetched wireless energy information of (%s).%n",
+                                                tmp1);
                                         var tmp2 =
                                                 new BigDecimal(tmp1.replaceAll(",", ""))
                                                         .stripTrailingZeros();
@@ -864,30 +917,46 @@ public class DataProcessor {
     }
 
     /**
-     * At present this method contains signal for 1.Document fetching 2.CPU information fetching
-     * process
+     * At present this method contains signal for
+     *
+     * <p>1.Document fetching
+     *
+     * <p>2.CPU information fetching process
+     *
+     * <p>3.Sensor information fetching
      */
     private void postProcessCheck() {
-        if (duringDocFetch && componentDocs.size() >= docIndex) {
+        if (requestDocState.get() && docMap.size() >= docIndex.get()) {
             log.info("Doc fetch complete.");
             lock.lock();
             try {
                 cDocFetch.signal();
             } finally {
                 lock.unlock();
-                duringDocFetch = false;
+                requestDocState.set(false);
             }
             return;
         }
-        if (duringCpuDetailFetch && cpuDetailIndex >= 4) {
-            log.info("CPU information fetch complete.");
+        if (requestCpuDetailState.get() && cpuDetailIndex.get() >= 4) {
+            log.info("CPU detail fetch complete.");
             lock.lock();
             try {
                 cCpuDetailFetch.signal();
             } finally {
                 lock.unlock();
-                duringCpuDetailFetch = false;
-                docIndex = 0;
+                requestCpuDetailState.set(false);
+                cpuDetailIndex.set(0);
+            }
+        }
+        if (requestSensorState.get() && sensorMap.size() >= sensorIndex.get()) {
+            log.info("Sensor fetch complete.");
+            lock.lock();
+            try {
+                cGtSensorFetch.signal();
+            } finally {
+                lock.unlock();
+                requestSensorState.set(false);
+                sensorIndex.set(0);
             }
         }
     }

@@ -159,7 +159,7 @@
  */
 package com.rhynia.ochelper.controller;
 
-import static com.rhynia.ochelper.util.LocalizationMap.*;
+import static com.rhynia.ochelper.util.Mappings.*;
 
 import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.config.ConfigValues;
@@ -199,7 +199,7 @@ public class AppengController {
     private final DatabaseAccessor da;
     private final DataProcessor dp;
 
-    @Value("${user.dir}/public/res/item_table/")
+    @Value("${path.icon-panel-path}")
     private String icon;
 
     private final DecimalFormat nf = new DecimalFormat("0.000%");

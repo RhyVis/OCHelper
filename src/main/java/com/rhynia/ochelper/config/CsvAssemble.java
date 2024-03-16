@@ -159,8 +159,8 @@
  */
 package com.rhynia.ochelper.config;
 
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_FLUID;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_ITEM;
 
 import com.csvreader.CsvReader;
 import com.rhynia.ochelper.util.Utilities;

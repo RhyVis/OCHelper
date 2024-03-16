@@ -159,8 +159,8 @@
  */
 package com.rhynia.ochelper.config;
 
-import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
+import static com.rhynia.ochelper.util.Mappings.NAME_MAP_FLUID_SWITCH;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_ITEM_SWITCH;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

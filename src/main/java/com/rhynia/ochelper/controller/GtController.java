@@ -159,6 +159,7 @@
  */
 package com.rhynia.ochelper.controller;
 
+import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.config.EnergyStationConfig;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Utilities;
@@ -172,9 +173,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -186,19 +185,22 @@ import java.util.ArrayList;
 public class GtController {
 
     private final DatabaseAccessor da;
+    private final DataProcessor dp;
     private final EnergyStationConfig es;
 
     @GetMapping("gt-sensor-info")
     public String requestGtSensorInfo(Model model) {
-        // var tmp = dp.requestGtMachineSensor(cv.getEnergyStationAddressForRecord());
-        // model.addAttribute("result", tmp);
-        model.addAttribute("result", "NULL");
+
+        var list = dp.requestGtMachineSensor();
+
+        model.addAttribute("list", list);
+
         return "gt/gt-sensor-info";
     }
 
     @GetMapping("gt-energy-data")
     public String requestEnergyData(Model model) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         DecimalFormat nf = new DecimalFormat("0.000%");
         int insightSize = 200;
         if (es.getEsData().get(0) == null) {

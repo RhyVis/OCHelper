@@ -160,16 +160,18 @@
 package com.rhynia.ochelper.controller;
 
 import com.rhynia.ochelper.component.DataProcessor;
+import com.rhynia.ochelper.util.Utilities;
 import com.rhynia.ochelper.var.element.connection.OcComponent;
 import com.rhynia.ochelper.var.element.connection.OcComponentDoc;
 
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -181,10 +183,19 @@ public class ComponentController {
 
     private final DataProcessor dp;
 
+    private Pair<OcComponent, String> appendAlias(OcComponent component) {
+        return Pair.of(component, Utilities.getAddressAlias(component.getAddress()));
+    }
+
     @GetMapping("oc-components")
     public String fetchOcComponents(Model model) {
-        List<OcComponent> list = dp.requestComponentList();
-        model.addAttribute("c_list", list);
+
+        var components = dp.requestComponentList().stream()
+                .map(this::appendAlias)
+                .toList();
+
+        model.addAttribute("c_list", components);
+
         return "oc/oc-components";
     }
 
@@ -192,10 +203,12 @@ public class ComponentController {
     public String fetchOcComponentsDetail(String name, String address, Model model) {
 
         var raw = dp.requestComponentDetail(address);
-        var list = raw.stream().sorted(Comparator.comparing(OcComponentDoc::getMethod)).toList();
+        var list = new ArrayList<Pair<Integer, OcComponentDoc>>();
+        raw.forEach((k, v) -> list.add(Pair.of(k, v)));
 
         model.addAttribute("component_name", name);
         model.addAttribute("d_list", list);
+
         return "oc/oc-components-detail";
     }
 }
