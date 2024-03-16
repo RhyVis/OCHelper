@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.rhynia</groupId>
     <artifactId>OCHelper</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.3</version>
     <name>OCHelper</name>
     <description>OCHelper</description>
     <properties>

@@ -229,6 +229,11 @@ public class UtilController {
         return "util/custom-command";
     }
 
+    @GetMapping("resource")
+    public String getResource() {
+        return "dashboard";
+    }
+
     @GetMapping("sss")
     public ResponseEntity<String> test() {
         return new ResponseEntity<>("TEST", HttpStatus.OK);

@@ -38,8 +38,8 @@ public class AeCraftObj extends AbstractAeObject {
         if (!this.un.endsWith("drop$0")) {
             this.local = Utilities.tryTranslateItemUn(this.un);
         } else {
-            // For drop to cell processing
-            String tmp1 = this.label.substring(8);
+            // For drop to cell processing subs 'drop of '
+            String tmp1 = label.substring(8);
             String tmp2 = Utilities.trySwitchFluidLocal(tmp1);
             this.local = tmp2 + "单元";
         }

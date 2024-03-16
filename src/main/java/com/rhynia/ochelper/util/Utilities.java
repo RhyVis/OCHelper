@@ -159,29 +159,60 @@
  */
 package com.rhynia.ochelper.util;
 
-import static com.rhynia.ochelper.util.LocalizationMap.NAME_MAP_FLUID_SWITCH;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_FLUID;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM;
-import static com.rhynia.ochelper.util.LocalizationMap.UNI_NAME_MAP_ITEM_SWITCH;
-
 import com.rhynia.ochelper.var.base.AbstractAeData;
+import com.rhynia.ochelper.var.base.AbstractAeDataSet;
+import com.rhynia.ochelper.var.base.AbstractAeObject;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
+import com.rhynia.ochelper.var.element.data.EnergyData;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.rhynia.ochelper.util.Mappings.*;
+
 /**
  * @author Rhynia
  */
+@Slf4j
 public class Utilities {
     private static final String[] BYTE_LIST = {
         "", "K", "M", "G", "T", "P", "E", "Z", "Y", "KY", "MY", "GY", "TY", "PY", "EY", "ZY", "YY",
         "KYY", "MYY", "GYY", "TYY", "PYY", "EYY", "ZYY", "YYY"
     };
+
+    private static final String[] UNIT_LIST = {"Y", "K", "M", "G", "T", "P", "E", "Z"};
+
+    private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private static String getByte(final int byteSeral) {
+        if (byteSeral <= 0) {
+            return "";
+        }
+
+        int xOrd = byteSeral % 8;
+        int yOrd = byteSeral / 8;
+
+        if (yOrd == 0) {
+            return UNIT_LIST[xOrd];
+        } else {
+            String y = "Y";
+            if (yOrd <= 32) {
+                return UNIT_LIST[xOrd] + y.repeat(yOrd);
+            } else {
+                return UNIT_LIST[xOrd] + "(" + y + "*" + yOrd + ")";
+            }
+        }
+    }
 
     public static String formatStringByte(String val) {
         if (val == null) {
@@ -201,6 +232,26 @@ public class Utilities {
         }
 
         return bytePrefix + BYTE_LIST[byteSeral];
+    }
+
+    public static String formatStringByteUnlimited(String val) {
+        if (val == null) {
+            return null;
+        }
+
+        int len = val.length();
+        int byteSeral = len / 3;
+        if (byteSeral == 0) {
+            return val;
+        }
+
+        String bytePrefix = val.substring(0, len - 3 * byteSeral);
+        // Rollback to last byte
+        if (bytePrefix.isEmpty()) {
+            return val.substring(0, len - 3 * (byteSeral - 1)) + getByte(byteSeral - 1);
+        }
+
+        return bytePrefix + getByte(byteSeral);
     }
 
     public static String removeUnavailableChar(String s) {
@@ -244,6 +295,11 @@ public class Utilities {
         return UNI_NAME_MAP_ITEM.getOrDefault(un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, un));
     }
 
+    public static String tryTranslateItemUn(String un, String rollBack) {
+        return UNI_NAME_MAP_ITEM.getOrDefault(
+                un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, rollBack));
+    }
+
     public static String tryTranslateFluidUn(String un) {
         return UNI_NAME_MAP_FLUID.getOrDefault(un, un);
     }
@@ -252,8 +308,16 @@ public class Utilities {
         return NAME_MAP_FLUID_SWITCH.getOrDefault(original, original);
     }
 
+    public static String getAddressAlias(String address) {
+        return ADDRESS_ALIAS_MAP.getOrDefault(address, "?");
+    }
+
     private static boolean stringSizeNonZero(@NotNull String s) {
         return !"0".equals(s);
+    }
+
+    private static boolean stringNonDrop(@NotNull String s) {
+        return !s.endsWith("drop$0");
     }
 
     public static <T extends AbstractAeData> boolean dataSizeNonZero(T data) {
@@ -262,5 +326,71 @@ public class Utilities {
         } else {
             return false;
         }
+    }
+
+    public static <T extends AbstractAeObject> boolean dataNonDrop(T data) {
+        if (data != null) {
+            return stringNonDrop(data.getUn());
+        } else {
+            return false;
+        }
+    }
+
+    public static void updateLocalMap(AeReportItemObj obj) {
+        if (obj != null && !UNI_NAME_MAP_ITEM.containsKey(obj.getUn())) {
+            UNI_NAME_MAP_ITEM.put(obj.getUn(), obj.getLabel());
+        }
+    }
+
+    public static <T extends AbstractAeDataSet> BigDecimal getBigDecimalTimeStamp(T data) {
+        try {
+            return BigDecimal.valueOf(DF.parse(data.getTime()).getTime());
+        } catch (ParseException e) {
+            log.error("Error caught in reading date: ", e);
+            return BigDecimal.ONE;
+        }
+    }
+
+    public static BigDecimal getBigDecimalTimeStamp(EnergyData data) {
+        try {
+            return BigDecimal.valueOf(DF.parse(data.getTime()).getTime());
+        } catch (ParseException e) {
+            log.error("Error caught in reading date: ", e);
+            return BigDecimal.ONE;
+        }
+    }
+
+    public static String stripQuotes(String s) {
+        if (!(s == null)) {
+            return s.substring(1, s.length() - 1);
+        } else {
+            return "";
+        }
+    }
+
+    public static String colorMinecraftToHtml(String s) {
+        return s.replace("§0", "<span style=\"color: #000000;\">")
+                // UIV
+                .replace("§1§l", "<span style=\"color: #0000AA; font-weight: bold;\">")
+                // UMV
+                .replace(
+                        "§c§l§n",
+                        "<span style=\"color: #FF5555; font-weight: bold; text-decoration：underline;\">")
+                .replace("§1", "<span style=\"color: #0000AA;\">")
+                .replace("§2", "<span style=\"color: #00AA00;\">")
+                .replace("§3", "<span style=\"color: #00AAAA;\">")
+                .replace("§4", "<span style=\"color: #AA0000;\">")
+                .replace("§5", "<span style=\"color: #AA00AA;\">")
+                .replace("§6", "<span style=\"color: #FFAA00;\">")
+                .replace("§7", "<span style=\"color: #AAAAAA;\">")
+                .replace("§8", "<span style=\"color: #555555;\">")
+                .replace("§9", "<span style=\"color: #5555FF;\">")
+                .replace("§a", "<span style=\"color: #55FF55;\">")
+                .replace("§b", "<span style=\"color: #55FFFF;\">")
+                .replace("§c", "<span style=\"color: #FF5555;\">")
+                .replace("§d", "<span style=\"color: #FF55FF;\">")
+                .replace("§e", "<span style=\"color: #FFFF55;\">")
+                .replace("§f", "<span style=\"color: #FFFFFF;\">")
+                .replace("§r", "</span>");
     }
 }

@@ -59,9 +59,26 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{gt-energy-data}"> <i class="nav-icon bi bi-table"></i>
-                        <p th:text="#{title.gt.es}">Energy Status</p>
+                    <a class="nav-link" href="#"> <i class="nav-icon bi bi-table"></i>
+                        <p>
+                            <th:block th:text="#{title.gt.header}">GT Components</th:block>
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{gt-energy-data}">
+                                <i class="nav-icon bi bi-circle "></i>
+                                <p th:text="#{title.gt.es}">Energy Status</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{gt-sensor-info}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p th:text="#{title.gt.sensor}">GT Sensor Info</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{oc-components}"> <i class="nav-icon bi bi-ui-checks-grid"></i>
@@ -69,9 +86,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"> <i class="nav-icon bi bi-grip-horizontal"></i>
-                        <p th:text="#{title.util.header}">
-                            Util
+                    <a class="nav-link" href="#"> <i class="nav-icon bi bi-box-seam-fill"></i>
+                        <p>
+                            <th:block th:text="#{title.util.header}">Util</th:block>
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
                     </a>

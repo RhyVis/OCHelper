@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * @author Rhynia
@@ -17,7 +18,8 @@ public abstract class AbstractAeData extends AbstractAeObject {
 
     protected AbstractAeData(String un, String sizeRaw) {
         super(un);
-        BigDecimal tmp = new BigDecimal(sizeRaw).stripTrailingZeros();
+        BigDecimal tmp =
+                new BigDecimal(sizeRaw).stripTrailingZeros().setScale(0, RoundingMode.DOWN);
         this.sizeRaw = sizeRaw;
         this.size = tmp;
         this.sizeString = tmp.toPlainString();

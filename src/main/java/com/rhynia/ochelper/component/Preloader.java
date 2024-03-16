@@ -159,6 +159,7 @@
  */
 package com.rhynia.ochelper.component;
 
+import com.rhynia.ochelper.config.AddressAliasConfig;
 import com.rhynia.ochelper.config.CsvAssemble;
 import com.rhynia.ochelper.config.EnergyStationConfig;
 import com.rhynia.ochelper.config.SwitchLocalAssemble;
@@ -188,9 +189,12 @@ public class Preloader implements ApplicationRunner {
     private final DatabaseUpdater dbu;
     private final SwitchLocalAssemble sl;
     private final LuaScriptFactory lp;
+    private final AddressAliasConfig ac;
 
     @Override
     public void run(ApplicationArguments args) {
+
+        // Construct Config Values
 
         log.info(
                 "Started application with following options: {}",
@@ -211,6 +215,7 @@ public class Preloader implements ApplicationRunner {
         // JSON Loader
         sl.initMap();
         es.initAddressSet();
+        ac.initAlias();
 
         // Database init
         dbu.initDatabase();

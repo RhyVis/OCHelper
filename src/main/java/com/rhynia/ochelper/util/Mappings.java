@@ -165,9 +165,19 @@ import java.util.Map;
 /**
  * @author Rhynia
  */
-public class LocalizationMap {
-    public static final Map<String, String> NAME_MAP_FLUID_SWITCH = new HashMap<>();
+public class Mappings {
+    /** Map for translate item unique name to local */
     public static final Map<String, String> UNI_NAME_MAP_ITEM = new HashMap<>();
+
+    /** Map for translate fluid unique name to local */
     public static final Map<String, String> UNI_NAME_MAP_FLUID = new HashMap<>();
+
+    /** Map as supplement for item unique name to local */
     public static final Map<String, String> UNI_NAME_MAP_ITEM_SWITCH = new HashMap<>();
+
+    /** Map for switch fluid names to fit cell names */
+    public static final Map<String, String> NAME_MAP_FLUID_SWITCH = new HashMap<>();
+
+    /** Map for component address's alias */
+    public static final Map<String, String> ADDRESS_ALIAS_MAP = new HashMap<>();
 }

@@ -67,11 +67,11 @@
                             </div>
                             <div class="card-body" th:each="doc:${d_list}">
                                 <div>
-                                    <span class="badge rounded-pill text-bg-primary" th:text="${doc.getMethod()}">
+                                    <span class="badge rounded-pill text-bg-primary" th:text="${doc.getLeft()} + ': ' + ${doc.getRight().getMethod()}">
                                         Method
                                     </span>
                                 </div>
-                                <div th:text="${doc.getDoc()}">
+                                <div th:text="${doc.getRight().getDoc()}">
                                     Doc
                                 </div>
                             </div> <!-- /.card-body -->

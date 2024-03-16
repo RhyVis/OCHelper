@@ -165,13 +165,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhynia.ochelper.var.element.config.EnergyStationSet;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -184,12 +184,12 @@ import java.util.Set;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class EnergyStationConfig {
 
-    @Getter private final Map<Integer, String> esData = new HashMap<>();
+    private final Path pa;
 
-    @Value("classpath:/config/energy_station.json")
-    private Resource resource;
+    @Getter private final Map<Integer, String> esData = new HashMap<>();
 
     /**
      * For es config in file, the structure should follow the example
@@ -200,7 +200,8 @@ public class EnergyStationConfig {
     public void initAddressSet() {
         String json;
         try {
-            json = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
+            File esConf = new File(pa.getExtraConfigPath() + "energy_station.json");
+            json = FileUtils.readFileToString(esConf, StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error("Energy station conf init failed, the file may not exist.");
             return;

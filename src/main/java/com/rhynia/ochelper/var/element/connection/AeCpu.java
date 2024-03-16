@@ -7,6 +7,7 @@ import com.rhynia.ochelper.util.Utilities;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * @author Rhynia
@@ -27,7 +28,7 @@ public class AeCpu {
             @JsonProperty("storage") String storage,
             @JsonProperty("busy") boolean busy,
             @JsonProperty("name") String name) {
-        BigDecimal tmp = new BigDecimal(storage);
+        BigDecimal tmp = new BigDecimal(storage).stripTrailingZeros().setScale(0, RoundingMode.DOWN);
         this.name = name.isEmpty() ? "UNNAMED" : name;
         this.cpuid = cpuid;
         this.coprocessors = coprocessors;
