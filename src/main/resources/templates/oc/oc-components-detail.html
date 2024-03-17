@@ -46,12 +46,10 @@
         <div class="app-content">
             <!--begin::Container-->
             <div class="container-fluid">
-
                 <h5 class="mb-2">
                     <th:block th:text="#{page.oc.components.sheet.component} + ' '"></th:block>
                     <th:block th:text="${component_name}"></th:block>
                 </h5>
-
                 <!--begin::Row-->
                 <div class="row">
                     <div class="col-12"> <!-- Default box -->
@@ -67,7 +65,8 @@
                             </div>
                             <div class="card-body" th:each="doc:${d_list}">
                                 <div>
-                                    <span class="badge rounded-pill text-bg-primary" th:text="${doc.getLeft()} + ': ' + ${doc.getRight().getMethod()}">
+                                    <span class="badge rounded-pill text-bg-primary" th:text="${doc.getLeft()} + ': '
+                                    + ${doc.getRight().getMethod()}">
                                         Method
                                     </span>
                                 </div>
@@ -75,17 +74,14 @@
                                     Doc
                                 </div>
                             </div> <!-- /.card-body -->
-                            <div class="card-footer" th:text="#{page.oc.component_detail.list.footer}">Method Name -
-                                Doc
+                            <div class="card-footer" th:text="#{page.oc.component_detail.list.footer}">
+                                Method Name - Doc
                             </div> <!-- /.card-footer-->
-
                         </div> <!-- /.card -->
                     </div>
                 </div> <!--end::Row-->
                 <!--end::Row-->
-
-                <br/>
-
+                <hr/>
             </div> <!--end::Container-->
         </div> <!--end::App Content-->
     </main> <!--end::App Main-->

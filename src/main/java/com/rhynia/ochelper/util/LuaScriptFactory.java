@@ -160,7 +160,7 @@
 package com.rhynia.ochelper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rhynia.ochelper.config.PathAssemble;
+import com.rhynia.ochelper.config.Path;
 import com.rhynia.ochelper.var.element.connection.CommandPack;
 
 import lombok.RequiredArgsConstructor;
@@ -189,7 +189,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class LuaScriptFactory {
 
-    private final PathAssemble pa;
+    private final Path path;
 
     private final String div = "\n";
     private final ObjectMapper mapper = new ObjectMapper();
@@ -222,7 +222,7 @@ public class LuaScriptFactory {
     }
 
     private void assembleLuaScriptBase() {
-        File filePath = new File(pa.getPath().getLuaScriptsPath());
+        File filePath = new File(path.getLuaScriptsPath());
         File[] fileList = filePath.listFiles();
         if (fileList != null) {
             StringBuilder builder = new StringBuilder();

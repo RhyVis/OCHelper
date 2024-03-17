@@ -180,11 +180,11 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class CsvAssemble {
 
-    private final PathAssemble pa;
+    private final Path path;
 
     public void initCsvLocalMap() {
         try {
-            CsvReader csvItem = new CsvReader(pa.getPath_csv_item(), ',', StandardCharsets.UTF_8);
+            CsvReader csvItem = new CsvReader(path.getCsvPath() + path.getCsvItemName(), ',', StandardCharsets.UTF_8);
             csvItem.readHeaders();
             while (csvItem.readRecord()) {
                 String name = csvItem.get(0);
@@ -193,7 +193,7 @@ public class CsvAssemble {
 
                 UNI_NAME_MAP_ITEM.put(Utilities.assembleItemUniqueName(name, meta), local);
             }
-            CsvReader csvFluid = new CsvReader(pa.getPath_csv_fluid(), ',', StandardCharsets.UTF_8);
+            CsvReader csvFluid = new CsvReader(path.getCsvPath() + path.getCsvFluidName(), ',', StandardCharsets.UTF_8);
             csvFluid.readHeaders();
             while (csvFluid.readRecord()) {
                 String name = csvFluid.get(1);

@@ -209,6 +209,6 @@ public class Schedule {
                 address ->
                         ls.injectMission(CommandPackEnum.GT_GET_ENERGY_WIRELESS.ofParams(address)),
                 () -> log.info("Wireless energy address doesnt exist, skip request."));
-        log.info("Standard command packs set.");
+        log.debug("Standard command packs set.");
     }
 }

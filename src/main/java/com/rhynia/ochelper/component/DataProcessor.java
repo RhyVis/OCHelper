@@ -166,7 +166,15 @@ import com.rhynia.ochelper.database.DatabaseUpdater;
 import com.rhynia.ochelper.util.CommandPackEnum;
 import com.rhynia.ochelper.util.LuaScriptFactory;
 import com.rhynia.ochelper.util.Utilities;
-import com.rhynia.ochelper.var.element.connection.*;
+import com.rhynia.ochelper.var.element.connection.AeCpu;
+import com.rhynia.ochelper.var.element.connection.AeCraftObj;
+import com.rhynia.ochelper.var.element.connection.AeReportFluidObj;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
+import com.rhynia.ochelper.var.element.connection.CommandPack;
+import com.rhynia.ochelper.var.element.connection.MsSet;
+import com.rhynia.ochelper.var.element.connection.OcComponent;
+import com.rhynia.ochelper.var.element.connection.OcComponentDoc;
+import com.rhynia.ochelper.var.element.connection.OcComponentMethod;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -177,7 +185,13 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -243,12 +257,16 @@ public class DataProcessor {
 
         opt.ifPresent(
                 l -> {
-                    var d = l.stream().peek(Utilities::updateLocalMap).toList();
+                    var d =
+                            l.parallelStream()
+                                    .filter(Utilities::dataNonDrop)
+                                    .peek(Utilities::updateLocalMap)
+                                    .toList();
                     long begin = System.currentTimeMillis();
                     du.updateItemDatabase(d);
                     long end = System.currentTimeMillis();
                     System.out.printf(
-                            "Received item report form OC, size: %d, using %d ms.%n",
+                            "[SYNC] Received item report: %d (process %d ms).%n",
                             l.size(), end - begin);
                 });
     }
@@ -263,7 +281,7 @@ public class DataProcessor {
                     du.updateFluidDatabase(l);
                     long end = System.currentTimeMillis();
                     System.out.printf(
-                            "Received fluid report form OC, size: %d, using %d ms.%n",
+                            "[SYNC] Received fluid report: %d (process %d ms).%n",
                             l.size(), end - begin);
                 });
     }
@@ -419,7 +437,7 @@ public class DataProcessor {
             return components;
         } else {
             log.error("Fetch no available components.");
-            return List.of(OcComponent.of("Fetched NOTHING!", "NULL"));
+            return List.of(OcComponent.of("Fetched NOTHING!", "NULL", "?"));
         }
     }
 
@@ -543,7 +561,7 @@ public class DataProcessor {
         sensorMap.forEach(
                 (k, v) -> {
                     String address = gtComponentAddressMap.get(k);
-                    tmpList.add(Triple.of(address, Utilities.getAddressAlias(address), v));
+                    tmpList.add(Triple.of(address, Utilities.lookupAliasForAddress(address), v));
                 });
 
         return tmpList;
@@ -807,7 +825,8 @@ public class DataProcessor {
                                     components.clear();
                                     temp.forEach(
                                             (address, name) ->
-                                                    components.add(OcComponent.of(address, name)));
+                                                    components.add(
+                                                            OcComponent.of(address, name, "?")));
                                     lock.lock();
                                     try {
                                         cComponentFetch.signal();
@@ -859,13 +878,12 @@ public class DataProcessor {
                                                         .map(s -> s.substring(21))
                                                         .findFirst()
                                                         .orElse("0");
+                                        var tmp2 = tmp1.replaceAll(",", "");
                                         System.out.printf(
-                                                "Fetched wireless energy information of (%s).%n",
-                                                tmp1);
-                                        var tmp2 =
-                                                new BigDecimal(tmp1.replaceAll(",", ""))
-                                                        .stripTrailingZeros();
-                                        du.updateEnergyDatabase(tmp2);
+                                                "[SYNC] Received wireless energy report: %s %s.%n",
+                                                tmp1, Utilities.formatSizeWithByte(tmp2));
+                                        var tmp3 = new BigDecimal(tmp2).stripTrailingZeros();
+                                        du.updateEnergyDatabase(tmp3);
                                     } catch (Exception e) {
                                         log.error("Map fail in {} :", k, e);
                                     }
