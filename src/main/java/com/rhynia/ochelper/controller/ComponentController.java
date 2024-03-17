@@ -172,7 +172,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 
 /**
  * @author Rhynia
@@ -183,8 +183,9 @@ public class ComponentController {
 
     private final DataProcessor dp;
 
-    private Pair<OcComponent, String> appendAlias(OcComponent component) {
-        return Pair.of(component, Utilities.getAddressAlias(component.getAddress()));
+    private OcComponent appendAlias(OcComponent component) {
+        component.setAlias(Utilities.lookupAliasForAddress(component.getAddress()));
+        return component;
     }
 
     @GetMapping("oc-components")
@@ -192,6 +193,7 @@ public class ComponentController {
 
         var components = dp.requestComponentList().stream()
                 .map(this::appendAlias)
+                .sorted(Comparator.comparing(OcComponent::getName).thenComparing(OcComponent::getAlias))
                 .toList();
 
         model.addAttribute("c_list", components);

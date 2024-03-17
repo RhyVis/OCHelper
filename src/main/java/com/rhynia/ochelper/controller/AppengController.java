@@ -159,13 +159,18 @@
  */
 package com.rhynia.ochelper.controller;
 
-import static com.rhynia.ochelper.util.Mappings.*;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_FLUID;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_ITEM;
 
 import com.rhynia.ochelper.component.DataProcessor;
 import com.rhynia.ochelper.config.ConfigValues;
 import com.rhynia.ochelper.database.DatabaseAccessor;
 import com.rhynia.ochelper.util.Utilities;
-import com.rhynia.ochelper.var.element.connection.*;
+import com.rhynia.ochelper.var.element.connection.AeCpu;
+import com.rhynia.ochelper.var.element.connection.AeCraftObj;
+import com.rhynia.ochelper.var.element.connection.AeDisplayFluidObj;
+import com.rhynia.ochelper.var.element.connection.AeDisplayItemObj;
+import com.rhynia.ochelper.var.element.connection.AeReportItemObj;
 import com.rhynia.ochelper.var.element.data.AeDataSetObj;
 
 import lombok.RequiredArgsConstructor;
@@ -230,11 +235,7 @@ public class AppengController {
         var tmp2 = pair.getRight();
 
         var items =
-                tmp1.stream()
-                        .filter(Utilities::dataNonDrop)
-                        .filter(Utilities::dataSizeNonZero)
-                        .map(this::setIconPath)
-                        .toList();
+                tmp1.stream().filter(Utilities::dataNonDropOrZero).map(this::setIconPath).toList();
 
         var fluids =
                 tmp2.stream().filter(Utilities::dataSizeNonZero).map(this::setIconPath).toList();
@@ -263,13 +264,7 @@ public class AppengController {
                         .sorted(Comparator.comparingLong(AeDataSetObj::getId).reversed())
                         .map(AeDataSetObj::getAeItemDisplayObj)
                         .map(this::setIconPath)
-                        .peek(
-                                obj -> {
-                                    BigDecimal[] tmpArray = new BigDecimal[2];
-                                    tmpArray[0] = Utilities.getBigDecimalTimeStamp(obj);
-                                    tmpArray[1] = obj.getSize();
-                                    tmpBdl.add(tmpArray);
-                                })
+                        .peek(obj -> tmpBdl.add(Utilities.getTimeSizeArray(obj)))
                         .toList();
 
         var older = processed.getLast().getSize();
@@ -307,13 +302,7 @@ public class AppengController {
                         .sorted(Comparator.comparingLong(AeDataSetObj::getId).reversed())
                         .map(AeDataSetObj::getAeFluidDisplayObj)
                         .map(this::setIconPath)
-                        .peek(
-                                obj -> {
-                                    BigDecimal[] tmpArray = new BigDecimal[2];
-                                    tmpArray[0] = Utilities.getBigDecimalTimeStamp(obj);
-                                    tmpArray[1] = obj.getSize();
-                                    tmpBdl.add(tmpArray);
-                                })
+                        .peek(obj -> tmpBdl.add(Utilities.getTimeSizeArray(obj)))
                         .toList();
 
         var older = processed.getLast().getSize();
@@ -403,7 +392,7 @@ public class AppengController {
             @RequestParam("meta") int meta,
             Model model) {
 
-        var local = Utilities.tryTranslateItemUn(Utilities.assembleItemUniqueName(name, meta));
+        var local = Utilities.lookupLocalItem(Utilities.assembleItemUniqueName(name, meta));
         log.info(
                 "Received crafting request of '{}:{}' with amount of {}, its local may be {}.",
                 name,

@@ -212,15 +212,7 @@ public class GtController {
         ArrayList<BigDecimal[]> tmpBdl = new ArrayList<>();
 
         var processed =
-                list.stream()
-                        .peek(
-                                data -> {
-                                    BigDecimal[] tmpArray = new BigDecimal[2];
-                                    tmpArray[0] = Utilities.getBigDecimalTimeStamp(data);
-                                    tmpArray[1] = data.getSize();
-                                    tmpBdl.add(tmpArray);
-                                })
-                        .toList();
+                list.stream().peek(data -> tmpBdl.add(Utilities.getTimeSizeArray(data))).toList();
 
         var older = processed.getLast().getSize();
         var newer = processed.getFirst().getSize();

@@ -159,6 +159,12 @@
  */
 package com.rhynia.ochelper.util;
 
+import static com.rhynia.ochelper.util.Mappings.ADDRESS_ALIAS_MAP;
+import static com.rhynia.ochelper.util.Mappings.NAME_MAP_FLUID_SWITCH;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_FLUID;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_ITEM;
+import static com.rhynia.ochelper.util.Mappings.UNI_NAME_MAP_ITEM_SWITCH;
+
 import com.rhynia.ochelper.var.base.AbstractAeData;
 import com.rhynia.ochelper.var.base.AbstractAeDataSet;
 import com.rhynia.ochelper.var.base.AbstractAeObject;
@@ -178,8 +184,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.rhynia.ochelper.util.Mappings.*;
-
 /**
  * @author Rhynia
  */
@@ -194,6 +198,7 @@ public class Utilities {
 
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    /** Form nearly unlimited byte unit with byteSeral */
     private static String getByte(final int byteSeral) {
         if (byteSeral <= 0) {
             return "";
@@ -214,6 +219,7 @@ public class Utilities {
         }
     }
 
+    /** Form byte display form by string length */
     public static String formatStringByte(String val) {
         if (val == null) {
             return null;
@@ -234,6 +240,10 @@ public class Utilities {
         return bytePrefix + BYTE_LIST[byteSeral];
     }
 
+    /**
+     * Form byte display form by string length, but using {@link Utilities#getByte(int)} for safer
+     * byte unit length, I guess it's not needed most of the time
+     */
     public static String formatStringByteUnlimited(String val) {
         if (val == null) {
             return null;
@@ -254,6 +264,7 @@ public class Utilities {
         return bytePrefix + getByte(byteSeral);
     }
 
+    /** Remove all char out of [0-9][a-Z], for generating sql sheet name. */
     public static String removeUnavailableChar(String s) {
         String regEx = "\\W";
         String str = "_";
@@ -262,27 +273,42 @@ public class Utilities {
         return m.replaceAll(str).trim();
     }
 
+    /**
+     * Assemble unique name by item name & meta value
+     *
+     * @param name unlocalized name
+     * @param meta for MetaItem, stored as damage in early Minecraft
+     */
     public static String assembleItemUniqueName(String name, int meta) {
         return "item$" + Utilities.removeUnavailableChar(name) + "$" + meta;
     }
 
+    /**
+     * Simply add a "fluid$" prefix, to suit item unique name format
+     *
+     * @param name unlocalized name
+     */
     public static String assembleFluidUniqueName(String name) {
         return "fluid$" + Utilities.removeUnavailableChar(name);
     }
 
+    /** Format value as like 12,345,678 */
     public static String formatSizeWithComma(String val) {
         return formatSizeWithComma(new BigDecimal(val));
     }
 
+    /** Format value as like 12,345,678 */
     public static String formatSizeWithComma(BigDecimal val) {
         DecimalFormat df = new DecimalFormat("#,###");
         return df.format(val);
     }
 
+    /** Format value as like 12T, 829Z */
     public static String formatSizeWithByte(BigDecimal val) {
         return formatSizeWithByte(val.toPlainString());
     }
 
+    /** Format value as like 12T, 829Z */
     public static String formatSizeWithByte(String val) {
         String tmp = formatStringByte(val);
         if (Objects.equals(val, tmp)) {
@@ -291,57 +317,95 @@ public class Utilities {
         return "(" + tmp + ")";
     }
 
-    public static String tryTranslateItemUn(String un) {
-        return UNI_NAME_MAP_ITEM.getOrDefault(un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, un));
-    }
-
-    public static String tryTranslateItemUn(String un, String rollBack) {
-        return UNI_NAME_MAP_ITEM.getOrDefault(
-                un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, rollBack));
-    }
-
-    public static String tryTranslateFluidUn(String un) {
-        return UNI_NAME_MAP_FLUID.getOrDefault(un, un);
-    }
-
-    public static String trySwitchFluidLocal(String original) {
-        return NAME_MAP_FLUID_SWITCH.getOrDefault(original, original);
-    }
-
-    public static String getAddressAlias(String address) {
-        return ADDRESS_ALIAS_MAP.getOrDefault(address, "?");
-    }
-
-    private static boolean stringSizeNonZero(@NotNull String s) {
-        return !"0".equals(s);
-    }
-
-    private static boolean stringNonDrop(@NotNull String s) {
-        return !s.endsWith("drop$0");
-    }
-
-    public static <T extends AbstractAeData> boolean dataSizeNonZero(T data) {
-        if (data != null) {
-            return stringSizeNonZero(data.getSizeString());
-        } else {
-            return false;
-        }
-    }
-
-    public static <T extends AbstractAeObject> boolean dataNonDrop(T data) {
-        if (data != null) {
-            return stringNonDrop(data.getUn());
-        } else {
-            return false;
-        }
-    }
-
+    /** Add local mapping for those doesn't contain in csv */
     public static void updateLocalMap(AeReportItemObj obj) {
         if (obj != null && !UNI_NAME_MAP_ITEM.containsKey(obj.getUn())) {
             UNI_NAME_MAP_ITEM.put(obj.getUn(), obj.getLabel());
         }
     }
 
+    /**
+     * Translate names by referring to static maps in {@link Mappings}
+     *
+     * @param un unique name
+     * @return localized string, or unique name itself
+     */
+    public static String lookupLocalItem(String un) {
+        return UNI_NAME_MAP_ITEM.getOrDefault(un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, un));
+    }
+
+    /**
+     * Translate names by referring to static maps in {@link Mappings}
+     *
+     * @param un unique name
+     * @param rollBack when local not found in map, return this
+     * @return localized string, or rollBack string
+     */
+    public static String lookupLocalItem(String un, String rollBack) {
+        return UNI_NAME_MAP_ITEM.getOrDefault(
+                un, UNI_NAME_MAP_ITEM_SWITCH.getOrDefault(un, rollBack));
+    }
+
+    /**
+     * Translate names by referring to static maps in {@link Mappings}
+     *
+     * @param un unique name
+     * @return localized string, or unique name itself
+     */
+    public static String lookupLocalFluid(String un) {
+        return UNI_NAME_MAP_FLUID.getOrDefault(un, un);
+    }
+
+    /**
+     * Get alternative local for suiting icon display function
+     *
+     * @param original original local
+     * @return altered local, or original local itself
+     */
+    public static String lookupSwitchLocalFluid(String original) {
+        return NAME_MAP_FLUID_SWITCH.getOrDefault(original, original);
+    }
+
+    /**
+     * Lookup alias for address given
+     *
+     * @param address component address
+     * @return configured alias, or "?" for not configured
+     */
+    public static String lookupAliasForAddress(String address) {
+        return ADDRESS_ALIAS_MAP.getOrDefault(address, "?");
+    }
+
+    /** Judge if the string present value is NOT "0" */
+    private static boolean stringSizeNonZero(@NotNull String s) {
+        return !"0".equals(s);
+    }
+
+    /** Judge if the item is NOT drop from AE2FC */
+    private static boolean stringNonDrop(@NotNull String s) {
+        return !s.endsWith("drop$0");
+    }
+
+    /** Judge if the data size value is NOT "0" */
+    public static <T extends AbstractAeData> boolean dataSizeNonZero(T data) {
+        return stringSizeNonZero(data.getSizeString());
+    }
+
+    /** Judge if the data type is NOT drop */
+    public static <T extends AbstractAeObject> boolean dataNonDrop(T data) {
+        return stringNonDrop(data.getUn());
+    }
+
+    /** Check both data size not 0 and type not drop, null safe */
+    public static <T extends AbstractAeData> boolean dataNonDropOrZero(T data) {
+        if (data != null) {
+            return dataNonDrop(data) && dataSizeNonZero(data);
+        } else {
+            return false;
+        }
+    }
+
+    /** Transform String like "yyyy-MM-dd HH:mm:ss" into timestamp, but store by BigDecimal */
     public static <T extends AbstractAeDataSet> BigDecimal getBigDecimalTimeStamp(T data) {
         try {
             return BigDecimal.valueOf(DF.parse(data.getTime()).getTime());
@@ -351,6 +415,7 @@ public class Utilities {
         }
     }
 
+    /** Transform String like "yyyy-MM-dd HH:mm:ss" into timestamp, but store by BigDecimal */
     public static BigDecimal getBigDecimalTimeStamp(EnergyData data) {
         try {
             return BigDecimal.valueOf(DF.parse(data.getTime()).getTime());
@@ -360,6 +425,17 @@ public class Utilities {
         }
     }
 
+    /** Assemble the data timestamp with size */
+    public static BigDecimal[] getTimeSizeArray(EnergyData data) {
+        return new BigDecimal[] {Utilities.getBigDecimalTimeStamp(data), data.getSize()};
+    }
+
+    /** Assemble the data timestamp with size */
+    public static <T extends AbstractAeDataSet> BigDecimal[] getTimeSizeArray(T data) {
+        return new BigDecimal[] {Utilities.getBigDecimalTimeStamp(data), data.getSize()};
+    }
+
+    /** For example "ep" to ep, doesn't check if it is really enveloped by quotes */
     public static String stripQuotes(String s) {
         if (!(s == null)) {
             return s.substring(1, s.length() - 1);
@@ -368,6 +444,7 @@ public class Utilities {
         }
     }
 
+    /** Transform Minecraft colors into html style */
     public static String colorMinecraftToHtml(String s) {
         return s.replace("§0", "<span style=\"color: #000000;\">")
                 // UIV

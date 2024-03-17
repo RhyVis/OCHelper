@@ -163,6 +163,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Static maps for mapping Something to Something
+ *
  * @author Rhynia
  */
 public class Mappings {

@@ -74,19 +74,19 @@
                                         <tbody>
                                         <tr th:each="component:${c_list}">
                                             <td>
-                                                <th:block th:text="${component.getLeft().getName()}"></th:block>
+                                                <th:block th:text="${component.getName()}"></th:block>
                                             </td>
                                             <td>
-                                                <th:block th:text="${component.getRight()}"></th:block>
+                                                <th:block th:text="${component.getAlias()}"></th:block>
                                             </td>
                                             <td>
                                                 <small class="text-success me-1">
-                                                    <th:block th:text="${component.getLeft().getAddress()}"></th:block>
+                                                    <th:block th:text="${component.getAddress()}"></th:block>
                                                 </small>
                                             </td>
                                             <td>
                                                 <a class="text-secondary"
-                                                   th:href="@{oc-components-detail(name = ${component.getLeft().getName()}, address = ${component.getLeft().getAddress()})}">
+                                                   th:href="@{oc-components-detail(name = ${component.getName()}, address = ${component.getAddress()})}">
                                                     <i class="bi bi-search"></i>
                                                 </a>
                                             </td>

@@ -3,7 +3,7 @@ local computer = require('computer')
 local json = require('json')
 local serialization = require("serialization")
 
-local url = "http://localhost:21314/api/oc"
+local url = "http://localhost:3030/api/oc"
 
 while true do
     local opt_0, resp_ = xpcall(function()
