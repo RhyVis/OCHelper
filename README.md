@@ -1,4 +1,6 @@
 # OC Helper
+As I am shifting to 1.20+ version playing, I'll try to rewrite it to fit multiple versions, this one will be archived.
+
 Springboot based app to collect & manage in-game oc components.
 
 ## Usage
